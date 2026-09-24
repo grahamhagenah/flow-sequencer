@@ -278,14 +278,20 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 }
 .tile {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: 12px;
   text-align: left;
   padding: 12px;
   background: var(--surface);
   min-height: 92px;
 }
 .tile-label { font-weight: 500; }
+.tile-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+/* The pose drawings sit in the quiet grey, a little brighter on hover. */
+.pose-figure { flex: none; color: var(--muted); }
+.tile:hover .pose-figure { color: var(--text); }
+.row .pose-figure { margin: 0 2px 0 4px; }
+.row.current .pose-figure, .row.playing .pose-figure { color: var(--accent); }
 .tile-to { font-size: 13px; color: var(--muted); }
 /* The empty sequence panel: recent flows and sample classes.
    One spacing scale throughout: 22px between sections, 10px under each heading. */
@@ -491,6 +497,62 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .row .via { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .row-name .side { font-size: 11px; }
 
+/* The ⋯ on each row: hidden until the row is hovered (always faintly there on touch),
+   but it keeps its space, so nothing moves when it shows. */
+.row-more {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  margin-right: -4px;
+  color: var(--muted);
+  background: none;
+  border: none;
+  border-radius: 50%;
+  opacity: 0;
+}
+.row:hover .row-more, .row-more:focus-visible, .row.menu-open .row-more { opacity: 1; }
+.row-more:hover:not(:disabled), .row.menu-open .row-more { color: var(--text); background: var(--surface-2); }
+@media (hover: none) { .row-more { opacity: 0.6; } }
+/* Where an insert will go: a quiet dashed line under the row. */
+.row.insert-after { border-bottom: 1px dashed var(--accent); }
+
+.row-menu {
+  position: fixed;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 240px;
+  padding: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
+}
+.row-menu button { padding: 7px 10px; font-size: 14px; text-align: left; background: none; border: none; border-radius: 5px; }
+.row-menu button:hover:not(:disabled) { background: var(--surface); }
+.row-menu .why { padding: 0 10px 6px; font-size: 12px; color: var(--muted); }
+
+/* The same grid as the tiles, so the select is exactly two tiles wide. */
+.route { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; margin-top: 24px; }
+/* A roomier select with its own chevron, in the tiles' colours. */
+.route select {
+  grid-column: span 2;
+  min-width: 0;
+  padding: 10px 38px 10px 14px;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239aa1ab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center / 16px;
+  border-radius: 8px;
+  appearance: none;
+  cursor: pointer;
+}
+.route select:hover { border-color: var(--muted); }
+.route select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.tiles-empty { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+
 .stepper { display: inline-flex; align-items: center; gap: 4px; flex: none; }
 /* Quiet − and +: no box, grey until hovered, then a soft round background. */
 .stepper button {
@@ -575,7 +637,7 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   .app { height: auto; min-height: 100vh; min-height: 100dvh; }
   .layout { grid-template-columns: minmax(0, 1fr); }
   .builder { padding: 0 16px 16px; overflow: visible; }
-  .tiles { grid-template-columns: 1fr 1fr; }
+  .tiles, .route { grid-template-columns: 1fr 1fr; }
   /* Five player buttons share a phone's width: slimmer side buttons, the main one on one line. */
   .play-controls { gap: 6px; }
   .play-controls button { padding: 10px; }

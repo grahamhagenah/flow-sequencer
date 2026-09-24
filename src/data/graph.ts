@@ -41,3 +41,22 @@ export function renderLabel(label: string, side: Side): string {
     .replaceAll('{Side}', cap(side))
     .replaceAll('{Other}', cap(other));
 }
+
+/**
+ * The shortest way (fewest moves) from one pose to every pose it can reach, as
+ * the moves to make. A breadth-first search over the transitions.
+ */
+export function routesFrom(poseId: string): Map<string, Transition[]> {
+  const routes = new Map<string, Transition[]>([[poseId, []]]);
+  const queue = [poseId];
+  for (let i = 0; i < queue.length; i++) {
+    const here = queue[i];
+    for (const t of outgoing(here)) {
+      if (routes.has(t.to)) continue;
+      routes.set(t.to, [...routes.get(here)!, t]);
+      queue.push(t.to);
+    }
+  }
+  routes.delete(poseId);
+  return routes;
+}

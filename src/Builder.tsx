@@ -1,14 +1,27 @@
-import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
-import { applySide, getPose, otherSide, outgoing, renderLabel, sideLabel, TRANSITION_BY_ID } from './data/graph';
-import { START_POSES } from './data/poses';
-import type { Transition } from './data/types';
+import { type CSSProperties, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { applySide, getPose, otherSide, outgoing, renderLabel, routesFrom, sideLabel, TRANSITION_BY_ID } from './data/graph';
+import { POSES, START_POSES } from './data/poses';
+import type { Base, Transition } from './data/types';
 import type { SampleFlow } from './data/samples';
 import { GetStarted, HowItWorks } from './GetStarted';
 import { PauseIcon, PlayIcon } from './icons';
+import { PoseFigure } from './PoseFigure';
 import type { SavedFlow } from './library';
 import { PlaybackDock } from './player/PlaybackDock';
 import { usePlayer } from './player/usePlayer';
-import { advance, mirror, mirrorRange, type Sequence, setBreaths, setLeadingSide, start } from './sequence';
+import {
+  advance,
+  cutFrom,
+  insertAfter,
+  insertOptions,
+  mirror,
+  mirrorRange,
+  removeStep,
+  type Sequence,
+  setBreaths,
+  setLeadingSide,
+  start,
+} from './sequence';
 import { aboutMinutes, classMs } from './player/conductor';
 
 type SetSeq = (next: Sequence | ((prev: Sequence) => Sequence)) => void;
@@ -22,6 +35,16 @@ const PAGE_SIZE = 30;
  * and a flow opened from there must still start at the top.
  */
 let handledOpen = 0;
+
+/** How the "Get to" list groups poses: by where the body is, standing down to lying. */
+const BASES: [Base, string][] = [
+  ['standing', 'Standing'],
+  ['hands', 'On hands and feet'],
+  ['kneeling', 'Kneeling'],
+  ['seated', 'Seated'],
+  ['prone', 'Lying face down'],
+  ['supine', 'Lying on your back'],
+];
 
 export function Builder({
   seq,
@@ -136,11 +159,35 @@ export function Builder({
   useEffect(() => {
     if (justOpened || seq.length === 0) setCarryBreaths(null);
   }, [justOpened, seq.length]);
-  const addPose = (t: Transition) =>
-    set((q) => {
-      const next = advance(q, t);
-      return carryBreaths === null ? next : setBreaths(next, next.length - 1, carryBreaths);
-    });
+  const addMoves = (moves: Transition[]) =>
+    set((q) =>
+      moves.reduce((acc, t) => {
+        const next = advance(acc, t);
+        return carryBreaths === null ? next : setBreaths(next, next.length - 1, carryBreaths);
+      }, q),
+    );
+  const addPose = (t: Transition) => addMoves([t]);
+
+  // "Get to": the fewest moves from the newest pose to any pose it can reach.
+  const routes = useMemo(() => (current ? routesFrom(current.poseId) : null), [current?.poseId]);
+
+  // Inserting between two poses: while set, the tiles offer what fits after this step.
+  const [insertAt, setInsertAt] = useState<number | null>(null);
+  const inserting = insertAt !== null && insertAt < seq.length - 1;
+  useEffect(() => {
+    if (insertAt !== null && !inserting) setInsertAt(null);
+  }, [insertAt, inserting]);
+  useEffect(() => {
+    if (!inserting) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setInsertAt(null);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [inserting]);
+  /** The step to show after the next edit, when it isn't the newest (an insert). */
+  const revealAt = useRef<number | null>(null);
+
+  // The ⋯ menu on a row: where it opens, and for which step.
+  const [menu, setMenu] = useState<{ index: number; anchor: DOMRect } | null>(null);
 
   // Adding a pose always shows it, even mid-class (when the page otherwise follows
   // the playing pose). The newest row is marked in the CSS (.row.current).
@@ -149,9 +196,11 @@ export function Builder({
   useEffect(() => {
     const grew = seq.length > lastLength.current && !justOpened;
     lastLength.current = seq.length;
+    const target = revealAt.current ?? seq.length - 1;
+    revealAt.current = null;
     if (!grew) return;
-    setPage(Math.floor((seq.length - 1) / PAGE_SIZE));
-    setJustAdded({ index: seq.length - 1 });
+    setPage(Math.floor(target / PAGE_SIZE));
+    setJustAdded({ index: target });
   }, [seq.length, justOpened]);
   useEffect(() => {
     if (justAdded === null) return;
@@ -185,16 +234,33 @@ export function Builder({
         {!current && <HowItWorks />}
 
         <div className="next-head">
-          <h2>
-            {current ? 'Next' : 'Start'}
-            {current && (
+          {inserting ? (
+            <h2>
+              Insert
               <span className="next-from">
-                · from {getPose(current.poseId).name}
-                {getPose(current.poseId).sided && ` (${current.side})`}
+                · between {insertAt + 1} {getPose(seq[insertAt].poseId).name} and {insertAt + 2}{' '}
+                {getPose(seq[insertAt + 1].poseId).name}
               </span>
-            )}
-          </h2>
-          {current && (
+            </h2>
+          ) : (
+            <h2>
+              {current ? 'Next' : 'Start'}
+              {current && (
+                <span className="next-from">
+                  · from {getPose(current.poseId).name}
+                  {getPose(current.poseId).sided && ` (${current.side})`}
+                </span>
+              )}
+            </h2>
+          )}
+          {inserting && (
+            <div className="next-controls">
+              <button className="link-btn" onClick={() => setInsertAt(null)}>
+                Cancel
+              </button>
+            </div>
+          )}
+          {current && !inserting && (
             <div className="next-controls">
               {/* The newest pose's breaths, carried on to the poses added after it. */}
               <Stepper
@@ -233,16 +299,44 @@ export function Builder({
           )}
         </div>
         <div className="tiles">
-          {current
+          {inserting
+            ? insertOptions(seq, insertAt).map((o) => {
+                const to = getPose(o.move.to);
+                const side = applySide(seq[insertAt].side, o.move.side);
+                return (
+                  <button
+                    key={o.move.id}
+                    className="tile"
+                    onClick={() => {
+                      revealAt.current = insertAt + 1;
+                      set((q) => insertAfter(q, insertAt, o));
+                      setInsertAt(null);
+                    }}
+                  >
+                    <PoseFigure poseId={o.move.to} side={side} />
+                    <span className="tile-text">
+                      <span className="tile-label">{renderLabel(o.move.label, side)}</span>
+                      <span className="tile-to">
+                        {to.name}
+                        {to.sided && ` · ${sideLabel(side)}`}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })
+            : current
             ? outgoing(current.poseId).map((t) => {
                 const to = getPose(t.to);
                 const side = applySide(current.side, t.side);
                 return (
                   <button key={t.id} className="tile" onClick={() => addPose(t)}>
-                    <span className="tile-label">{renderLabel(t.label, side)}</span>
-                    <span className="tile-to">
-                      {to.name}
-                      {to.sided && ` · ${sideLabel(side)}`}
+                    <PoseFigure poseId={t.to} side={side} />
+                    <span className="tile-text">
+                      <span className="tile-label">{renderLabel(t.label, side)}</span>
+                      <span className="tile-to">
+                        {to.name}
+                        {to.sided && ` · ${sideLabel(side)}`}
+                      </span>
                     </span>
                   </button>
                 );
@@ -251,15 +345,54 @@ export function Builder({
                 const p = getPose(id);
                 return (
                   <button key={id} className="tile" onClick={() => set(start(id))}>
-                    <span className="tile-label">{p.name}</span>
-                    {p.sanskrit && <span className="tile-to">{p.sanskrit}</span>}
+                    <PoseFigure poseId={id} />
+                    <span className="tile-text">
+                      <span className="tile-label">{p.name}</span>
+                      {p.sanskrit && <span className="tile-to">{p.sanskrit}</span>}
+                    </span>
                   </button>
                 );
               })}
         </div>
 
+        {inserting && insertOptions(seq, insertAt).length === 0 && (
+          <p className="tiles-empty">
+            No single pose leads from {getPose(seq[insertAt].poseId).name} on to{' '}
+            {getPose(seq[insertAt + 1].poseId).name}.
+          </p>
+        )}
+
+        {/* Always here once there's a pose, so it never moves the suggestion below it. */}
+        {routes && !inserting && (
+          <div className="route">
+            <select
+              id="route"
+              aria-label="Get to a pose"
+              value=""
+              onChange={(e) => {
+                const moves = routes.get(e.target.value);
+                if (moves) addMoves(moves);
+              }}
+            >
+              <option value="">Get to any pose in fewest moves</option>
+              {BASES.map(([base, label]) => (
+                <optgroup key={base} label={label}>
+                  {POSES.filter((p) => p.base === base && routes.has(p.id)).map((p) => {
+                    const n = routes.get(p.id)!.length;
+                    return (
+                      <option key={p.id} value={p.id}>
+                        {p.name} · {n} {n === 1 ? 'move' : 'moves'}
+                      </option>
+                    );
+                  })}
+                </optgroup>
+              ))}
+            </select>
+          </div>
+        )}
+
         {/* Below the tiles, so it coming and going never moves them. */}
-        {range && mirrorSide && (
+        {range && mirrorSide && !inserting && (
           <button className="mirror" onClick={() => set(mirror)}>
             <span className="kicker">Suggestion</span>
             Repeat on the {mirrorSide} side
@@ -323,6 +456,8 @@ export function Builder({
                 isLast && !playing && 'current',
                 playing && 'playing',
                 player.active && i < playingIndex && 'played',
+                inserting && i === insertAt && 'insert-after',
+                menu?.index === i && 'menu-open',
               ]
                 .filter(Boolean)
                 .join(' ');
@@ -337,7 +472,7 @@ export function Builder({
                   // The whole row jumps there, not just its text; the breaths control keeps its own clicks.
                   // (The text is a real button, for the keyboard.)
                   onClick={(e) => {
-                    if ((e.target as HTMLElement).closest('.stepper, .row-main')) return;
+                    if ((e.target as HTMLElement).closest('.stepper, .row-main, .row-more')) return;
                     player.goTo(i);
                   }}
                 >
@@ -346,6 +481,7 @@ export function Builder({
                   <span className="num" aria-label={playing ? `${i + 1}, ${player.state.playing ? 'playing' : 'paused'}` : undefined}>
                     {playing ? <span className="now">{player.state.playing ? <PlayIcon /> : <PauseIcon />}</span> : i + 1}
                   </span>
+                  <PoseFigure poseId={s.poseId} side={s.side} size={30} />
                   {/* Jumps playback here, paused, so the class can pick up from this pose. */}
                   <button className="row-main" onClick={() => player.goTo(i)} title="Jump here (paused)">
                     {rowBody(i)}
@@ -357,6 +493,18 @@ export function Builder({
                   ) : (
                     <span className="row-breaths">{s.breaths === 1 ? '1 breath' : `${s.breaths} breaths`}</span>
                   )}
+                  <button
+                    className="row-more"
+                    aria-label={`Edit pose ${i + 1}`}
+                    title="Insert or remove"
+                    aria-haspopup="menu"
+                    aria-expanded={menu?.index === i}
+                    onClick={(e) =>
+                      setMenu(menu?.index === i ? null : { index: i, anchor: e.currentTarget.getBoundingClientRect() })
+                    }
+                  >
+                    <MoreIcon />
+                  </button>
                 </li>
               );
             })}
@@ -368,9 +516,116 @@ export function Builder({
           </div>
         )}
       </aside>
+      {menu && menu.index < seq.length && (
+        <RowMenu
+          seq={seq}
+          index={menu.index}
+          anchor={menu.anchor}
+          onClose={() => setMenu(null)}
+          onInsert={() => {
+            setInsertAt(menu.index);
+            document.querySelector('.next-head')?.scrollIntoView({ block: 'nearest' });
+          }}
+          onRemove={(next) => set(next)}
+        />
+      )}
     </main>
   );
 }
+
+/**
+ * A row's edits: insert after it, remove it (when its neighbours can be joined), or
+ * remove it and everything after. Undo takes any of them back.
+ */
+function RowMenu({
+  seq,
+  index,
+  anchor,
+  onClose,
+  onInsert,
+  onRemove,
+}: {
+  seq: Sequence;
+  index: number;
+  anchor: DOMRect;
+  onClose: () => void;
+  onInsert: () => void;
+  onRemove: (next: Sequence) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    ref.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus();
+    const outside = (e: PointerEvent) => {
+      const t = e.target as HTMLElement;
+      if (!ref.current?.contains(t) && !t.closest('.row-more')) onClose();
+    };
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    // It's placed from the button's position, so anything that moves the button closes it.
+    const moved = () => onClose();
+    document.addEventListener('pointerdown', outside);
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('scroll', moved, true);
+    window.addEventListener('resize', moved);
+    return () => {
+      document.removeEventListener('pointerdown', outside);
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('scroll', moved, true);
+      window.removeEventListener('resize', moved);
+    };
+  }, [onClose]);
+
+  const last = index === seq.length - 1;
+  const removal = removeStep(seq, index);
+  const after = seq.length - index - 1;
+  const name = (i: number) => getPose(seq[i].poseId).name;
+  // Opens below the button, or above it when there isn't room.
+  const up = anchor.bottom + 170 > window.innerHeight;
+  const style: CSSProperties = {
+    right: Math.max(8, window.innerWidth - anchor.right),
+    ...(up ? { bottom: window.innerHeight - anchor.top + 4 } : { top: anchor.bottom + 4 }),
+  };
+  const run = (fn: () => void) => () => {
+    onClose();
+    fn();
+  };
+
+  return (
+    <div className="row-menu" role="menu" ref={ref} style={style}>
+      {!last && (
+        <button role="menuitem" onClick={run(onInsert)}>
+          Insert a pose after
+        </button>
+      )}
+      {removal ? (
+        <button role="menuitem" onClick={run(() => onRemove(removal.seq))}>
+          {removal.count === 2 ? `Remove, with the return to ${name(index + 1)}` : 'Remove'}
+        </button>
+      ) : (
+        <>
+          <button role="menuitem" disabled>
+            Remove
+          </button>
+          <span className="why">
+            {name(index - 1)} doesn’t lead to {name(index + 1)}
+          </span>
+        </>
+      )}
+      {!last && (
+        <button role="menuitem" className="danger" onClick={run(() => onRemove(cutFrom(seq, index)))}>
+          Remove this and the {after === 1 ? 'pose' : `${after} poses`} after
+        </button>
+      )}
+    </div>
+  );
+}
+
+const MoreIcon = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+    <circle cx="5" cy="12" r="1.6" />
+    <circle cx="12" cy="12" r="1.6" />
+    <circle cx="19" cy="12" r="1.6" />
+  </svg>
+);
 
 /** An unsided pose whose next moves include a sided one, so the side is still open. */
 function choosesSide(poseId: string): boolean {
