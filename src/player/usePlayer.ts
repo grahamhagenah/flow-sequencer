@@ -13,7 +13,8 @@ export interface Settings {
 
 const DEFAULTS: Settings = { secondsPerBreath: 5, voiceURI: null, chime: true };
 
-function loadSettings(): Settings {
+/** The saved player settings (or defaults), for estimating class lengths outside the player. */
+export function loadSettings(): Settings {
   try {
     const s = { ...DEFAULTS, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? '') as Partial<Settings>) };
     if (BREATH_CHOICES.includes(s.secondsPerBreath)) return s;
@@ -62,7 +63,15 @@ function useWakeLock(active: boolean) {
   }, [active]);
 }
 
-const IDLE: PlayerState = { index: 0, phase: 'ready', playing: false, holdElapsed: 0, holdTotal: 0 };
+const IDLE: PlayerState = {
+  index: 0,
+  phase: 'ready',
+  playing: false,
+  holdElapsed: 0,
+  holdTotal: 0,
+  speechElapsed: 0,
+  speechTotal: 0,
+};
 
 /**
  * Voice playback of a flow. `active` is true from Play until Stop, including

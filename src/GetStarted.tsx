@@ -1,10 +1,19 @@
+import type { CSSProperties } from 'react';
+import { sampleLook } from './data/sampleLooks';
 import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
 import { PlayIcon } from './icons';
 import type { SavedFlow } from './library';
 import { decodeSteps } from './link';
-import { formatDuration, totalSeconds } from './sequence';
+import { aboutMinutes, classMs } from './player/conductor';
+import { loadSettings } from './player/usePlayer';
 
 const RECENT = 3;
+
+/** How long a flow runs with the player's saved settings, voice included. */
+const length = (seq: Parameters<typeof classMs>[0]) => {
+  const { secondsPerBreath, chime } = loadSettings();
+  return classMs(seq, secondsPerBreath, chime);
+};
 
 /** What the sequence panel shows while the flow is empty: how it works, classes to try, and recent flows. */
 export function GetStarted({
@@ -53,7 +62,7 @@ export function GetStarted({
                   <button className="gs-item" onClick={() => onOpenSaved(f)}>
                     <span className="gs-title">{f.name}</span>
                     <span className="gs-meta">
-                      {seq.length} {seq.length === 1 ? 'pose' : 'poses'} · {formatDuration(totalSeconds(seq))}
+                      {seq.length} {seq.length === 1 ? 'pose' : 'poses'} · {aboutMinutes(length(seq))}
                     </span>
                     <span className="gs-open">Open ›</span>
                   </button>
@@ -68,26 +77,35 @@ export function GetStarted({
         <div className="gs-head">
           <h3>Try a sample class</h3>
         </div>
-        <ul className="gs-list">
-          {SAMPLE_FLOWS.map((f) => (
-            <li key={f.id} className="gs-sample">
-              <div className="gs-text">
-                <span className="gs-title">{f.name}</span>
-                <span className="gs-desc">{f.description}</span>
-                <span className="gs-meta">
-                  {f.seq.length} poses · {formatDuration(totalSeconds(f.seq))} of holds
+        <ul className="sample-cards">
+          {SAMPLE_FLOWS.map((f) => {
+            const { icon, color } = sampleLook(f.id);
+            // "Power Flow · strong": the part after the dot becomes a style pill.
+            const [title, style] = f.name.split(' · ');
+            return (
+              <li key={f.id} className="sample-card" style={{ '--tone': color } as CSSProperties}>
+                <span className="sample-title">
+                  <span className="sample-icon">{icon}</span>
+                  {title}
                 </span>
-              </div>
-              <div className="gs-actions">
-                <button className="gs-play" onClick={() => onPlaySample(f)} aria-label={`Play ${f.name}`}>
-                  <PlayIcon /> Play
-                </button>
-                <button onClick={() => onOpenSample(f)} aria-label={`Open ${f.name}`}>
-                  Open
-                </button>
-              </div>
-            </li>
-          ))}
+                <span className="sample-meta">
+                  {style && <span className="sample-style">{style}</span>}
+                  {aboutMinutes(length(f.seq))}
+                </span>
+                <span className="sample-desc" title={`${f.description} (${f.seq.length} poses)`}>
+                  {f.description}
+                </span>
+                <div className="sample-actions">
+                  <button className="gs-play" onClick={() => onPlaySample(f)} aria-label={`Play ${f.name}`}>
+                    <PlayIcon /> Play
+                  </button>
+                  <button onClick={() => onOpenSample(f)} aria-label={`Open ${f.name}`}>
+                    Open
+                  </button>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </section>
     </div>

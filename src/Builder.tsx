@@ -6,7 +6,8 @@ import { GetStarted } from './GetStarted';
 import type { SavedFlow } from './library';
 import { PlaybackDock } from './player/PlaybackDock';
 import { usePlayer } from './player/usePlayer';
-import { advance, formatDuration, mirror, mirrorRange, type Sequence, setBreaths, setLeadingSide, start, totalSeconds } from './sequence';
+import { advance, mirror, mirrorRange, type Sequence, setBreaths, setLeadingSide, start } from './sequence';
+import { aboutMinutes, classMs } from './player/conductor';
 
 type SetSeq = (next: Sequence | ((prev: Sequence) => Sequence)) => void;
 
@@ -207,7 +208,8 @@ export function Builder({
           )}
           {seq.length > 0 && (
             <span className="meta">
-              {seq.length} {seq.length === 1 ? 'pose' : 'poses'} · {formatDuration(totalSeconds(seq))}
+              {seq.length} {seq.length === 1 ? 'pose' : 'poses'} ·{' '}
+              {aboutMinutes(classMs(seq, player.settings.secondsPerBreath, player.settings.chime))}
             </span>
           )}
         </div>

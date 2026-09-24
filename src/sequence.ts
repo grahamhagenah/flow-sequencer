@@ -12,8 +12,6 @@ export interface Step {
 
 export type Sequence = Step[];
 
-export const SECONDS_PER_BREATH = 5;
-
 export function start(poseId: string, side: Side = 'right'): Sequence {
   return [{ poseId, side, breaths: getPose(poseId).breaths }];
 }
@@ -62,10 +60,6 @@ export function mirror(seq: Sequence): Sequence {
   if (!range) return seq;
   const repeat = seq.slice(range[0], range[1] + 1).map((s) => ({ ...s, side: otherSide(s.side) }));
   return [...seq, ...repeat];
-}
-
-export function totalSeconds(seq: Sequence): number {
-  return seq.reduce((sum, s) => sum + s.breaths * SECONDS_PER_BREATH, 0);
 }
 
 export function formatDuration(seconds: number): string {

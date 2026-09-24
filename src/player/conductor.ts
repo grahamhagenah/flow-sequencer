@@ -16,6 +16,13 @@ export interface PlayerState {
   /** Milliseconds of the current hold so far, and its full length. */
   holdElapsed: number;
   holdTotal: number;
+  /**
+   * Milliseconds of the current step's chime and announcement so far, and how
+   * long they're expected to take (see speechMs). Counted so the time left keeps
+   * moving while the voice talks.
+   */
+  speechElapsed: number;
+  speechTotal: number;
 }
 
 export interface PlayerSettings {
@@ -38,16 +45,50 @@ export function unlockPlayback() {
   synth?.speak(new SpeechSynthesisUtterance(''));
 }
 
+const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
+
 /** A generous guess at how long text takes to say, for when the browser never reports it finished. */
-const estimateMs = (text: string) => (text.split(/\s+/).length / 2.5) * 1000;
+const estimateMs = (text: string) => (words(text) / 2.5) * 1000;
+
+/** A realistic guess at how long the voice takes to say text: about 155 words a minute at rate 0.95. */
+const sayMs = (text: string) => (words(text) / 2.6) * 1000;
+
+/** Expected time for step i's chime and spoken announcement, before its hold begins. */
+export function speechMs(seq: Sequence, i: number, chimeOn: boolean): number {
+  return (chimeOn ? CHIME_LEAD_MS : 0) + sayMs(announcement(seq, i));
+}
+
+/** Expected length of a whole class: every step's announcement and hold, then the closing words. */
+export function classMs(seq: Sequence, secondsPerBreath: number, chimeOn: boolean): number {
+  if (seq.length === 0) return 0;
+  const steps = seq.reduce((sum, s, i) => sum + speechMs(seq, i, chimeOn) + s.breaths * secondsPerBreath * 1000, 0);
+  return steps + closingMs();
+}
+
+/** A class length for lists and headings: "about 27 min". */
+export function aboutMinutes(ms: number): string {
+  return `about ${Math.max(1, Math.round(ms / 60000))} min`;
+}
+
+/** Expected time for the closing words after the last hold. */
+export const closingMs = () => sayMs(CLOSING);
 
 export class Conductor {
-  private state: PlayerState = { index: 0, phase: 'ready', playing: false, holdElapsed: 0, holdTotal: 0 };
+  private state: PlayerState = {
+    index: 0,
+    phase: 'ready',
+    playing: false,
+    holdElapsed: 0,
+    holdTotal: 0,
+    speechElapsed: 0,
+    speechTotal: 0,
+  };
   /** Bumped whenever the current action is abandoned, so its late callbacks do nothing. */
   private token = 0;
   private timers: ReturnType<typeof setTimeout>[] = [];
   private ticker: ReturnType<typeof setInterval> | undefined;
   private holdStartedAt = 0;
+  private speechStartedAt = 0;
   /** Utterances being spoken. Chrome drops onend if one is garbage collected, so hold on to them. */
   private live = new Set<SpeechSynthesisUtterance>();
 
@@ -66,7 +107,7 @@ export class Conductor {
     this.seq = seq;
     if (seq.length === 0) {
       this.abandon();
-      this.update({ index: 0, playing: false, phase: 'ready', holdElapsed: 0, holdTotal: 0 });
+      this.update({ index: 0, playing: false, phase: 'ready', holdElapsed: 0, holdTotal: 0, speechElapsed: 0, speechTotal: 0 });
     } else if (this.state.index >= seq.length) {
       this.goTo(seq.length - 1, false);
     }
@@ -94,7 +135,13 @@ export class Conductor {
     const holdElapsed = this.state.phase === 'holding' ? this.elapsed() : this.state.holdElapsed;
     this.abandon();
     // Speech can't be resumed mid-sentence reliably, so a paused announcement starts over.
-    this.update({ playing: false, holdElapsed, phase: this.state.phase === 'speaking' ? 'ready' : this.state.phase });
+    const speaking = this.state.phase === 'speaking';
+    this.update({
+      playing: false,
+      holdElapsed,
+      phase: speaking ? 'ready' : this.state.phase,
+      speechElapsed: speaking ? 0 : this.state.speechElapsed,
+    });
   }
 
   next() {
@@ -107,7 +154,15 @@ export class Conductor {
 
   goTo(index: number, playing: boolean) {
     this.abandon();
-    this.update({ index, playing, phase: 'ready', holdElapsed: 0, holdTotal: this.holdMs(index) });
+    this.update({
+      index,
+      playing,
+      phase: 'ready',
+      holdElapsed: 0,
+      holdTotal: this.holdMs(index),
+      speechElapsed: 0,
+      speechTotal: speechMs(this.seq, index, this.settings.chime),
+    });
     if (playing) this.announce(index);
   }
 
@@ -116,7 +171,14 @@ export class Conductor {
   }
 
   private announce(index: number) {
-    this.update({ phase: 'speaking', holdElapsed: 0, holdTotal: this.holdMs(index) });
+    const speechTotal = speechMs(this.seq, index, this.settings.chime);
+    this.speechStartedAt = performance.now();
+    this.update({ phase: 'speaking', holdElapsed: 0, holdTotal: this.holdMs(index), speechElapsed: 0, speechTotal });
+    // Tick while the voice talks too. Held at the estimate if it runs long.
+    this.ticker = setInterval(
+      () => this.update({ speechElapsed: Math.min(speechTotal, performance.now() - this.speechStartedAt) }),
+      250,
+    );
     const say = () => this.speak(announcement(this.seq, index), () => this.hold());
     if (!this.settings.chime) return say();
     chime();
@@ -124,9 +186,11 @@ export class Conductor {
   }
 
   private hold() {
+    this.stopTicker();
     const remaining = this.state.holdTotal - this.state.holdElapsed;
     this.holdStartedAt = performance.now() - this.state.holdElapsed;
-    this.update({ phase: 'holding' });
+    // The announcement is over, whether it ran short or long of its estimate.
+    this.update({ phase: 'holding', speechElapsed: this.state.speechTotal });
     // The progress bars' CSS transitions match this interval; change both together.
     this.ticker = setInterval(() => this.update({ holdElapsed: this.elapsed() }), 250);
     this.later(remaining, () => {

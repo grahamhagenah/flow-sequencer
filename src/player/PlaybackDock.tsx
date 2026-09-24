@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { getPose, sideLabel } from '../data/graph';
 import { BackIcon, ForwardIcon, PauseIcon, PlayIcon, SettingsIcon, StopIcon } from '../icons';
 import { formatDuration, type Sequence } from '../sequence';
-import { canSpeak } from './conductor';
+import { canSpeak, classMs, closingMs, speechMs } from './conductor';
 import { BREATH_CHOICES, type Playback } from './usePlayer';
 
 /**
@@ -20,13 +20,20 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
   const next = seq[index + 1];
   const nextPose = next && getPose(next.poseId);
 
+  // Time counts the voice as well as the holds, so the clock keeps moving while
+  // an announcement is read and the total is how long the class really takes.
   const breathMs = settings.secondsPerBreath * 1000;
-  const totalMs = seq.reduce((sum, s) => sum + s.breaths * breathMs, 0);
+  const totalMs = classMs(seq, settings.secondsPerBreath, settings.chime);
+  const stepsBefore = seq
+    .slice(0, index)
+    .reduce((sum, s, i) => sum + speechMs(seq, i, settings.chime) + s.breaths * breathMs, 0);
   const elapsedMs = !active
     ? 0
     : state.phase === 'done'
       ? totalMs
-      : seq.slice(0, index).reduce((sum, s) => sum + s.breaths * breathMs, 0) + state.holdElapsed;
+      : state.phase === 'closing'
+        ? totalMs - closingMs() // only the closing words are left
+        : stepsBefore + state.speechElapsed + state.holdElapsed;
   const breath = Math.min(step.breaths, Math.floor(state.holdElapsed / breathMs) + 1);
 
   const label = !active
@@ -50,7 +57,7 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
         <span className="meta">
           {active
             ? `${formatDuration(Math.round(Math.max(0, totalMs - elapsedMs) / 1000))} left`
-            : `${formatDuration(Math.round(totalMs / 1000))} · ${settings.secondsPerBreath}s breaths`}
+            : `About ${formatDuration(Math.round(totalMs / 1000))} · ${settings.secondsPerBreath}s breaths`}
         </span>
       </div>
       <div className="play-progress" aria-hidden="true">

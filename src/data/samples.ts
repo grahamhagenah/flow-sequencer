@@ -168,6 +168,20 @@ function sunSalutations() {
   return f.seq;
 }
 
+function middayReset() {
+  const f = new FlowBuilder('mountain', 5);
+  f.path('upward-salute', ['forward-fold', 3, 'Swan'], ['halfway-lift', 1], ['forward-fold', 3], ['down-dog', 5, 'Step back']);
+  f.bothSides((f) =>
+    f.path(['three-leg-dog', 2], ['low-lunge', 5, 'lower back knee'], ['half-split', 5], ['low-lunge', 2])
+      .path(['down-dog', 3, 'Step back']),
+  );
+  catCow(f.path(['table', 2, 'Lower knees'])).path(['table', 1, 'Return'], ['child', 8]);
+  f.path(['table', 2], ['easy-seat', 3, 'Swing']);
+  f.lead('right').go('seated-twist', 5).go('seated-twist', 5).go('easy-seat', 3, 'Unwind to center');
+  f.path(['savasana', 12, 'Lower down']);
+  return f.seq;
+}
+
 export const SAMPLE_FLOWS: SampleFlow[] = [
   {
     id: 'morning-vinyasa',
@@ -192,6 +206,12 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     name: 'Power Flow · strong',
     description: 'Sun A and B, warrior III and side plank each side, crow, then deep backbends.',
     seq: powerFlow(),
+  },
+  {
+    id: 'midday-reset',
+    name: 'Midday Reset · quick',
+    description: 'A short break: fold, lunge and half split each side, then twist and rest.',
+    seq: middayReset(),
   },
   {
     id: 'sun-salutations',

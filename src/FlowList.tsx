@@ -2,7 +2,14 @@ import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
 import { PlusIcon } from './icons';
 import type { SavedFlow } from './library';
 import { decodeSteps } from './link';
-import { formatDuration, totalSeconds } from './sequence';
+import { aboutMinutes, classMs } from './player/conductor';
+import { loadSettings } from './player/usePlayer';
+
+/** How long a flow runs with the player's saved settings, voice included. */
+const length = (seq: Parameters<typeof classMs>[0]) => {
+  const { secondsPerBreath, chime } = loadSettings();
+  return classMs(seq, secondsPerBreath, chime);
+};
 
 export function FlowList({
   flows,
@@ -51,7 +58,7 @@ export function FlowList({
                 <button className="flow-main" onClick={() => onOpen(f)}>
                   <span className="flow-title">{f.name}</span>
                   <span className="flow-meta">
-                    {seq.length} {seq.length === 1 ? 'pose' : 'poses'} · {formatDuration(totalSeconds(seq))} · saved{' '}
+                    {seq.length} {seq.length === 1 ? 'pose' : 'poses'} · {aboutMinutes(length(seq))} · saved{' '}
                     {new Date(f.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                     {f.id === currentId && ' · open now'}
                   </span>
@@ -80,7 +87,7 @@ export function FlowList({
               <span className="flow-title">{f.name}</span>
               <span className="flow-desc">{f.description}</span>
               <span className="flow-meta">
-                {f.seq.length} poses · {formatDuration(totalSeconds(f.seq))} of holds
+                {f.seq.length} poses · {aboutMinutes(length(f.seq))}
               </span>
             </button>
             <div className="flow-actions">

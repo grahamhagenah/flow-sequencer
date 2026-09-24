@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { outgoing } from '../data/graph';
 import { advance, type Sequence, setBreaths, start } from '../sequence';
-import { Conductor, type PlayerState } from './conductor';
+import { classMs, closingMs, Conductor, type PlayerState, speechMs } from './conductor';
 import { announcement } from './script';
 
 function go(seq: Sequence, to: string): Sequence {
@@ -65,6 +65,27 @@ describe('conductor', () => {
     expect(last().index).toBe(0);
     vi.advanceTimersByTime(1);
     expect(last()).toMatchObject({ index: 1, phase: 'speaking' });
+  });
+
+  it('keeps time moving while the voice speaks, then holds', () => {
+    const { c, last, until } = setup();
+    c.play();
+    const { speechTotal } = last();
+    expect(speechTotal).toBeGreaterThan(0);
+    vi.advanceTimersByTime(1000);
+    expect(last().phase).toBe('speaking');
+    expect(last().speechElapsed).toBeGreaterThanOrEqual(750); // ticks every 250ms
+    until('holding');
+    expect(last().speechElapsed).toBe(speechTotal); // settled at the estimate
+  });
+
+  it('counts the voice in a class length', () => {
+    const holdsOnly = flow.reduce((sum, s) => sum + s.breaths * 1000, 0);
+    const withVoice = classMs(flow, 1, true);
+    const expected = flow.reduce((sum, _, i) => sum + speechMs(flow, i, true), 0) + holdsOnly + closingMs();
+    expect(withVoice).toBe(expected);
+    expect(withVoice).toBeGreaterThan(holdsOnly);
+    expect(classMs(flow, 1, false)).toBeLessThan(withVoice); // no chime, less lead-in
   });
 
   it('jumps to a step and holds it paused, then resumes from there', () => {
