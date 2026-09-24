@@ -15,7 +15,7 @@ const length = (seq: Parameters<typeof classMs>[0]) => {
   return classMs(seq, secondsPerBreath, chime);
 };
 
-/** What the sequence panel shows while the flow is empty: how it works, classes to try, and recent flows. */
+/** What the sequence panel shows while the flow is empty: recent flows and classes to try. */
 export function GetStarted({
   recent,
   onPlaySample,
@@ -31,21 +31,6 @@ export function GetStarted({
 }) {
   return (
     <div className="get-started">
-      <ol className="how-it-works">
-        <li>
-          <span className="step">1</span>
-          <span>Pick a starting pose</span>
-        </li>
-        <li>
-          <span className="step">2</span>
-          <span>Tap the moves that follow</span>
-        </li>
-        <li>
-          <span className="step">3</span>
-          <span>Press play and follow along</span>
-        </li>
-      </ol>
-
       {recent.length > 0 && (
         <section>
           <div className="gs-head">
@@ -75,7 +60,7 @@ export function GetStarted({
 
       <section>
         <div className="gs-head">
-          <h3>Try a sample class</h3>
+          <h3>Ready-made classes</h3>
         </div>
         <ul className="sample-cards">
           {SAMPLE_FLOWS.map((f) => {
@@ -108,6 +93,29 @@ export function GetStarted({
           })}
         </ul>
       </section>
+    </div>
+  );
+}
+
+/** How building works, shown above the Start poses while the flow is empty. */
+export function HowItWorks() {
+  return (
+    <div className="current-pose how-it-works-card">
+      <h2>Get started</h2>
+      <ol className="how-it-works">
+        <li>
+          <span className="step">1</span>
+          <span>Pick a starting pose</span>
+        </li>
+        <li>
+          <span className="step">2</span>
+          <span>Tap the moves that follow</span>
+        </li>
+        <li>
+          <span className="step">3</span>
+          <span>Press play and follow along</span>
+        </li>
+      </ol>
     </div>
   );
 }

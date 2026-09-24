@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Sequence } from '../sequence';
 import { canSpeak, Conductor, type PlayerState } from './conductor';
+import { rankVoices } from './voices';
 
 const SETTINGS_KEY = 'nextpose:player';
 export const BREATH_CHOICES = [3, 4, 5, 6, 7, 8];
@@ -29,7 +30,7 @@ function useVoices(): SpeechSynthesisVoice[] {
   useEffect(() => {
     if (!canSpeak) return;
     // Voices load asynchronously in most browsers.
-    const load = () => setVoices(speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith('en')));
+    const load = () => setVoices(rankVoices(speechSynthesis.getVoices(), navigator.language));
     load();
     speechSynthesis.addEventListener('voiceschanged', load);
     return () => speechSynthesis.removeEventListener('voiceschanged', load);
@@ -80,7 +81,10 @@ const IDLE: PlayerState = {
 export function usePlayer(seq: Sequence) {
   const [settings, setSettings] = useState(loadSettings);
   const voices = useVoices();
-  const voice = voices.find((v) => v.voiceURI === settings.voiceURI) ?? null;
+  // A voice the user chose, or else the best one this device has (voices come ranked).
+  const chosen = voices.find((v) => v.voiceURI === settings.voiceURI);
+  const best = voices[0] ?? null;
+  const voice = chosen ?? best;
   const [state, setState] = useState<PlayerState>(IDLE);
   const [active, setActive] = useState(false);
   const conductor = useRef<Conductor | null>(null);
@@ -118,6 +122,8 @@ export function usePlayer(seq: Sequence) {
     setSettings,
     voices,
     voice,
+    /** The voice used when none is chosen: the best available. */
+    best,
     /** Call from a click or key press: browsers only let speech start from one. */
     toggle: () => {
       setActive(true);

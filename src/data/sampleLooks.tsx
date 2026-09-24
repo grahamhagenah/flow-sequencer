@@ -52,14 +52,14 @@ export interface SampleLook {
   color: string;
 }
 
-// Muted, greyed tones, so the cards read as a family rather than a rainbow.
+// Bright, clear tones: the icons are small and the tags grey, so a little colour goes a long way.
 const LOOKS: Record<string, SampleLook> = {
-  'morning-vinyasa': { icon: <SunHorizon />, color: '#c2a98c' },
-  'slow-hips': { icon: <Waves />, color: '#8fabb3' },
-  'evening-wind-down': { icon: <MoonStars />, color: '#a3a1bf' },
-  'power-flow': { icon: <Fire />, color: '#bf9c90' },
-  'midday-reset': { icon: <Leaf />, color: '#98ae9f' },
-  'sun-salutations': { icon: <Sun />, color: '#bdb38f' },
+  'morning-vinyasa': { icon: <SunHorizon />, color: '#f2b06a' },
+  'slow-hips': { icon: <Waves />, color: '#62c4e0' },
+  'evening-wind-down': { icon: <MoonStars />, color: '#b4a4f5' },
+  'power-flow': { icon: <Fire />, color: '#f5866a' },
+  'midday-reset': { icon: <Leaf />, color: '#72d19a' },
+  'sun-salutations': { icon: <Sun />, color: '#f4d25a' },
 };
 
 const FALLBACK: SampleLook = { icon: <Sun />, color: '#8fb8a8' };

@@ -77,7 +77,7 @@ export function FlowList({
       )}
 
       <div className="flows-head samples-head">
-        <h2>Sample flows</h2>
+        <h2>Ready-made classes</h2>
       </div>
       <p className="hint">Complete classes to play as they are or open and make your own.</p>
       <ul>

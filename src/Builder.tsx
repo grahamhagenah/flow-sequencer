@@ -2,7 +2,7 @@ import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 
 import { applySide, getPose, otherSide, outgoing, renderLabel, sideLabel, TRANSITION_BY_ID } from './data/graph';
 import { START_POSES } from './data/poses';
 import type { SampleFlow } from './data/samples';
-import { GetStarted } from './GetStarted';
+import { GetStarted, HowItWorks } from './GetStarted';
 import type { SavedFlow } from './library';
 import { PlaybackDock } from './player/PlaybackDock';
 import { usePlayer } from './player/usePlayer';
@@ -137,10 +137,8 @@ export function Builder({
         {current ? (
           <CurrentPose step={current} onBreaths={(n) => set((s) => setBreaths(s, s.length - 1, n))} />
         ) : (
-          // Holds the pose card's place, so "Start" sits where "Next" will.
-          <div className="current-pose empty">
-            <p className="hint">Pick a pose to start from.</p>
-          </div>
+          // How it works, in the pose card's place, so "Start" sits where "Next" will.
+          <HowItWorks />
         )}
 
         <div className="next-head">
@@ -199,8 +197,8 @@ export function Builder({
       </section>
 
       <aside className="timeline" ref={timelineRef}>
-        <div className="timeline-head">
-          <h2>{seq.length ? 'Sequence' : 'Get started'}</h2>
+        <div className={seq.length ? 'timeline-head' : 'timeline-head empty-head'}>
+          <h2>Sequence</h2>
           {first > 0 && (
             <button className="link-btn to-first" onClick={() => goToPage(0)}>
               ↑ Back to first page

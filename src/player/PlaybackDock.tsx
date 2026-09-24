@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { getPose, sideLabel } from '../data/graph';
 import { BackIcon, ForwardIcon, PauseIcon, PlayIcon, SettingsIcon, StopIcon } from '../icons';
 import { formatDuration, type Sequence } from '../sequence';
-import { canSpeak, classMs, closingMs, speechMs } from './conductor';
+import { canSpeak, classMs, closingMs, speakSample, speechMs } from './conductor';
+import { betterVoiceTip } from './voices';
 import { BREATH_CHOICES, type Playback } from './usePlayer';
 
 /**
@@ -120,7 +121,8 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
 }
 
 function VoiceSettings({ player }: { player: Playback }) {
-  const { settings, setSettings, voices, voice } = player;
+  const { settings, setSettings, voices, voice, best } = player;
+  const tip = betterVoiceTip(navigator.userAgent);
   return (
     <div className="play-settings">
       <label>
@@ -137,20 +139,26 @@ function VoiceSettings({ player }: { player: Playback }) {
         </select>
       </label>
       {voices.length > 0 && (
-        <label>
-          Voice
-          <select
-            value={voice?.voiceURI ?? ''}
-            onChange={(e) => setSettings({ ...settings, voiceURI: e.target.value || null })}
-          >
-            <option value="">Browser default</option>
-            {voices.map((v) => (
-              <option key={v.voiceURI} value={v.voiceURI}>
-                {v.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="voice-row">
+          <label>
+            Voice
+            {/* Empty means automatic: the best voice this device has, which can change as voices are installed. */}
+            <select
+              value={settings.voiceURI && voices.some((v) => v.voiceURI === settings.voiceURI) ? settings.voiceURI : ''}
+              onChange={(e) => setSettings({ ...settings, voiceURI: e.target.value || null })}
+            >
+              <option value="">Best available{best ? ` (${best.name})` : ''}</option>
+              {voices.map((v) => (
+                <option key={v.voiceURI} value={v.voiceURI}>
+                  {v.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button className="test-voice" onClick={() => speakSample(voice)}>
+            Test voice
+          </button>
+        </div>
       )}
       <label className="check">
         <input
@@ -160,6 +168,7 @@ function VoiceSettings({ player }: { player: Playback }) {
         />
         Chime at each new pose
       </label>
+      {canSpeak && tip && <p className="hint">{tip}</p>}
       <p className="hint">
         {canSpeak
           ? 'Keep the screen on: phones pause the voice when it locks.'

@@ -1,7 +1,7 @@
 import { advance, type Sequence, setBreaths, setLeadingSide, start } from '../sequence';
 import { outgoing } from './graph';
 
-// Complete classes that ship with the app, shown under Sample flows. Each is
+// Complete classes that ship with the app, shown under Ready-made classes. Each is
 // written as the moves a teacher would call, and built with the same functions
 // the builder uses, so every step is a real move in the pose graph.
 // samples.test.ts checks they all still build after the graph changes.

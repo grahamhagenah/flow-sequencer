@@ -222,7 +222,6 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   border-radius: 8px;
   padding: 16px;
 }
-.current-pose.empty { display: flex; align-items: center; justify-content: center; background: none; border-style: dashed; }
 .pose-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
 .pose-name { font-size: 22px; font-weight: 600; }
 .sanskrit { color: var(--muted); font-style: italic; }
@@ -287,36 +286,21 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 }
 .tile-label { font-weight: 500; }
 .tile-to { font-size: 13px; color: var(--muted); }
-/* The empty sequence panel: how it works, recent flows, sample classes.
+/* The empty sequence panel: recent flows and sample classes.
    One spacing scale throughout: 22px between sections, 10px under each heading. */
 .get-started { display: flex; flex-direction: column; gap: 22px; padding: 2px 0 24px; container-type: inline-size; }
-/* .get-started prefix: the panel's own `.timeline ol` reset would otherwise zero this padding. */
-.get-started .how-it-works {
-  list-style: none;
-  margin: 0;
-  padding: 18px;
-  /* Always a vertical list. */
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
+/* How it works: in the pose card's place above the Start poses while the flow is empty. */
+.how-it-works-card h2 { margin: 0 0 10px; }
+/* Sized to fit the pose card's 144px, so "Start" doesn't move when the first pose arrives. */
+.how-it-works { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .how-it-works li { display: flex; align-items: center; gap: 12px; font-size: 14px; line-height: 1.35; }
-.how-it-works .step { flex: none; }
-/* Wide panels: the three steps share one short row, to save height. */
-@container (min-width: 440px) {
-  .get-started .how-it-works { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 16px; padding: 12px 16px; }
-  .how-it-works li { gap: 8px; font-size: 13px; }
-  .how-it-works .step { width: 22px; height: 22px; line-height: 22px; font-size: 12px; }
-}
 .how-it-works .step {
-  width: 26px;
-  height: 26px;
-  font-size: 13px;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
   font-weight: 600;
-  line-height: 26px;
+  line-height: 22px;
   text-align: center;
   color: var(--accent);
   background: var(--accent-bg);
@@ -347,9 +331,10 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .gs-title { font-weight: 600; }
 .gs-meta { margin-top: 3px; font-size: 12px; color: var(--muted); opacity: 0.8; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .gs-item .gs-meta { margin-top: 0; }
-/* A soft tint rather than solid green, so five of them in a column stay calm. */
-.gs-play { color: var(--accent); background: var(--accent-bg); border-color: transparent; font-weight: 500; }
-.gs-play:hover:not(:disabled) { border-color: var(--accent); }
+/* Quiet until hovered: only the ▶ is green at rest; the whole button turns green on hover or focus. */
+.gs-play { color: var(--text); background: none; border-color: var(--border); font-weight: 500; }
+.gs-play .icon { color: var(--accent); }
+.gs-play:hover:not(:disabled), .gs-play:focus-visible { color: var(--accent); background: var(--accent-bg); border-color: var(--accent); }
 /* Sample classes as cards, two across (one on narrow panels). --tone (set per
    card) colours only the small icon beside each title. */
 .sample-cards {
@@ -372,7 +357,6 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   border: 1px solid var(--border);
   border-radius: 10px;
 }
-.sample-card:hover { border-color: color-mix(in srgb, var(--tone) 30%, var(--border)); }
 .sample-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; line-height: 1.3; }
 .sample-icon { flex: none; display: inline-flex; color: var(--tone); }
 .sample-icon svg { width: 17px; height: 17px; }
@@ -419,6 +403,8 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .timeline-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 24px 0 10px; }
 .timeline-head h2 { margin: 0; }
 .timeline-head .meta { font-size: 13px; }
+.timeline-head.empty-head { display: none; }
+.timeline-head.empty-head + .get-started { padding-top: 24px; }
 /* Beside the heading, before the count, so it fits the row without changing its height. */
 .to-first { margin-right: auto; margin-left: 12px; font-size: 12px; line-height: inherit; }
 .pager { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -522,6 +508,11 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .play-settings select { max-width: 180px; font-size: 13px; }
 .play-settings input[type='checkbox'] { accent-color: var(--accent); margin: 0; }
 .play-settings .hint { margin-top: 8px; }
+.voice-row { display: flex; align-items: flex-end; gap: 8px; margin-top: 8px; }
+.voice-row label { flex: 1; min-width: 0; margin-top: 0; }
+.voice-row select { flex: 1; min-width: 0; max-width: none; }
+.test-voice { flex: none; padding: 5px 10px; font-size: 13px; background: none; color: var(--muted); }
+.test-voice:hover:not(:disabled) { color: var(--text); }
 
 @media (max-width: 480px) {
   /* Stacked, the main action first and Cancel last. */
@@ -552,7 +543,5 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   .flow-actions { width: 100%; }
   .tile { padding: 10px; }
   /* Phones stack the builder first, since its tiles are how a flow gets made. */
-  /* ...except while the flow is empty, when Get started is the easiest way in. */
-  .layout.empty .timeline { order: -1; border-top: none; border-bottom: 1px solid var(--border); }
   .timeline { order: 0; overflow: visible; border-right: none; border-top: 1px solid var(--border); padding: 0 16px; }
 }

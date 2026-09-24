@@ -1,6 +1,6 @@
 import type { Sequence } from '../sequence';
 import { chime, CHIME_LEAD_MS, unlockAudio } from './chime';
-import { announcement, CLOSING } from './script';
+import { announcementParts, CLOSING, PHRASE_GAP_MS } from './script';
 
 // Walks a flow step by step: chime, speak the step's announcement, then hold the pose
 // for its breaths, then move on. Plain timers and the browser's built-in
@@ -47,15 +47,33 @@ export function unlockPlayback() {
 
 const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
 
-/** A generous guess at how long text takes to say, for when the browser never reports it finished. */
-const estimateMs = (text: string) => (words(text) / 2.5) * 1000;
+/** Speaking pace. A little under normal speed reads as calmer and less mechanical. */
+const RATE = 0.9;
 
-/** A realistic guess at how long the voice takes to say text: about 155 words a minute at rate 0.95. */
-const sayMs = (text: string) => (words(text) / 2.6) * 1000;
+/** A realistic guess at how long the voice takes to say text: about 150 words a minute at RATE. */
+const sayMs = (text: string) => (words(text) / 2.5) * 1000;
 
-/** Expected time for step i's chime and spoken announcement, before its hold begins. */
+/** Expected time for step i's chime and spoken announcement, pauses included, before its hold begins. */
 export function speechMs(seq: Sequence, i: number, chimeOn: boolean): number {
-  return (chimeOn ? CHIME_LEAD_MS : 0) + sayMs(announcement(seq, i));
+  const parts = announcementParts(seq, i);
+  return (
+    (chimeOn ? CHIME_LEAD_MS : 0) +
+    parts.reduce((sum, p) => sum + sayMs(p), 0) +
+    (parts.length - 1) * PHRASE_GAP_MS
+  );
+}
+
+/** Says a short line in the given voice at the class's pace, for trying a voice out. */
+export function speakSample(voice: SpeechSynthesisVoice | null) {
+  if (!synth) return;
+  synth.cancel();
+  const u = new SpeechSynthesisUtterance('Welcome. Find a comfortable seat, and let your breath slow down.');
+  if (voice) {
+    u.voice = voice;
+    u.lang = voice.lang;
+  }
+  u.rate = RATE;
+  synth.speak(u);
 }
 
 /** Expected length of a whole class: every step's announcement and hold, then the closing words. */
@@ -179,7 +197,7 @@ export class Conductor {
       () => this.update({ speechElapsed: Math.min(speechTotal, performance.now() - this.speechStartedAt) }),
       250,
     );
-    const say = () => this.speak(announcement(this.seq, index), () => this.hold());
+    const say = () => this.speakParts(announcementParts(this.seq, index), () => this.hold());
     if (!this.settings.chime) return say();
     chime();
     this.later(CHIME_LEAD_MS, say);
@@ -205,6 +223,13 @@ export class Conductor {
     this.speak(CLOSING, () => this.update({ phase: 'done', playing: false }));
   }
 
+  /** Speaks each phrase in turn with a short pause between them, then calls done. */
+  private speakParts(parts: string[], done: () => void) {
+    const [first, ...rest] = parts;
+    if (first === undefined) return done();
+    this.speak(first, () => (rest.length ? this.later(PHRASE_GAP_MS, () => this.speakParts(rest, done)) : done()));
+  }
+
   private speak(text: string, done: () => void) {
     const token = this.token;
     let finished = false;
@@ -217,14 +242,14 @@ export class Conductor {
     };
     // Some browsers never fire onend (and without speech there's nothing to wait
     // for), so move on anyway once the text has surely been said.
-    this.later(synth ? estimateMs(text) * 1.5 + 3000 : estimateMs(text), finish);
+    this.later(synth ? sayMs(text) * 1.5 + 3000 : sayMs(text), finish);
     if (!synth) return;
     u = new SpeechSynthesisUtterance(text);
     if (this.settings.voice) {
       u.voice = this.settings.voice;
       u.lang = this.settings.voice.lang;
     }
-    u.rate = 0.95;
+    u.rate = RATE;
     u.onend = finish;
     u.onerror = finish;
     this.live.add(u);

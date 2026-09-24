@@ -11,16 +11,30 @@ export function spokenPose(seq: Sequence, i: number): string {
   return pose.sided ? `${pose.name}, ${step.side} side` : pose.name;
 }
 
-/** What the voice says on arriving at step i: how to get there, the pose, its cue and the hold. */
-export function announcement(seq: Sequence, i: number): string {
+/**
+ * What the voice says on arriving at step i, as short phrases spoken one at a
+ * time with a pause between: how to get there, the pose, its cue, the hold.
+ * Short phrases sound calmer than one long sentence, and give the listener a
+ * beat to move.
+ */
+export function announcementParts(seq: Sequence, i: number): string[] {
   const step = seq[i];
   const via = step.via === undefined ? undefined : TRANSITION_BY_ID.get(step.via);
-  const parts = [
-    i === 0 || !via ? `Begin in ${spokenPose(seq, i)}.` : `${renderLabel(via.label, step.side)}. ${spokenPose(seq, i)}.`,
-    getPose(step.poseId).cue,
-  ];
+  const parts =
+    i === 0 || !via
+      ? [`Begin in ${spokenPose(seq, i)}.`]
+      : [`${renderLabel(via.label, step.side)}.`, `${spokenPose(seq, i)}.`];
+  parts.push(getPose(step.poseId).cue);
   if (step.breaths > 1) parts.push(`Hold for ${spell(step.breaths)} breaths.`);
-  return parts.join(' ');
+  return parts;
 }
+
+/** The whole announcement as one line of text. */
+export function announcement(seq: Sequence, i: number): string {
+  return announcementParts(seq, i).join(' ');
+}
+
+/** The short pause between phrases, in milliseconds. */
+export const PHRASE_GAP_MS = 350;
 
 export const CLOSING = 'That’s the end of your flow. Take a moment before you move on.';
