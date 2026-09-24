@@ -1,6 +1,7 @@
 import { type CSSProperties, type ReactNode, useEffect, useRef } from 'react';
 import { applySide, getPose, otherSide, outgoing, renderLabel, sideLabel, TRANSITION_BY_ID } from './data/graph';
 import { START_POSES } from './data/poses';
+import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
 import { PlaybackDock } from './player/PlaybackDock';
 import { usePlayer } from './player/usePlayer';
 import { advance, formatDuration, mirror, mirrorRange, type Sequence, setBreaths, setLeadingSide, start, totalSeconds } from './sequence';
@@ -12,12 +13,14 @@ export function Builder({
   set,
   banner,
   timelineRef,
+  onOpenSample,
 }: {
   seq: Sequence;
   set: SetSeq;
   /** A notice shown above the current pose, if any. */
   banner: ReactNode;
   timelineRef: React.RefObject<HTMLElement | null>;
+  onOpenSample: (f: SampleFlow) => void;
 }) {
   const current = seq[seq.length - 1];
   const range = mirrorRange(seq);
@@ -112,6 +115,23 @@ export function Builder({
                 );
               })}
         </div>
+
+        {!current && (
+          <>
+            <h2 className="samples-title">Or start from a sample class</h2>
+            <div className="tiles samples">
+              {SAMPLE_FLOWS.map((f) => (
+                <button key={f.id} className="tile sample" onClick={() => onOpenSample(f)}>
+                  <span className="tile-label">{f.name}</span>
+                  <span className="tile-desc">{f.description}</span>
+                  <span className="tile-to">
+                    {f.seq.length} poses · {formatDuration(totalSeconds(f.seq))} of holds
+                  </span>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Below the tiles, so it coming and going never moves them. */}
         {range && mirrorSide && (

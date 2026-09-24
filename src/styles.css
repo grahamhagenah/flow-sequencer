@@ -174,6 +174,8 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .flow-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .flow.current .flow-title { color: var(--accent); }
 .flow-meta { font-size: 13px; color: var(--muted); }
+.flow-desc { font-size: 13px; color: var(--text); margin: 2px 0; }
+.samples-head { margin-top: 32px; }
 .flow-actions { display: flex; gap: 6px; flex: none; }
 .flow-actions button { font-size: 13px; padding: 4px 10px; }
 
@@ -250,6 +252,9 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 }
 .tile-label { font-weight: 500; }
 .tile-to { font-size: 13px; color: var(--muted); }
+.samples-title { margin-top: 32px; }
+.tile.sample { min-height: 0; }
+.tile-desc { font-size: 13px; color: var(--text); }
 
 .timeline {
   border-left: 1px solid var(--border);

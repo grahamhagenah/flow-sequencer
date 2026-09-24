@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Builder } from './Builder';
+import type { SampleFlow } from './data/samples';
 import { Dialog, type DialogSpec } from './Dialog';
 import { FlowList } from './FlowList';
 import { CheckIcon, LinkIcon, PlusIcon, SaveIcon, UndoIcon } from './icons';
@@ -168,6 +169,10 @@ export function App() {
     );
   };
 
+  // A sample opens as an unsaved copy, so the sample itself never changes.
+  const openSample = (f: SampleFlow) =>
+    guardUnsaved(`Open “${f.name}”?`, 'Save and open', () => open({ id: null, name: f.name, seq: f.seq, notice: null }));
+
   const duplicate = (f: SavedFlow) => {
     putFlow({ id: newId(), name: `${f.name} (copy)`, steps: f.steps, updatedAt: Date.now() });
     setFlows(listFlows());
@@ -271,12 +276,15 @@ export function App() {
           onCopyLink={(f) => copyLink(f.id, f.name, f.steps)}
           onDuplicate={duplicate}
           onDelete={remove}
+          onOpenSample={openSample}
+          onCopySampleLink={(f) => copyLink(f.id, f.name, encodeSteps(f.seq))}
         />
       ) : (
         <Builder
           seq={seq}
           set={set}
           timelineRef={timelineRef}
+          onOpenSample={openSample}
           banner={
             notice && (
               <div className="notice" role="status">

@@ -1,3 +1,4 @@
+import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
 import type { SavedFlow } from './library';
 import { decodeSteps } from './link';
 import { formatDuration, totalSeconds } from './sequence';
@@ -11,6 +12,8 @@ export function FlowList({
   onCopyLink,
   onDuplicate,
   onDelete,
+  onOpenSample,
+  onCopySampleLink,
 }: {
   flows: SavedFlow[];
   currentId: string | null;
@@ -21,6 +24,8 @@ export function FlowList({
   onCopyLink: (f: SavedFlow) => void;
   onDuplicate: (f: SavedFlow) => void;
   onDelete: (f: SavedFlow) => void;
+  onOpenSample: (f: SampleFlow) => void;
+  onCopySampleLink: (f: SampleFlow) => void;
 }) {
   return (
     <main className="flows">
@@ -33,7 +38,7 @@ export function FlowList({
         it for good or open it on another device.
       </p>
       {flows.length === 0 ? (
-        <p className="empty">No saved flows yet. Build one and press Save.</p>
+        <p className="empty">No saved flows yet. Build one and press Save, or open a sample below.</p>
       ) : (
         <ul>
           {flows.map((f) => {
@@ -58,6 +63,27 @@ export function FlowList({
           })}
         </ul>
       )}
+
+      <div className="flows-head samples-head">
+        <h2>Sample flows</h2>
+      </div>
+      <p className="hint">Complete classes to play as they are or open and make your own.</p>
+      <ul>
+        {SAMPLE_FLOWS.map((f) => (
+          <li key={f.id} className="flow">
+            <button className="flow-main" onClick={() => onOpenSample(f)}>
+              <span className="flow-title">{f.name}</span>
+              <span className="flow-desc">{f.description}</span>
+              <span className="flow-meta">
+                {f.seq.length} poses · {formatDuration(totalSeconds(f.seq))} of holds
+              </span>
+            </button>
+            <div className="flow-actions">
+              <button onClick={() => onCopySampleLink(f)}>{copiedKey === f.id ? 'Copied' : 'Copy link'}</button>
+            </div>
+          </li>
+        ))}
+      </ul>
     </main>
   );
 }
