@@ -203,7 +203,7 @@ export function App() {
       {/* One bar: the app name, the open flow's title and status, and everything you do with it. */}
       <header className="bar">
         <h1>
-          <Logo size={28} /> Flow Sequencer
+          <Logo size={22} /> Flow Sequencer
         </h1>
         {view === 'builder' ? (
           <>

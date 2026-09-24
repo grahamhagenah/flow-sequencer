@@ -117,7 +117,11 @@ export function usePlayer(seq: Sequence) {
     },
     next: () => conductor.current?.next(),
     prev: () => conductor.current?.prev(),
-    goTo: (i: number) => conductor.current?.goTo(i, state.playing),
+    /** Moves to step i and holds there, paused; Resume carries on from it. */
+    goTo: (i: number) => {
+      setActive(true);
+      conductor.current?.goTo(i, false);
+    },
     stop: () => {
       conductor.current?.stop();
       setActive(false);

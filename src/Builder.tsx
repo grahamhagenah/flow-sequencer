@@ -200,14 +200,10 @@ export function Builder({
                   aria-current={playing ? 'step' : undefined}
                 >
                   <span className="num">{i + 1}</span>
-                  {/* Rows are only clickable while playing, to jump there. */}
-                  {player.active ? (
-                    <button className="row-main" onClick={() => player.goTo(i)} title="Play from here">
-                      {rowBody(i)}
-                    </button>
-                  ) : (
-                    <div className="row-main">{rowBody(i)}</div>
-                  )}
+                  {/* Jumps playback here, paused, so the class can pick up from this pose. */}
+                  <button className="row-main" onClick={() => player.goTo(i)} title="Jump here (paused)">
+                    {rowBody(i)}
+                  </button>
                   <span className="row-breaths">{s.breaths === 1 ? '1 breath' : `${s.breaths} breaths`}</span>
                 </li>
               );

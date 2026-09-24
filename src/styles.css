@@ -12,6 +12,10 @@
 
 * { box-sizing: border-box; }
 
+/* Nothing may widen the page sideways, least of all on phones. clip, unlike hidden,
+   doesn't make a scroll container, so the sticky header and dock keep working. */
+html, body { overflow-x: clip; }
+
 body {
   margin: 0;
   background: var(--bg);
@@ -60,11 +64,13 @@ h2 {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 16px;
-  padding: 10px 20px;
+  padding: 8px 20px;
+  /* Same colour as the page with a hairline under it, so the bar doesn't read as a heavy band. */
   border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  background: var(--bg);
 }
-.bar h1 { flex: none; display: flex; align-items: center; gap: 8px; font-size: 21px; letter-spacing: 0.01em; padding-right: 16px; border-right: 1px solid var(--border); line-height: 28px; }
+.bar h1 { flex: none; display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 600; letter-spacing: 0; line-height: 28px; }
+.bar h1::after { content: '/'; margin-left: 8px; font-weight: 400; color: var(--border); }
 /* Title and status keep at least 320px; when the buttons don't fit beside them they wrap to a second line. */
 .bar-title { flex: 1 1 320px; min-width: 0; display: flex; align-items: center; gap: 12px; }
 .bar .nav { flex: none; }
@@ -76,7 +82,8 @@ h2 {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(380px, 38vw, 560px);
+  /* Sequence and builder share the width; the sequence comes first, on the left. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
 .builder { padding: 20px; overflow-y: auto; }
@@ -92,12 +99,13 @@ input {
 input:hover { border-color: var(--border); }
 input:focus { outline: none; border-color: var(--accent); background: var(--surface); }
 
-.flow-name { flex: 1; min-width: 0; font-size: 16px; font-weight: 600; padding: 4px 8px; margin-left: -8px; }
+.flow-name { flex: 1; min-width: 0; font-size: 15px; font-weight: 500; padding: 4px 8px; margin-left: -8px; }
 .flow-name::placeholder { color: var(--muted); font-weight: 500; }
 /* Fixed width for the longest status, so the title and buttons don't shift as it changes. */
 .status { font-size: 13px; color: var(--muted); white-space: nowrap; min-width: 7.5em; text-align: right; }
 .flow-buttons { display: flex; gap: 4px; }
-.bar .nav { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; }
+.bar .nav { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; background: none; color: var(--muted); }
+.bar .nav:hover { color: var(--text); }
 .nav .count {
   min-width: 18px;
   padding: 0 5px;
@@ -112,6 +120,10 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 
 /* Square icon buttons with a tooltip from data-tip, shown on hover or keyboard focus. */
 .icon-btn { position: relative; width: 32px; height: 32px; padding: 0; justify-content: center; }
+/* In the bar the action icons are borderless and only show a background on hover. */
+.bar .icon-btn { background: none; border-color: transparent; color: var(--muted); }
+.bar .icon-btn:hover:not(:disabled) { background: var(--surface-2); border-color: transparent; color: var(--text); }
+.bar .icon-btn.tip-shown { color: var(--accent); }
 .icon-btn[data-tip]::after {
   content: attr(data-tip);
   position: absolute;
@@ -130,6 +142,8 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
   visibility: hidden;
 }
 .icon-btn:hover::after, .icon-btn:focus-visible::after, .icon-btn.tip-shown::after { visibility: visible; }
+/* The last buttons sit near the right edge, so their tooltips hang to the left instead of centring. */
+.flow-buttons .icon-btn:nth-last-child(-n + 2)::after { left: auto; right: 0; transform: none; }
 .icon-btn.tip-shown { color: var(--accent); }
 /* Fade just the icon when disabled, so its tooltip stays readable. */
 .icon-btn:disabled { opacity: 1; }
@@ -249,7 +263,7 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 
 .tiles {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: 8px;
 }
 .tile {
@@ -268,7 +282,8 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .tile-desc { font-size: 13px; color: var(--text); }
 
 .timeline {
-  border-left: 1px solid var(--border);
+  order: -1;
+  border-right: 1px solid var(--border);
   padding: 0 20px;
   overflow-y: auto;
   display: flex;
@@ -386,7 +401,7 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   /* Phones: the name and icon buttons on one line; the title, its status and Flows below.
      The title's 200px basis can't fit beside the name, so it starts the second line. */
   .bar { padding: 10px 16px; gap: 10px; }
-  .bar h1 { border-right: none; padding-right: 0; font-size: 18px; }
+  .bar h1::after { content: none; }
   .bar-actions { display: contents; }
   .flow-buttons { order: 1; margin-left: auto; }
   .bar-title { order: 2; flex: 1 1 200px; gap: 8px; }
@@ -400,5 +415,6 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   .flow { flex-wrap: wrap; row-gap: 6px; }
   .flow-actions { width: 100%; }
   .tile { padding: 10px; }
-  .timeline { overflow: visible; border-left: none; border-top: 1px solid var(--border); padding: 0 16px; }
+  /* Phones stack the builder first, since its tiles are how a flow gets made. */
+  .timeline { order: 0; overflow: visible; border-right: none; border-top: 1px solid var(--border); padding: 0 16px; }
 }

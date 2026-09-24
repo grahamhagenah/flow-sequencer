@@ -41,7 +41,7 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
             ? `Breath ${breath} of ${step.breaths}`
             : 'Now';
 
-  const primaryLabel = state.playing ? 'Pause' : !active ? 'Play' : state.phase === 'done' ? 'Play again' : 'Resume';
+  const primaryLabel = state.playing ? 'Pause' : !active ? 'Play sequence' : state.phase === 'done' ? 'Play again' : 'Resume';
 
   return (
     <div className="play-dock">

@@ -67,6 +67,18 @@ describe('conductor', () => {
     expect(last()).toMatchObject({ index: 1, phase: 'speaking' });
   });
 
+  it('jumps to a step and holds it paused, then resumes from there', () => {
+    const { c, last, until } = setup();
+    c.play();
+    until('holding');
+    c.goTo(1, false);
+    expect(last()).toMatchObject({ index: 1, playing: false, phase: 'ready', holdElapsed: 0 });
+    vi.advanceTimersByTime(60_000); // stays put while paused
+    expect(last()).toMatchObject({ index: 1, playing: false });
+    c.play();
+    expect(last()).toMatchObject({ index: 1, playing: true, phase: 'speaking' });
+  });
+
   it('skips without leaving the old step’s timers running', () => {
     const { c, last, until } = setup();
     c.play();
