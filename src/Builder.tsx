@@ -69,7 +69,8 @@ export function Builder({
   }, [autoplay, seq]);
   const playingIndex = player.active ? player.state.index : -1;
 
-  const rowBody = (i: number) => {
+  /** A row's text; the expanded (newest) row also shows the Sanskrit name and the cue. */
+  const rowBody = (i: number, expanded: boolean) => {
     const s = seq[i];
     const p = getPose(s.poseId);
     const via = s.via === undefined ? undefined : TRANSITION_BY_ID.get(s.via);
@@ -84,6 +85,12 @@ export function Builder({
           {p.name}
           {p.sided && <span className="side">{sideLabel(s.side)}</span>}
         </span>
+        {expanded && (
+          <>
+            {p.sanskrit && <span className="row-sanskrit">{p.sanskrit}</span>}
+            <span className="row-cue">{p.cue}</span>
+          </>
+        )}
       </>
     );
   };
@@ -134,15 +141,32 @@ export function Builder({
       <section className="builder">
         {banner}
 
-        {current ? (
-          <CurrentPose step={current} onBreaths={(n) => set((s) => setBreaths(s, s.length - 1, n))} />
-        ) : (
-          // How it works, in the pose card's place, so "Start" sits where "Next" will.
-          <HowItWorks />
+        {/* The newest pose shows in the sequence, expanded; this side is only for what comes next. */}
+        {!current && <HowItWorks />}
+
+        {/* Phones only (see styles.css): the sequence sits far below the tiles there, so this
+            confirms what a tap just added and keeps its breaths in reach. */}
+        {current && (
+          <div className="added-strip" role="status">
+            <span className="added-label">Added</span>
+            <span className="added-name">
+              {getPose(current.poseId).name}
+              {getPose(current.poseId).sided && <span className="side">{sideLabel(current.side)}</span>}
+            </span>
+            <Stepper value={current.breaths} onChange={(n) => set((q) => setBreaths(q, q.length - 1, n))} />
+          </div>
         )}
 
         <div className="next-head">
-          <h2>{current ? 'Next' : 'Start'}</h2>
+          <h2>
+            {current ? 'Next' : 'Start'}
+            {current && (
+              <span className="next-from">
+                · from {getPose(current.poseId).name}
+                {getPose(current.poseId).sided && ` (${current.side})`}
+              </span>
+            )}
+          </h2>
           {current && choosesSide(current.poseId) && (
             <div className="leading" role="group" aria-label="Side for the next move">
               {(['right', 'left'] as const).map((side) => (
@@ -199,10 +223,27 @@ export function Builder({
       <aside className="timeline" ref={timelineRef}>
         <div className={seq.length ? 'timeline-head' : 'timeline-head empty-head'}>
           <h2>Sequence</h2>
-          {first > 0 && (
-            <button className="link-btn to-first" onClick={() => goToPage(0)}>
-              ↑ Back to first page
-            </button>
+          {/* Quiet page controls beside the heading, for flows longer than a page. */}
+          {pageCount > 1 && (
+            <nav className="pager" aria-label="Sequence pages">
+              <button onClick={() => goToPage(0)} disabled={first === 0} aria-label="First page" title="First page">
+                «
+              </button>
+              <button onClick={() => turnPage(-1)} disabled={first === 0} aria-label="Previous poses" title="Previous poses">
+                ‹
+              </button>
+              <span>
+                {first + 1}–{first + shown.length} of {seq.length}
+              </span>
+              <button
+                onClick={() => turnPage(1)}
+                disabled={first + PAGE_SIZE >= seq.length}
+                aria-label="Next poses"
+                title="Next poses"
+              >
+                ›
+              </button>
+            </nav>
           )}
           {seq.length > 0 && (
             <span className="meta">
@@ -226,9 +267,11 @@ export function Builder({
               const isLast = i === seq.length - 1;
               const playing = i === playingIndex;
               const { holdElapsed, holdTotal } = player.state;
+              // The newest pose opens up for editing, except during a class, when rows stay still.
+              const expanded = isLast && !player.active;
               const className = [
                 'row',
-                isLast && !player.active && 'current',
+                expanded && 'current expanded',
                 playing && 'playing',
                 player.active && i < playingIndex && 'played',
               ]
@@ -246,34 +289,20 @@ export function Builder({
                   <span className="num">{i + 1}</span>
                   {/* Jumps playback here, paused, so the class can pick up from this pose. */}
                   <button className="row-main" onClick={() => player.goTo(i)} title="Jump here (paused)">
-                    {rowBody(i)}
+                    {rowBody(i, expanded)}
                   </button>
-                  <span className="row-breaths">{s.breaths === 1 ? '1 breath' : `${s.breaths} breaths`}</span>
+                  {expanded ? (
+                    <Stepper value={s.breaths} onChange={(n) => set((q) => setBreaths(q, i, n))} />
+                  ) : (
+                    <span className="row-breaths">{s.breaths === 1 ? '1 breath' : `${s.breaths} breaths`}</span>
+                  )}
                 </li>
               );
             })}
           </ol>
         )}
-        {/* The pager sits with the dock, pinned to the bottom, so it's in the same place on every page. */}
         {seq.length > 0 && (
           <div className="play-footer">
-            {pageCount > 1 && (
-              <div className="pager">
-                <button onClick={() => turnPage(-1)} disabled={first === 0} aria-label="Previous poses">
-                  ‹
-                </button>
-                <span>
-                  Poses {first + 1}–{first + shown.length} of {seq.length}
-                </span>
-                <button
-                  onClick={() => turnPage(1)}
-                  disabled={first + PAGE_SIZE >= seq.length}
-                  aria-label="Next poses"
-                >
-                  ›
-                </button>
-              </div>
-            )}
             <PlaybackDock seq={seq} player={player} />
           </div>
         )}
@@ -285,26 +314,6 @@ export function Builder({
 /** An unsided pose whose next moves include a sided one, so the side is still open. */
 function choosesSide(poseId: string): boolean {
   return !getPose(poseId).sided && outgoing(poseId).some((t) => getPose(t.to).sided);
-}
-
-function CurrentPose({ step, onBreaths }: { step: Sequence[number]; onBreaths: (n: number) => void }) {
-  const p = getPose(step.poseId);
-  return (
-    <div className="current-pose">
-      <div className="pose-head">
-        <div>
-          <div className="pose-name">
-            {p.name}
-            {p.sided && <span className="side">{sideLabel(step.side)}</span>}
-          </div>
-          {/* Always there, so poses without one don't make the card shorter. */}
-          <div className="sanskrit">{p.sanskrit ?? '\u00a0'}</div>
-        </div>
-        <Stepper value={step.breaths} onChange={onBreaths} />
-      </div>
-      <p className="cue">{p.cue}</p>
-    </div>
-  );
 }
 
 function Stepper({ value, onChange }: { value: number; onChange: (n: number) => void }) {

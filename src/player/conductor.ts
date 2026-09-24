@@ -1,5 +1,5 @@
 import type { Sequence } from '../sequence';
-import { chime, CHIME_LEAD_MS, unlockAudio } from './chime';
+import { breathCue, chime, CHIME_LEAD_MS, resumeCue, unlockAudio } from './chime';
 import { announcementParts, CLOSING, PHRASE_GAP_MS } from './script';
 
 // Walks a flow step by step: chime, speak the step's announcement, then hold the pose
@@ -29,6 +29,10 @@ export interface PlayerSettings {
   secondsPerBreath: number;
   /** Ring a soft bell as each pose begins. */
   chime: boolean;
+  /** A faint tone at each new breath of a hold. */
+  breathTone: boolean;
+  /** A quiet rise when playback resumes after a pause or a jump. */
+  resumeTone: boolean;
   voice: SpeechSynthesisVoice | null;
 }
 
@@ -107,6 +111,8 @@ export class Conductor {
   private ticker: ReturnType<typeof setInterval> | undefined;
   private holdStartedAt = 0;
   private speechStartedAt = 0;
+  /** Played since the last stop, so the next Play is a resume. */
+  private started = false;
   /** Utterances being spoken. Chrome drops onend if one is garbage collected, so hold on to them. */
   private live = new Set<SpeechSynthesisUtterance>();
 
@@ -125,6 +131,7 @@ export class Conductor {
     this.seq = seq;
     if (seq.length === 0) {
       this.abandon();
+      this.started = false;
       this.update({ index: 0, playing: false, phase: 'ready', holdElapsed: 0, holdTotal: 0, speechElapsed: 0, speechTotal: 0 });
     } else if (this.state.index >= seq.length) {
       this.goTo(seq.length - 1, false);
@@ -133,6 +140,7 @@ export class Conductor {
 
   /** Back to the start, silent. */
   stop() {
+    this.started = false;
     this.goTo(0, false);
   }
 
@@ -142,6 +150,8 @@ export class Conductor {
     unlockAudio();
     const { phase, index } = this.state;
     if (phase === 'done') return this.goTo(0, true);
+    if (this.started && this.settings.resumeTone) resumeCue();
+    this.started = true;
     this.update({ playing: true });
     if (phase === 'holding') this.hold();
     else if (phase === 'closing') this.close();
@@ -209,6 +219,14 @@ export class Conductor {
     this.holdStartedAt = performance.now() - this.state.holdElapsed;
     // The announcement is over, whether it ran short or long of its estimate.
     this.update({ phase: 'holding', speechElapsed: this.state.speechTotal });
+    // A faint tone at the start of each breath after the first (the first follows the pose's chime).
+    if (this.settings.breathTone) {
+      const breathMs = this.settings.secondsPerBreath * 1000;
+      const first = Math.floor(this.state.holdElapsed / breathMs) + 1;
+      for (let b = first; b < this.seq[this.state.index].breaths; b++) {
+        this.later(b * breathMs - this.state.holdElapsed, breathCue);
+      }
+    }
     // The progress bars' CSS transitions match this interval; change both together.
     this.ticker = setInterval(() => this.update({ holdElapsed: this.elapsed() }), 250);
     this.later(remaining, () => {

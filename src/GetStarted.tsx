@@ -100,7 +100,7 @@ export function GetStarted({
 /** How building works, shown above the Start poses while the flow is empty. */
 export function HowItWorks() {
   return (
-    <div className="current-pose how-it-works-card">
+    <div className="how-it-works-card">
       <h2>Get started</h2>
       <ol className="how-it-works">
         <li>

@@ -168,6 +168,22 @@ function VoiceSettings({ player }: { player: Playback }) {
         />
         Chime at each new pose
       </label>
+      <label className="check">
+        <input
+          type="checkbox"
+          checked={settings.breathTone}
+          onChange={(e) => setSettings({ ...settings, breathTone: e.target.checked })}
+        />
+        Soft tone on each breath
+      </label>
+      <label className="check">
+        <input
+          type="checkbox"
+          checked={settings.resumeTone}
+          onChange={(e) => setSettings({ ...settings, resumeTone: e.target.checked })}
+        />
+        Soft tone when resuming
+      </label>
       {canSpeak && tip && <p className="hint">{tip}</p>}
       <p className="hint">
         {canSpeak

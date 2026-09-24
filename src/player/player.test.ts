@@ -1,4 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { breathCue, resumeCue } from './chime';
+
+vi.mock('./chime', async (load) => ({
+  ...(await load<typeof import('./chime')>()),
+  chime: vi.fn(),
+  breathCue: vi.fn(),
+  resumeCue: vi.fn(),
+}));
 import { outgoing } from '../data/graph';
 import { advance, type Sequence, setBreaths, start } from '../sequence';
 import { classMs, closingMs, Conductor, type PlayerState, speechMs } from './conductor';
@@ -30,7 +38,7 @@ describe('conductor', () => {
   const flow = go(setBreaths(start('mountain'), 0, 2), 'upward-salute'); // 2 breaths, then 1
   const setup = () => {
     const states: PlayerState[] = [];
-    const c = new Conductor(flow, { secondsPerBreath: 1, chime: true, voice: null }, (s) => states.push(s));
+    const c = new Conductor(flow, { secondsPerBreath: 1, chime: true, breathTone: true, resumeTone: true, voice: null }, (s) => states.push(s));
     const last = () => states[states.length - 1];
     /** Steps the clock until the player reaches `phase`. */
     const until = (phase: PlayerState['phase']) => {
@@ -86,6 +94,34 @@ describe('conductor', () => {
     expect(withVoice).toBe(expected);
     expect(withVoice).toBeGreaterThan(holdsOnly);
     expect(classMs(flow, 1, false)).toBeLessThan(withVoice); // no chime, less lead-in
+  });
+
+  it('sounds a breath cue at each new breath of a hold, not the first', () => {
+    const { c, until } = setup();
+    vi.mocked(breathCue).mockClear();
+    c.play();
+    until('holding'); // step 0 holds for 2 breaths of 1s each
+    expect(breathCue).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1000);
+    expect(breathCue).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(1000); // the hold ends; the next pose has 1 breath, so no cue
+    until('holding');
+    vi.advanceTimersByTime(900);
+    expect(breathCue).toHaveBeenCalledTimes(1);
+  });
+
+  it('sounds the resume cue on Resume, but not on the first Play or after Stop', () => {
+    const { c, until } = setup();
+    vi.mocked(resumeCue).mockClear();
+    c.play();
+    expect(resumeCue).not.toHaveBeenCalled();
+    until('holding');
+    c.pause();
+    c.play();
+    expect(resumeCue).toHaveBeenCalledTimes(1);
+    c.stop();
+    c.play();
+    expect(resumeCue).toHaveBeenCalledTimes(1);
   });
 
   it('jumps to a step and holds it paused, then resumes from there', () => {

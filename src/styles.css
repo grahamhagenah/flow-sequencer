@@ -90,7 +90,8 @@ h2 {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
-.builder { padding: 20px; overflow-y: auto; }
+/* No top padding: its first heading's own 24px margin lines it up with the Sequence heading opposite. */
+.builder { padding: 0 20px 20px; overflow-y: auto; }
 .hint { color: var(--muted); margin: 0; }
 
 input {
@@ -181,7 +182,7 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 16px;
+  margin: 24px 0 -8px;
   padding: 10px 12px;
   font-size: 14px;
   background: var(--surface);
@@ -214,18 +215,13 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .new-flow { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; font-size: 13px; background: none; color: var(--muted); }
 .new-flow:hover:not(:disabled) { color: var(--text); }
 
-.current-pose {
-  /* Room for a two-line cue, so the tiles below stay put from pose to pose. */
-  min-height: 144px;
+.how-it-works-card {
+  margin-top: 24px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
 }
-.pose-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
-.pose-name { font-size: 22px; font-weight: 600; }
-.sanskrit { color: var(--muted); font-style: italic; }
-.cue { margin: 12px 0 0; }
 
 .side {
   display: inline-block;
@@ -400,15 +396,18 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   flex-direction: column;
 }
 .timeline > * { flex-shrink: 0; }
-.timeline-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 24px 0 10px; }
+/* Same margin and height as .next-head, so the two panels' headings line up. */
+.timeline-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 12px; margin: 24px 0 10px; min-height: 28px; }
+.timeline-head > * { white-space: nowrap; }
 .timeline-head h2 { margin: 0; }
 .timeline-head .meta { font-size: 13px; }
 .timeline-head.empty-head { display: none; }
 .timeline-head.empty-head + .get-started { padding-top: 24px; }
-/* Beside the heading, before the count, so it fits the row without changing its height. */
-.to-first { margin-right: auto; margin-left: 12px; font-size: 12px; line-height: inherit; }
-.pager { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.pager button { width: 28px; height: 28px; padding: 0; font-size: 16px; line-height: 1; }
+.pager { display: flex; align-items: center; gap: 2px; margin-right: auto; margin-left: 10px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pager span { padding: 0 4px; }
+.pager button { width: 22px; height: 22px; padding: 0; font-size: 15px; line-height: 1; color: var(--muted); background: none; border-color: transparent; }
+.pager button:hover:not(:disabled) { color: var(--text); background: var(--surface-2); border-color: transparent; }
+.pager button:disabled { opacity: 0.3; }
 
 /* Stays at the bottom of the panel: pushed down when the list is short, stuck when it scrolls. */
 .play-footer {
@@ -437,6 +436,16 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   min-height: 56px;
 }
 .row.current .row-name { color: var(--accent); }
+/* The newest pose opens up: Sanskrit name, cue and a breaths control. */
+.row.expanded { align-items: flex-start; padding-top: 12px; padding-bottom: 12px; background: var(--surface); }
+.row.expanded:hover:not(.playing) { background: var(--surface); }
+.row.expanded .num { padding-top: 3px; }
+.row.expanded .stepper { margin-top: 2px; }
+.row-sanskrit { font-size: 12px; font-style: italic; color: var(--muted); }
+.row-cue { margin-top: 6px; font-size: 13px; line-height: 1.45; color: var(--text); white-space: normal; }
+/* Hidden on desktop, where the expanded sequence row sits right beside the tiles. */
+.added-strip { display: none; }
+.next-from { margin-left: 6px; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 13px; }
 /* Room for the pinned play button or dock when the playing row scrolls into view. */
 .row { scroll-margin-bottom: 220px; }
 .row.played .row-main { opacity: 0.45; }
@@ -536,8 +545,26 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   .bar .nav { order: 3; }
   .app { height: auto; min-height: 100vh; min-height: 100dvh; }
   .layout { grid-template-columns: minmax(0, 1fr); }
-  .builder { padding: 16px; overflow: visible; }
+  .builder { padding: 0 16px 16px; overflow: visible; }
   .tiles { grid-template-columns: 1fr 1fr; }
+  .added-strip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    padding: 10px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .added-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .added-name { flex: 1; min-width: 0; font-weight: 600; line-height: 1.3; color: var(--accent); }
+  .added-strip .stepper { gap: 6px; }
+  .added-strip .stepper button { width: 28px; height: 28px; }
+  /* Five player buttons share a phone's width: slimmer side buttons, the main one on one line. */
+  .play-controls { gap: 6px; }
+  .play-controls button { padding: 10px; }
+  .play-controls .primary { white-space: nowrap; padding: 10px 12px; }
   .flows { padding: 16px; }
   .flow { flex-wrap: wrap; row-gap: 6px; }
   .flow-actions { width: 100%; }
