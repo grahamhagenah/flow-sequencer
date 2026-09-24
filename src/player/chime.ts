@@ -1,6 +1,5 @@
 // The player's sounds, synthesised with the Web Audio API so there's no file to
-// load: a soft bell for each new pose, a quiet rise on resuming, and a faint low
-// tone at each new breath.
+// load: a soft bell for each new pose and a faint low tone at each new breath.
 
 let ctx: AudioContext | null = null;
 
@@ -49,18 +48,6 @@ export function chime() {
       [2112, 0.12, 0.6],
     ],
     0.12,
-  );
-}
-
-/** A quiet two-note rise (G then D, a fifth apart) when playback resumes. */
-export function resumeCue() {
-  play(
-    [
-      [392, 1, 0.7],
-      [587.33, 0.8, 0.9, 0.12],
-    ],
-    0.05,
-    0.03,
   );
 }
 

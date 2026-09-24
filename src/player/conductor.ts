@@ -1,5 +1,5 @@
 import type { Sequence } from '../sequence';
-import { breathCue, chime, CHIME_LEAD_MS, resumeCue, unlockAudio } from './chime';
+import { breathCue, chime, CHIME_LEAD_MS, unlockAudio } from './chime';
 import { announcementParts, CLOSING, PHRASE_GAP_MS } from './script';
 
 // Walks a flow step by step: chime, speak the step's announcement, then hold the pose
@@ -31,8 +31,6 @@ export interface PlayerSettings {
   chime: boolean;
   /** A faint tone at each new breath of a hold. */
   breathTone: boolean;
-  /** A quiet rise when playback resumes after a pause or a jump. */
-  resumeTone: boolean;
   voice: SpeechSynthesisVoice | null;
 }
 
@@ -111,8 +109,6 @@ export class Conductor {
   private ticker: ReturnType<typeof setInterval> | undefined;
   private holdStartedAt = 0;
   private speechStartedAt = 0;
-  /** Played since the last stop, so the next Play is a resume. */
-  private started = false;
   /** Utterances being spoken. Chrome drops onend if one is garbage collected, so hold on to them. */
   private live = new Set<SpeechSynthesisUtterance>();
 
@@ -131,16 +127,44 @@ export class Conductor {
     this.seq = seq;
     if (seq.length === 0) {
       this.abandon();
-      this.started = false;
       this.update({ index: 0, playing: false, phase: 'ready', holdElapsed: 0, holdTotal: 0, speechElapsed: 0, speechTotal: 0 });
     } else if (this.state.index >= seq.length) {
       this.goTo(seq.length - 1, false);
+    } else {
+      this.retime();
+    }
+  }
+
+  /**
+   * Picks up a change to the current pose's breaths. A hold in progress keeps the
+   * time already spent and runs to the new length (moving on at once if that's
+   * already past); otherwise the new length applies when the hold begins.
+   */
+  private retime() {
+    const holdTotal = this.holdMs(this.state.index);
+    if (holdTotal === this.state.holdTotal) return;
+    if (this.state.phase === 'holding' && this.state.playing) {
+      const spent = Math.min(holdTotal, performance.now() - this.holdStartedAt);
+      // Drop the old hold's timers (end, breath tones, ticker) and start them afresh.
+      this.token++;
+      this.timers.forEach(clearTimeout);
+      this.timers = [];
+      this.stopTicker();
+      this.update({ holdTotal, holdElapsed: spent });
+      this.hold();
+    } else {
+      const speaking = this.state.phase === 'speaking';
+      this.update({
+        holdTotal,
+        holdElapsed: Math.min(this.state.holdElapsed, holdTotal),
+        // "Hold for N breaths" is part of the announcement, so its length changes too.
+        speechTotal: speaking ? this.state.speechTotal : speechMs(this.seq, this.state.index, this.settings.chime),
+      });
     }
   }
 
   /** Back to the start, silent. */
   stop() {
-    this.started = false;
     this.goTo(0, false);
   }
 
@@ -150,8 +174,6 @@ export class Conductor {
     unlockAudio();
     const { phase, index } = this.state;
     if (phase === 'done') return this.goTo(0, true);
-    if (this.started && this.settings.resumeTone) resumeCue();
-    this.started = true;
     this.update({ playing: true });
     if (phase === 'holding') this.hold();
     else if (phase === 'closing') this.close();

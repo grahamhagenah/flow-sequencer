@@ -11,10 +11,9 @@ export interface Settings {
   voiceURI: string | null;
   chime: boolean;
   breathTone: boolean;
-  resumeTone: boolean;
 }
 
-const DEFAULTS: Settings = { secondsPerBreath: 5, voiceURI: null, chime: true, breathTone: true, resumeTone: true };
+const DEFAULTS: Settings = { secondsPerBreath: 5, voiceURI: null, chime: true, breathTone: true };
 
 /** The saved player settings (or defaults), for estimating class lengths outside the player. */
 export function loadSettings(): Settings {
@@ -96,7 +95,7 @@ export function usePlayer(seq: Sequence) {
   // One conductor for the life of the builder; the flow and settings reach it as they change.
   useEffect(() => {
     const { seq, settings, voice } = latest.current;
-    const c = new Conductor(seq, { secondsPerBreath: settings.secondsPerBreath, chime: settings.chime, breathTone: settings.breathTone, resumeTone: settings.resumeTone, voice }, setState);
+    const c = new Conductor(seq, { secondsPerBreath: settings.secondsPerBreath, chime: settings.chime, breathTone: settings.breathTone, voice }, setState);
     conductor.current = c;
     return () => c.dispose();
   }, []);
@@ -107,7 +106,7 @@ export function usePlayer(seq: Sequence) {
   }, [seq]);
 
   useEffect(() => {
-    conductor.current?.setSettings({ secondsPerBreath: settings.secondsPerBreath, chime: settings.chime, breathTone: settings.breathTone, resumeTone: settings.resumeTone, voice });
+    conductor.current?.setSettings({ secondsPerBreath: settings.secondsPerBreath, chime: settings.chime, breathTone: settings.breathTone, voice });
     try {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
     } catch {

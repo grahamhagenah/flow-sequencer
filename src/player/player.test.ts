@@ -1,11 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { breathCue, resumeCue } from './chime';
+import { breathCue } from './chime';
 
 vi.mock('./chime', async (load) => ({
   ...(await load<typeof import('./chime')>()),
   chime: vi.fn(),
   breathCue: vi.fn(),
-  resumeCue: vi.fn(),
 }));
 import { outgoing } from '../data/graph';
 import { advance, type Sequence, setBreaths, start } from '../sequence';
@@ -38,7 +37,7 @@ describe('conductor', () => {
   const flow = go(setBreaths(start('mountain'), 0, 2), 'upward-salute'); // 2 breaths, then 1
   const setup = () => {
     const states: PlayerState[] = [];
-    const c = new Conductor(flow, { secondsPerBreath: 1, chime: true, breathTone: true, resumeTone: true, voice: null }, (s) => states.push(s));
+    const c = new Conductor(flow, { secondsPerBreath: 1, chime: true, breathTone: true, voice: null }, (s) => states.push(s));
     const last = () => states[states.length - 1];
     /** Steps the clock until the player reaches `phase`. */
     const until = (phase: PlayerState['phase']) => {
@@ -110,18 +109,27 @@ describe('conductor', () => {
     expect(breathCue).toHaveBeenCalledTimes(1);
   });
 
-  it('sounds the resume cue on Resume, but not on the first Play or after Stop', () => {
-    const { c, until } = setup();
-    vi.mocked(resumeCue).mockClear();
+  it('stretches or cuts short the current hold when its breaths change', () => {
+    const { c, last, until } = setup();
     c.play();
-    expect(resumeCue).not.toHaveBeenCalled();
+    until('holding'); // 2 breaths of 1s
+    vi.advanceTimersByTime(500);
+    c.setSeq(setBreaths(flow, 0, 4)); // now 4s long, 0.5s already spent
+    expect(last()).toMatchObject({ index: 0, phase: 'holding', holdTotal: 4000 });
+    vi.advanceTimersByTime(3000);
+    expect(last().index).toBe(0); // still holding at 3.5s
+    vi.advanceTimersByTime(600);
+    expect(last()).toMatchObject({ index: 1, phase: 'speaking' });
+  });
+
+  it('moves straight on when a hold is shortened below the time already spent', () => {
+    const { c, last, until } = setup();
+    c.play();
     until('holding');
-    c.pause();
-    c.play();
-    expect(resumeCue).toHaveBeenCalledTimes(1);
-    c.stop();
-    c.play();
-    expect(resumeCue).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(1500);
+    c.setSeq(setBreaths(flow, 0, 1)); // 1s, but 1.5s have passed
+    vi.advanceTimersByTime(10);
+    expect(last()).toMatchObject({ index: 1, phase: 'speaking' });
   });
 
   it('jumps to a step and holds it paused, then resumes from there', () => {

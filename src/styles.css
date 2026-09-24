@@ -236,7 +236,12 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 }
 
 /* Tall enough for the Right/Left toggle, so the row doesn't grow when it appears. */
-.next-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 24px 0 10px; min-height: 28px; }
+.next-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin: 24px 0 10px; min-height: 28px; }
+/* The newest pose's breaths and the side for the next move, on the right of the Next heading. */
+.next-controls { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+.next-controls .stepper .count { font-size: 14px; }
+.reset-breaths { font-size: 12px; color: var(--muted); }
+.reset-breaths:hover:not(:disabled) { color: var(--accent); }
 .next-head h2 { margin: 0; }
 .leading { display: flex; gap: 6px; }
 .leading button { padding: 3px 10px; font-size: 13px; }
@@ -432,19 +437,16 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   padding: 6px 8px;
   margin: 0 -8px;
   border-bottom: 1px solid var(--border);
-  /* Same height whether or not a row has a move above its name, so the list doesn't shift. */
-  min-height: 56px;
+  /* Every row has the same three lines (move, pose, Sanskrit), so they're all this tall. */
+  min-height: 72px;
+  cursor: pointer;
 }
 .row.current .row-name { color: var(--accent); }
-/* The newest pose opens up: Sanskrit name, cue and a breaths control. */
-.row.expanded { align-items: flex-start; padding-top: 12px; padding-bottom: 12px; background: var(--surface); }
-.row.expanded:hover:not(.playing) { background: var(--surface); }
-.row.expanded .num { padding-top: 3px; }
-.row.expanded .stepper { margin-top: 2px; }
-.row-sanskrit { font-size: 12px; font-style: italic; color: var(--muted); }
-.row-cue { margin-top: 6px; font-size: 13px; line-height: 1.45; color: var(--text); white-space: normal; }
-/* Hidden on desktop, where the expanded sequence row sits right beside the tiles. */
-.added-strip { display: none; }
+/* The newest pose: a faint steady tint, like a cursor. It moves down as poses are
+   added; no animation, and no edge (that marks the playing pose). */
+.row.current { background: color-mix(in srgb, var(--accent) 7%, transparent); }
+.row.current:hover:not(.playing) { background: color-mix(in srgb, var(--accent) 11%, var(--surface)); }
+.row-sanskrit { font-size: 12px; font-style: italic; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .next-from { margin-left: 6px; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 13px; }
 /* Room for the pinned play button or dock when the playing row scrolls into view. */
 .row { scroll-margin-bottom: 220px; }
@@ -463,6 +465,8 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   transition: --progress 250ms linear;
 }
 .row.playing .row-name { color: var(--accent); }
+.row.playing .num { display: flex; justify-content: flex-end; color: var(--accent); }
+.row.playing .num svg { width: 12px; height: 12px; }
 .num { width: 22px; flex: none; color: var(--muted); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
 .row-main {
   flex: 1;
@@ -479,8 +483,21 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .row .via { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .row-name .side { font-size: 11px; }
 
-.stepper { display: inline-flex; align-items: center; gap: 10px; flex: none; }
-.stepper button { width: 30px; height: 30px; padding: 0; }
+.stepper { display: inline-flex; align-items: center; gap: 4px; flex: none; }
+/* Quiet − and +: no box, grey until hovered, then a soft round background. */
+.stepper button {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--muted);
+  background: none;
+  border-color: transparent;
+  border-radius: 50%;
+}
+.stepper button:hover:not(:disabled) { color: var(--text); background: var(--surface-2); border-color: transparent; }
+.stepper button:disabled { opacity: 0.3; }
 .stepper .count { min-width: 22px; white-space: nowrap; text-align: center; font-variant-numeric: tabular-nums; color: var(--text); font-size: 15px; }
 .stepper .unit { color: var(--muted); font-size: 13px; }
 .row-breaths { flex: none; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -508,7 +525,11 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .play-controls { display: flex; gap: 8px; margin-top: 12px; }
 .play-controls button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 12px; }
 .play-controls .primary { flex: 1; }
-.play-controls button.toggled { border-color: var(--accent); color: var(--accent); }
+/* Everything but Play/Pause is quiet: no box, grey until hovered. */
+.play-controls button:not(.primary) { color: var(--muted); background: none; border-color: transparent; }
+.play-controls button:not(.primary):hover:not(:disabled) { color: var(--text); background: var(--surface-2); border-color: transparent; }
+.play-controls button:not(.primary):disabled { opacity: 0.3; }
+.play-controls button.toggled { color: var(--accent); background: var(--accent-bg); }
 
 .play-settings { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); }
 .play-settings label { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
@@ -547,20 +568,6 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   .layout { grid-template-columns: minmax(0, 1fr); }
   .builder { padding: 0 16px 16px; overflow: visible; }
   .tiles { grid-template-columns: 1fr 1fr; }
-  .added-strip {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 16px;
-    padding: 10px 12px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-  }
-  .added-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-  .added-name { flex: 1; min-width: 0; font-weight: 600; line-height: 1.3; color: var(--accent); }
-  .added-strip .stepper { gap: 6px; }
-  .added-strip .stepper button { width: 28px; height: 28px; }
   /* Five player buttons share a phone's width: slimmer side buttons, the main one on one line. */
   .play-controls { gap: 6px; }
   .play-controls button { padding: 10px; }

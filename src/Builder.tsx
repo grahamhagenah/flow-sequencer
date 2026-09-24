@@ -1,8 +1,10 @@
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
 import { applySide, getPose, otherSide, outgoing, renderLabel, sideLabel, TRANSITION_BY_ID } from './data/graph';
 import { START_POSES } from './data/poses';
+import type { Transition } from './data/types';
 import type { SampleFlow } from './data/samples';
 import { GetStarted, HowItWorks } from './GetStarted';
+import { PlayIcon } from './icons';
 import type { SavedFlow } from './library';
 import { PlaybackDock } from './player/PlaybackDock';
 import { usePlayer } from './player/usePlayer';
@@ -69,28 +71,26 @@ export function Builder({
   }, [autoplay, seq]);
   const playingIndex = player.active ? player.state.index : -1;
 
-  /** A row's text; the expanded (newest) row also shows the Sanskrit name and the cue. */
-  const rowBody = (i: number, expanded: boolean) => {
+  /**
+   * A row's three lines: the move that led here, the pose, and its Sanskrit name.
+   * A line with nothing to show keeps its space (a no-break space), so every row
+   * is the same height.
+   */
+  const rowBody = (i: number) => {
     const s = seq[i];
     const p = getPose(s.poseId);
     const via = s.via === undefined ? undefined : TRANSITION_BY_ID.get(s.via);
+    const move = via ? renderLabel(via.label, s.side) : '';
     return (
       <>
-        {via && (
-          <span className="via" title={renderLabel(via.label, s.side)}>
-            {renderLabel(via.label, s.side)}
-          </span>
-        )}
+        <span className="via" title={move || undefined}>
+          {move || '\u00a0'}
+        </span>
         <span className="row-name">
           {p.name}
           {p.sided && <span className="side">{sideLabel(s.side)}</span>}
         </span>
-        {expanded && (
-          <>
-            {p.sanskrit && <span className="row-sanskrit">{p.sanskrit}</span>}
-            <span className="row-cue">{p.cue}</span>
-          </>
-        )}
+        <span className="row-sanskrit">{p.sanskrit ?? '\u00a0'}</span>
       </>
     );
   };
@@ -115,6 +115,8 @@ export function Builder({
   // Only a real change of focus moves the page, not the effect running again
   // (React re-runs effects on mount in development).
   const lastFocus = useRef(focus);
+  // Read before the effects below mark the open as handled.
+  const justOpened = handledOpen !== openCount;
   useEffect(() => {
     if (handledOpen !== openCount) {
       handledOpen = openCount;
@@ -127,6 +129,44 @@ export function Builder({
     lastFocus.current = focus;
     setPage(Math.max(0, Math.floor(focus / PAGE_SIZE)));
   }, [focus, openCount, timelineRef]);
+
+  // Breaths set in the Next heading carry on to each new pose, until reset to the
+  // poses' own defaults. A newly opened or cleared flow starts on the defaults.
+  const [carryBreaths, setCarryBreaths] = useState<number | null>(null);
+  useEffect(() => {
+    if (justOpened || seq.length === 0) setCarryBreaths(null);
+  }, [justOpened, seq.length]);
+  const addPose = (t: Transition) =>
+    set((q) => {
+      const next = advance(q, t);
+      return carryBreaths === null ? next : setBreaths(next, next.length - 1, carryBreaths);
+    });
+
+  // Adding a pose always shows it, even mid-class (when the page otherwise follows
+  // the playing pose). The newest row is marked in the CSS (.row.current).
+  const lastLength = useRef(seq.length);
+  const [justAdded, setJustAdded] = useState<{ index: number } | null>(null);
+  useEffect(() => {
+    const grew = seq.length > lastLength.current && !justOpened;
+    lastLength.current = seq.length;
+    if (!grew) return;
+    setPage(Math.floor((seq.length - 1) / PAGE_SIZE));
+    setJustAdded({ index: seq.length - 1 });
+  }, [seq.length, justOpened]);
+  useEffect(() => {
+    if (justAdded === null) return;
+    // Bring the new row into view within the sequence panel (desktop, where the panel
+    // scrolls on its own). On phones the page would scroll away from the tiles, so not there.
+    const panel = timelineRef.current;
+    const row = panel?.querySelector<HTMLElement>(`.row[data-index="${justAdded.index}"]`);
+    if (panel && row && getComputedStyle(panel).overflowY === 'auto') {
+      const { top, bottom } = row.getBoundingClientRect();
+      const box = panel.getBoundingClientRect();
+      const footer = panel.querySelector('.play-footer')?.getBoundingClientRect().top ?? box.bottom;
+      if (bottom > footer) panel.scrollTop += bottom - footer + 12;
+      else if (top < box.top) panel.scrollTop -= box.top - top + 12;
+    }
+  }, [justAdded, page, timelineRef]);
   const first = Math.min(page, Math.max(0, pageCount - 1)) * PAGE_SIZE;
   const shown = seq.slice(first, first + PAGE_SIZE);
   const goToPage = (p: number) => {
@@ -141,21 +181,8 @@ export function Builder({
       <section className="builder">
         {banner}
 
-        {/* The newest pose shows in the sequence, expanded; this side is only for what comes next. */}
+        {/* The newest pose shows in the sequence; this side is only for what comes next. */}
         {!current && <HowItWorks />}
-
-        {/* Phones only (see styles.css): the sequence sits far below the tiles there, so this
-            confirms what a tap just added and keeps its breaths in reach. */}
-        {current && (
-          <div className="added-strip" role="status">
-            <span className="added-label">Added</span>
-            <span className="added-name">
-              {getPose(current.poseId).name}
-              {getPose(current.poseId).sided && <span className="side">{sideLabel(current.side)}</span>}
-            </span>
-            <Stepper value={current.breaths} onChange={(n) => set((q) => setBreaths(q, q.length - 1, n))} />
-          </div>
-        )}
 
         <div className="next-head">
           <h2>
@@ -167,17 +194,41 @@ export function Builder({
               </span>
             )}
           </h2>
-          {current && choosesSide(current.poseId) && (
-            <div className="leading" role="group" aria-label="Side for the next move">
-              {(['right', 'left'] as const).map((side) => (
+          {current && (
+            <div className="next-controls">
+              {/* The newest pose's breaths, carried on to the poses added after it. */}
+              <Stepper
+                value={current.breaths}
+                onChange={(n) => {
+                  setCarryBreaths(n);
+                  set((q) => setBreaths(q, q.length - 1, n));
+                }}
+              />
+              {carryBreaths !== null && (
                 <button
-                  key={side}
-                  aria-pressed={current.side === side}
-                  onClick={() => set((s) => setLeadingSide(s, side))}
+                  className="link-btn reset-breaths"
+                  onClick={() => {
+                    setCarryBreaths(null);
+                    set((q) => setBreaths(q, q.length - 1, getPose(current.poseId).breaths));
+                  }}
+                  title="Go back to each pose's suggested breaths"
                 >
-                  {sideLabel(side)}
+                  Default
                 </button>
-              ))}
+              )}
+              {choosesSide(current.poseId) && (
+                <div className="leading" role="group" aria-label="Side for the next move">
+                  {(['right', 'left'] as const).map((side) => (
+                    <button
+                      key={side}
+                      aria-pressed={current.side === side}
+                      onClick={() => set((s) => setLeadingSide(s, side))}
+                    >
+                      {sideLabel(side)}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -187,7 +238,7 @@ export function Builder({
                 const to = getPose(t.to);
                 const side = applySide(current.side, t.side);
                 return (
-                  <button key={t.id} className="tile" onClick={() => set((s) => advance(s, t))}>
+                  <button key={t.id} className="tile" onClick={() => addPose(t)}>
                     <span className="tile-label">{renderLabel(t.label, side)}</span>
                     <span className="tile-to">
                       {to.name}
@@ -267,11 +318,9 @@ export function Builder({
               const isLast = i === seq.length - 1;
               const playing = i === playingIndex;
               const { holdElapsed, holdTotal } = player.state;
-              // The newest pose opens up for editing, except during a class, when rows stay still.
-              const expanded = isLast && !player.active;
               const className = [
                 'row',
-                expanded && 'current expanded',
+                isLast && !playing && 'current',
                 playing && 'playing',
                 player.active && i < playingIndex && 'played',
               ]
@@ -285,13 +334,25 @@ export function Builder({
                   className={className}
                   style={playing ? ({ '--progress': `${progress}%` } as CSSProperties) : undefined}
                   aria-current={playing ? 'step' : undefined}
+                  // The whole row jumps there, not just its text; the breaths control keeps its own clicks.
+                  // (The text is a real button, for the keyboard.)
+                  onClick={(e) => {
+                    if ((e.target as HTMLElement).closest('.stepper, .row-main')) return;
+                    player.goTo(i);
+                  }}
                 >
-                  <span className="num">{i + 1}</span>
+                  {/* The pose the player is on, playing or paused, shows a play mark in place of its
+                      number. (A pause mark read as "11".) */}
+                  <span className="num" aria-label={playing ? `${i + 1}, ${player.state.playing ? 'playing' : 'paused'}` : undefined}>
+                    {playing ? <PlayIcon /> : i + 1}
+                  </span>
                   {/* Jumps playback here, paused, so the class can pick up from this pose. */}
                   <button className="row-main" onClick={() => player.goTo(i)} title="Jump here (paused)">
-                    {rowBody(i, expanded)}
+                    {rowBody(i)}
                   </button>
-                  {expanded ? (
+                  {/* The newest pose's breaths are edited in the Next heading; during a class, the
+                      pose it's on can be changed here. */}
+                  {playing ? (
                     <Stepper value={s.breaths} onChange={(n) => set((q) => setBreaths(q, i, n))} />
                   ) : (
                     <span className="row-breaths">{s.breaths === 1 ? '1 breath' : `${s.breaths} breaths`}</span>
