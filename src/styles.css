@@ -97,7 +97,18 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 /* Fixed width for the longest status, so the title and buttons don't shift as it changes. */
 .status { font-size: 13px; color: var(--muted); white-space: nowrap; min-width: 7.5em; text-align: right; }
 .flow-buttons { display: flex; gap: 4px; }
-.bar .nav { padding: 5px 10px; }
+.bar .nav { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; }
+.nav .count {
+  min-width: 18px;
+  padding: 0 5px;
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+  color: var(--muted);
+  background: var(--surface);
+  border-radius: 9px;
+  font-variant-numeric: tabular-nums;
+}
 
 /* Square icon buttons with a tooltip from data-tip, shown on hover or keyboard focus. */
 .icon-btn { position: relative; width: 32px; height: 32px; padding: 0; justify-content: center; }
@@ -267,6 +278,8 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .timeline-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 24px 0 10px; }
 .timeline-head h2 { margin: 0; }
 .timeline-head .meta { font-size: 13px; }
+.pager { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pager button { width: 28px; height: 28px; padding: 0; font-size: 16px; line-height: 1; }
 
 /* Stays at the bottom of the panel: pushed down when the list is short, stuck when it scrolls. */
 .play-footer {
@@ -370,13 +383,15 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 }
 
 @media (max-width: 760px) {
-  /* Phones: the name, the icon buttons and My flows on one line, the title below. */
+  /* Phones: the name and icon buttons on one line; the title, its status and Flows below.
+     The title's 200px basis can't fit beside the name, so it starts the second line. */
   .bar { padding: 10px 16px; gap: 10px; }
-  .bar h1 { border-right: none; padding-right: 0; }
+  .bar h1 { border-right: none; padding-right: 0; font-size: 18px; }
   .bar-actions { display: contents; }
   .flow-buttons { order: 1; margin-left: auto; }
-  .bar .nav { order: 2; }
-  .bar-title { order: 3; flex-basis: 100%; }
+  .bar-title { order: 2; flex: 1 1 200px; gap: 8px; }
+  .status { min-width: 0; }
+  .bar .nav { order: 3; }
   .app { height: auto; min-height: 100vh; min-height: 100dvh; }
   .layout { grid-template-columns: 1fr; }
   .builder { padding: 16px; overflow: visible; }

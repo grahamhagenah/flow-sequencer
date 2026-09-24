@@ -3,7 +3,7 @@ import { Builder } from './Builder';
 import type { SampleFlow } from './data/samples';
 import { Dialog, type DialogSpec } from './Dialog';
 import { FlowList } from './FlowList';
-import { CheckIcon, LinkIcon, PlusIcon, SaveIcon, UndoIcon } from './icons';
+import { CheckIcon, FlowsIcon, LinkIcon, PlusIcon, SaveIcon, UndoIcon } from './icons';
 import { Logo } from './Logo';
 import { deleteFlow, listFlows, loadDraft, newId, putFlow, type SavedFlow, saveDraft } from './library';
 import { decodeSteps, encodeSteps, fromHash, shareUrl, toHash } from './link';
@@ -197,15 +197,13 @@ export function App() {
 
   const status = saved ? (dirty ? 'Unsaved changes' : 'Saved') : seq.length ? 'Not saved yet' : '';
 
-  const myFlowsLabel = `My flows${flows.length ? ` (${flows.length})` : ''}`;
-
   return (
     <div className="app">
       <Dialog spec={dialog} onClose={() => setDialog(null)} />
       {/* One bar: the app name, the open flow's title and status, and everything you do with it. */}
       <header className="bar">
         <h1>
-          <Logo size={28} /> Om
+          <Logo size={28} /> Flow Sequencer
         </h1>
         {view === 'builder' ? (
           <>
@@ -254,8 +252,13 @@ export function App() {
                 <PlusIcon />
               </button>
             </div>
-            <button className="nav" onClick={() => setView('flows')}>
-              {myFlowsLabel}
+            <button
+              className="nav"
+              onClick={() => setView('flows')}
+              aria-label={`Flows, ${flows.length} saved`}
+            >
+              <FlowsIcon /> Flows
+              {flows.length > 0 && <span className="count">{flows.length}</span>}
             </button>
             </div>
           </>

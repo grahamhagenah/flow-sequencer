@@ -93,3 +93,12 @@ export const CheckIcon = () => (
     <path d="M5 12.5 10 17.5 19 7" />
   </Icon>
 );
+
+export const FlowsIcon = () => (
+  <Icon>
+    <path d="M9 6h11M9 12h11M9 18h11" />
+    <circle cx="4.5" cy="6" r="1" fill="currentColor" />
+    <circle cx="4.5" cy="12" r="1" fill="currentColor" />
+    <circle cx="4.5" cy="18" r="1" fill="currentColor" />
+  </Icon>
+);

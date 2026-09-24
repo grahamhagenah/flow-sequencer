@@ -1,4 +1,4 @@
-import { type CSSProperties, type ReactNode, useEffect, useRef } from 'react';
+import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
 import { applySide, getPose, otherSide, outgoing, renderLabel, sideLabel, TRANSITION_BY_ID } from './data/graph';
 import { START_POSES } from './data/poses';
 import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
@@ -7,6 +7,9 @@ import { usePlayer } from './player/usePlayer';
 import { advance, formatDuration, mirror, mirrorRange, type Sequence, setBreaths, setLeadingSide, start, totalSeconds } from './sequence';
 
 type SetSeq = (next: Sequence | ((prev: Sequence) => Sequence)) => void;
+
+/** Poses per page of the sequence list; shorter flows show in full. */
+const PAGE_SIZE = 20;
 
 export function Builder({
   seq,
@@ -57,8 +60,23 @@ export function Builder({
   useEffect(() => {
     const moved = playingIndex >= 0 && lastIndex.current >= 0 && playingIndex !== lastIndex.current;
     lastIndex.current = playingIndex;
-    if (moved) timelineRef.current?.querySelectorAll('.row')[playingIndex]?.scrollIntoView({ block: 'nearest' });
+    if (moved) timelineRef.current?.querySelector(`.row[data-index="${playingIndex}"]`)?.scrollIntoView({ block: 'nearest' });
   }, [playingIndex, timelineRef]);
+
+  // Long flows show a page of the list at a time. The page follows what you're
+  // doing: the newest pose while building, the playing one during a class.
+  // Turning pages by hand holds until that moves on.
+  const pageCount = Math.ceil(seq.length / PAGE_SIZE);
+  const focus = player.active ? player.state.index : seq.length - 1;
+  const [page, setPage] = useState(() => Math.max(0, Math.floor(focus / PAGE_SIZE)));
+  useEffect(() => setPage(Math.max(0, Math.floor(focus / PAGE_SIZE))), [focus]);
+  const first = Math.min(page, Math.max(0, pageCount - 1)) * PAGE_SIZE;
+  const shown = seq.slice(first, first + PAGE_SIZE);
+  const turnPage = (by: number) => {
+    setPage(first / PAGE_SIZE + by);
+    // Start the new page at its first pose. Only the desktop panel scrolls on its own.
+    if (timelineRef.current) timelineRef.current.scrollTop = 0;
+  };
 
   return (
     <main className="layout">
@@ -158,8 +176,9 @@ export function Builder({
         {seq.length === 0 ? (
           <p className="hint">Your flow will build up here.</p>
         ) : (
-          <ol>
-            {seq.map((s, i) => {
+          <ol start={first + 1}>
+            {shown.map((s, j) => {
+              const i = first + j;
               const isLast = i === seq.length - 1;
               const playing = i === playingIndex;
               const { holdElapsed, holdTotal } = player.state;
@@ -175,6 +194,7 @@ export function Builder({
               return (
                 <li
                   key={i}
+                  data-index={i}
                   className={className}
                   style={playing ? ({ '--progress': `${progress}%` } as CSSProperties) : undefined}
                   aria-current={playing ? 'step' : undefined}
@@ -194,8 +214,26 @@ export function Builder({
             })}
           </ol>
         )}
+        {/* The pager sits with the dock, pinned to the bottom, so it's in the same place on every page. */}
         {seq.length > 0 && (
           <div className="play-footer">
+            {pageCount > 1 && (
+              <div className="pager">
+                <button onClick={() => turnPage(-1)} disabled={first === 0} aria-label="Previous poses">
+                  ‹
+                </button>
+                <span>
+                  Poses {first + 1}–{first + shown.length} of {seq.length}
+                </span>
+                <button
+                  onClick={() => turnPage(1)}
+                  disabled={first + PAGE_SIZE >= seq.length}
+                  aria-label="Next poses"
+                >
+                  ›
+                </button>
+              </div>
+            )}
             <PlaybackDock seq={seq} player={player} />
           </div>
         )}
