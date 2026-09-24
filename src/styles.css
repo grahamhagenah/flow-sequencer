@@ -1,0 +1,361 @@
+:root {
+  --bg: #121417;
+  --surface: #1b1e23;
+  --surface-2: #23272e;
+  --border: #2f343c;
+  --text: #e6e8eb;
+  --muted: #9aa1ab;
+  --accent: #8fb8a8;
+  --accent-bg: #1f2e29;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.45 system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+button:hover:not(:disabled) { border-color: var(--muted); }
+button:disabled { opacity: 0.4; cursor: default; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #0f1714; font-weight: 600; }
+button.primary:hover:not(:disabled) { background: #a3c8b9; border-color: #a3c8b9; }
+
+select {
+  font: inherit;
+  color: inherit;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 8px;
+}
+
+h1 { font-size: 17px; margin: 0; font-weight: 600; }
+h2 {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 24px 0 10px;
+}
+
+.app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.bar h1 { flex: none; display: flex; align-items: center; gap: 8px; font-size: 21px; letter-spacing: 0.01em; padding-right: 16px; border-right: 1px solid var(--border); line-height: 28px; }
+/* Title and status keep at least 320px; when the buttons don't fit beside them they wrap to a second line. */
+.bar-title { flex: 1 1 320px; min-width: 0; display: flex; align-items: center; gap: 12px; }
+.bar .nav { flex: none; }
+.bar > .nav { margin-left: auto; }
+.bar-actions { display: flex; align-items: center; gap: 16px; margin-left: auto; }
+.meta { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(380px, 38vw, 560px);
+}
+
+.builder { padding: 20px; overflow-y: auto; }
+.hint { color: var(--muted); margin: 0; }
+
+input {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+}
+input:hover { border-color: var(--border); }
+input:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+
+.flow-name { flex: 1; min-width: 0; font-size: 16px; font-weight: 600; padding: 4px 8px; margin-left: -8px; }
+.flow-name::placeholder { color: var(--muted); font-weight: 500; }
+/* Fixed width for the longest status, so the title and buttons don't shift as it changes. */
+.status { font-size: 13px; color: var(--muted); white-space: nowrap; min-width: 7.5em; text-align: right; }
+.flow-buttons { display: flex; gap: 4px; }
+.bar .nav { padding: 5px 10px; }
+
+/* Square icon buttons with a tooltip from data-tip, shown on hover or keyboard focus. */
+.icon-btn { position: relative; width: 32px; height: 32px; padding: 0; justify-content: center; }
+.icon-btn[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 4px 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  pointer-events: none;
+  visibility: hidden;
+}
+.icon-btn:hover::after, .icon-btn:focus-visible::after, .icon-btn.tip-shown::after { visibility: visible; }
+.icon-btn.tip-shown { color: var(--accent); }
+/* Fade just the icon when disabled, so its tooltip stays readable. */
+.icon-btn:disabled { opacity: 1; }
+.icon-btn:disabled svg { opacity: 0.35; }
+.flow-buttons button { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+.icon { flex: none; }
+
+.dialog {
+  width: min(420px, calc(100vw - 32px));
+  padding: 20px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.dialog::backdrop { background: rgba(0, 0, 0, 0.55); }
+.dialog h2 { margin: 0 0 6px; font-size: 17px; font-weight: 600; color: var(--text); letter-spacing: 0; text-transform: none; }
+.dialog p { margin: 0 0 18px; color: var(--muted); }
+.dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+button.danger { color: #e8a598; }
+button.danger:hover:not(:disabled) { border-color: #e8a598; }
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  font-size: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+}
+.notice span { flex: 1; }
+.notice button { padding: 0 8px; background: none; border: none; color: var(--muted); font-size: 18px; line-height: 1.2; }
+
+.flows { flex: 1; overflow-y: auto; padding: 20px; max-width: 760px; width: 100%; margin: 0 auto; }
+.flows-head { display: flex; align-items: center; justify-content: space-between; margin: 4px 0 8px; }
+.flows-head h2 { margin: 0; }
+.flows .hint { font-size: 13px; margin-bottom: 16px; }
+.flows .empty { color: var(--muted); padding: 24px 0; }
+.flows ul { list-style: none; margin: 0; padding: 0; }
+.flow { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.flow-main { flex: 1; min-width: 0; display: flex; flex-direction: column; text-align: left; background: none; border: none; padding: 4px 8px; margin-left: -8px; }
+.flow-main:hover:not(:disabled) { background: var(--surface-2); }
+.flow-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.flow.current .flow-title { color: var(--accent); }
+.flow-meta { font-size: 13px; color: var(--muted); }
+.flow-actions { display: flex; gap: 6px; flex: none; }
+.flow-actions button { font-size: 13px; padding: 4px 10px; }
+
+.current-pose {
+  /* Room for a two-line cue, so the tiles below stay put from pose to pose. */
+  min-height: 144px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+.current-pose.empty { display: flex; align-items: center; justify-content: center; background: none; border-style: dashed; }
+.pose-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.pose-name { font-size: 22px; font-weight: 600; }
+.sanskrit { color: var(--muted); font-style: italic; }
+.cue { margin: 12px 0 0; }
+
+.side {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 7px;
+  font-size: 12px;
+  font-weight: 500;
+  vertical-align: middle;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border-radius: 4px;
+}
+
+/* Tall enough for the Right/Left toggle, so the row doesn't grow when it appears. */
+.next-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 24px 0 10px; min-height: 28px; }
+.next-head h2 { margin: 0; }
+.leading { display: flex; gap: 6px; }
+.leading button { padding: 3px 10px; font-size: 13px; }
+.leading button[aria-pressed='true'] { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
+
+.mirror {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px 14px;
+  text-align: left;
+  gap: 2px;
+  background: transparent;
+  border: 1px dashed var(--muted);
+  color: var(--text);
+  font-weight: 500;
+}
+.mirror:hover:not(:disabled) { border-color: var(--accent); }
+.mirror .kicker {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+.mirror .sub { font-size: 13px; font-weight: 400; color: var(--muted); }
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  padding: 12px;
+  background: var(--surface);
+  min-height: 92px;
+}
+.tile-label { font-weight: 500; }
+.tile-to { font-size: 13px; color: var(--muted); }
+
+.timeline {
+  border-left: 1px solid var(--border);
+  padding: 0 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.timeline > * { flex-shrink: 0; }
+.timeline-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 24px 0 10px; }
+.timeline-head h2 { margin: 0; }
+.timeline-head .meta { font-size: 13px; }
+
+/* Stays at the bottom of the panel: pushed down when the list is short, stuck when it scrolls. */
+.play-footer {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  padding: 16px 0 calc(20px + env(safe-area-inset-bottom));
+  background: var(--bg);
+}
+.timeline ol { list-style: none; margin: 0; padding: 0; }
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* Side padding gives the hover highlight some room; the margin keeps the text where it was. */
+  padding: 6px 8px;
+  margin: 0 -8px;
+  border-bottom: 1px solid var(--border);
+  /* Same height whether or not a row has a move above its name, so the list doesn't shift. */
+  min-height: 56px;
+}
+.row.current .row-name { color: var(--accent); }
+/* Room for the pinned play button or dock when the playing row scrolls into view. */
+.row { scroll-margin-bottom: 220px; }
+.row.played .row-main { opacity: 0.45; }
+.row.playing {
+  background: linear-gradient(to right, var(--accent-bg) var(--progress), transparent var(--progress));
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.row.playing .row-name { color: var(--accent); }
+.num { width: 22px; flex: none; color: var(--muted); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+.row-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 2px 4px;
+}
+.row:hover:not(.playing) { background: var(--surface); }
+.via { font-size: 12px; color: var(--muted); }
+.row .via { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row-name .side { font-size: 11px; }
+
+.stepper { display: inline-flex; align-items: center; gap: 10px; flex: none; }
+.stepper button { width: 30px; height: 30px; padding: 0; }
+.stepper .count { min-width: 22px; white-space: nowrap; text-align: center; font-variant-numeric: tabular-nums; color: var(--text); font-size: 15px; }
+.stepper .unit { color: var(--muted); font-size: 13px; }
+.row-breaths { flex: none; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.play-dock {
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.play-status { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-variant-numeric: tabular-nums; }
+.play-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
+.play-status .meta { font-size: 13px; }
+.play-progress { height: 3px; margin: 8px 0 12px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+.play-progress div { height: 100%; background: var(--accent); }
+
+.play-pose { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.play-pose-name { font-size: 17px; font-weight: 600; }
+.play-pose-step { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* Two lines kept for the cue whatever its length, so the dock never changes height. */
+.play-cue { margin: 4px 0 0; font-size: 14px; color: var(--muted); min-height: 2.9em; }
+.play-next { margin: 8px 0 0; font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.play-next span { color: var(--text); }
+
+.play-controls { display: flex; gap: 8px; margin-top: 12px; }
+.play-controls button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 12px; }
+.play-controls .primary { flex: 1; }
+.play-controls button.toggled { border-color: var(--accent); color: var(--accent); }
+
+.play-settings { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); }
+.play-settings label { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.play-settings label:first-child { margin-top: 0; }
+.play-settings label.check { justify-content: flex-start; }
+.play-settings select { max-width: 180px; font-size: 13px; }
+.play-settings input[type='checkbox'] { accent-color: var(--accent); margin: 0; }
+.play-settings .hint { margin-top: 8px; }
+
+@media (max-width: 760px) {
+  /* Phones: the name, the icon buttons and My flows on one line, the title below. */
+  .bar { padding: 10px 16px; gap: 10px; }
+  .bar h1 { border-right: none; padding-right: 0; }
+  .bar-actions { display: contents; }
+  .flow-buttons { order: 1; margin-left: auto; }
+  .bar .nav { order: 2; }
+  .bar-title { order: 3; flex-basis: 100%; }
+  .app { height: auto; min-height: 100vh; min-height: 100dvh; }
+  .layout { grid-template-columns: 1fr; }
+  .builder { padding: 16px; overflow: visible; }
+  .tiles { grid-template-columns: 1fr 1fr; }
+  .flows { padding: 16px; }
+  .flow { flex-wrap: wrap; row-gap: 6px; }
+  .flow-actions { width: 100%; }
+  .tile { padding: 10px; }
+  .timeline { overflow: visible; border-left: none; border-top: 1px solid var(--border); padding: 0 16px; }
+}

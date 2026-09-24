@@ -1,0 +1,37 @@
+import { useCallback, useState } from 'react';
+
+interface History<T> {
+  past: T[];
+  present: T;
+  future: T[];
+}
+
+/** State with undo/redo. Every `set` is one undoable step. */
+export function useHistory<T>(initial: () => T) {
+  const [h, setH] = useState<History<T>>(() => ({ past: [], present: initial(), future: [] }));
+
+  const set = useCallback((next: T | ((prev: T) => T)) => {
+    setH((cur) => {
+      const value = typeof next === 'function' ? (next as (prev: T) => T)(cur.present) : next;
+      if (value === cur.present) return cur;
+      return { past: [...cur.past, cur.present], present: value, future: [] };
+    });
+  }, []);
+
+  const undo = useCallback(() => {
+    setH((cur) =>
+      cur.past.length ? { past: cur.past.slice(0, -1), present: cur.past[cur.past.length - 1], future: [cur.present, ...cur.future] } : cur,
+    );
+  }, []);
+
+  const redo = useCallback(() => {
+    setH((cur) =>
+      cur.future.length ? { past: [...cur.past, cur.present], present: cur.future[0], future: cur.future.slice(1) } : cur,
+    );
+  }, []);
+
+  /** Replaces the value and forgets the undo history, e.g. when opening another flow. */
+  const reset = useCallback((value: T) => setH({ past: [], present: value, future: [] }), []);
+
+  return { value: h.present, set, reset, undo, redo, canUndo: h.past.length > 0, canRedo: h.future.length > 0 };
+}
