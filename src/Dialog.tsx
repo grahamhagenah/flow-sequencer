@@ -25,9 +25,16 @@ export function Dialog({ spec, onClose }: { spec: DialogSpec | null; onClose: ()
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (spec && !el.open) el.showModal();
+    if (spec && !el.open) {
+      el.showModal();
+      // Start on a safe choice for Enter: the main action when it's a save, Cancel when
+      // the only action destroys something. Never the first button, which may be Discard.
+      el.querySelector<HTMLButtonElement>('.main.primary, .cancel')?.focus();
+    }
     if (!spec && el.open) el.close();
   }, [spec]);
+
+  const hasPrimary = spec?.actions.some((a) => a.kind === 'primary') ?? false;
 
   const cancel = () => {
     spec?.onCancel?.();
@@ -48,20 +55,27 @@ export function Dialog({ spec, onClose }: { spec: DialogSpec | null; onClose: ()
         <>
           <h2 id="dialog-title">{spec.title}</h2>
           <p>{spec.body}</p>
+          {/* A destructive action sits apart on the left when there's also a main one;
+              Cancel and the main action go on the right, the main one last. */}
           <div className="dialog-actions">
-            {spec.actions.map((a) => (
-              <button
-                key={a.label}
-                className={a.kind}
-                onClick={() => {
-                  onClose();
-                  a.run();
-                }}
-              >
-                {a.label}
-              </button>
-            ))}
-            <button onClick={cancel}>Cancel</button>
+            {spec.actions.map((a) => {
+              const main = a.kind === 'primary' || (a.kind === 'danger' && !hasPrimary);
+              return (
+                <button
+                  key={a.label}
+                  className={[a.kind, main ? 'main' : 'aside'].filter(Boolean).join(' ')}
+                  onClick={() => {
+                    onClose();
+                    a.run();
+                  }}
+                >
+                  {a.label}
+                </button>
+              );
+            })}
+            <button className="cancel" onClick={cancel}>
+              Cancel
+            </button>
           </div>
         </>
       )}

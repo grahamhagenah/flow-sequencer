@@ -127,17 +127,23 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 .icon { flex: none; }
 
 .dialog {
-  width: min(420px, calc(100vw - 32px));
-  padding: 20px;
+  width: min(460px, calc(100vw - 32px));
+  padding: 24px;
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
 }
 .dialog::backdrop { background: rgba(0, 0, 0, 0.55); }
-.dialog h2 { margin: 0 0 6px; font-size: 17px; font-weight: 600; color: var(--text); letter-spacing: 0; text-transform: none; }
-.dialog p { margin: 0 0 18px; color: var(--muted); }
-.dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.dialog h2 { margin: 0 0 8px; font-size: 18px; font-weight: 600; color: var(--text); letter-spacing: 0; text-transform: none; }
+.dialog p { margin: 0 0 24px; color: var(--muted); }
+.dialog-actions { display: flex; align-items: center; gap: 8px; }
+.dialog-actions button { padding: 8px 14px; white-space: nowrap; }
+/* Order on screen: the set-apart action, a gap, Cancel, then the main action. */
+.dialog-actions .aside { margin-right: auto; }
+.dialog-actions .cancel { order: 1; margin-left: auto; }
+.dialog-actions .aside ~ .cancel { margin-left: 0; }
+.dialog-actions .main { order: 2; }
 button.danger { color: #e8a598; }
 button.danger:hover:not(:disabled) { border-color: #e8a598; }
 
@@ -281,9 +287,18 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 /* Room for the pinned play button or dock when the playing row scrolls into view. */
 .row { scroll-margin-bottom: 220px; }
 .row.played .row-main { opacity: 0.45; }
+/* Registered so it can be animated: progress arrives in 250ms ticks (see
+   conductor.ts), and gliding between them over the same 250ms reads as one
+   continuous fill. */
+@property --progress {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
 .row.playing {
   background: linear-gradient(to right, var(--accent-bg) var(--progress), transparent var(--progress));
   box-shadow: inset 3px 0 0 var(--accent);
+  transition: --progress 250ms linear;
 }
 .row.playing .row-name { color: var(--accent); }
 .num { width: 22px; flex: none; color: var(--muted); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
@@ -318,7 +333,7 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .play-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
 .play-status .meta { font-size: 13px; }
 .play-progress { height: 3px; margin: 8px 0 12px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
-.play-progress div { height: 100%; background: var(--accent); }
+.play-progress div { height: 100%; background: var(--accent); transition: width 250ms linear; }
 
 .play-pose { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 .play-pose-name { font-size: 17px; font-weight: 600; }
@@ -340,6 +355,14 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .play-settings select { max-width: 180px; font-size: 13px; }
 .play-settings input[type='checkbox'] { accent-color: var(--accent); margin: 0; }
 .play-settings .hint { margin-top: 8px; }
+
+@media (max-width: 480px) {
+  /* Stacked, the main action first and Cancel last. */
+  .dialog-actions { flex-direction: column; align-items: stretch; }
+  .dialog-actions .main { order: 0; }
+  .dialog-actions .aside { order: 1; margin-right: 0; }
+  .dialog-actions .cancel { order: 2; margin-left: 0; }
+}
 
 @media (max-width: 760px) {
   /* Phones: the name, the icon buttons and My flows on one line, the title below. */

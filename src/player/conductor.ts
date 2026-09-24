@@ -117,6 +117,7 @@ export class Conductor {
     const remaining = this.state.holdTotal - this.state.holdElapsed;
     this.holdStartedAt = performance.now() - this.state.holdElapsed;
     this.update({ phase: 'holding' });
+    // The progress bars' CSS transitions match this interval; change both together.
     this.ticker = setInterval(() => this.update({ holdElapsed: this.elapsed() }), 250);
     this.later(remaining, () => {
       this.stopTicker();
