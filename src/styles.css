@@ -466,6 +466,14 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 }
 .row.playing .row-name { color: var(--accent); }
 .row.playing .num { display: flex; justify-content: flex-end; color: var(--accent); }
+.row.playing .num .now {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
 .row.playing .num svg { width: 12px; height: 12px; }
 .num { width: 22px; flex: none; color: var(--muted); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
 .row-main {

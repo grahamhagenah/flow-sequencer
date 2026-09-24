@@ -4,7 +4,7 @@ import { START_POSES } from './data/poses';
 import type { Transition } from './data/types';
 import type { SampleFlow } from './data/samples';
 import { GetStarted, HowItWorks } from './GetStarted';
-import { PlayIcon } from './icons';
+import { PauseIcon, PlayIcon } from './icons';
 import type { SavedFlow } from './library';
 import { PlaybackDock } from './player/PlaybackDock';
 import { usePlayer } from './player/usePlayer';
@@ -14,7 +14,7 @@ import { aboutMinutes, classMs } from './player/conductor';
 type SetSeq = (next: Sequence | ((prev: Sequence) => Sequence)) => void;
 
 /** Poses per page of the sequence list; shorter flows show in full. */
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 30;
 
 /**
  * The last flow-open (App's openCount) the list has started on page one. Kept
@@ -341,10 +341,10 @@ export function Builder({
                     player.goTo(i);
                   }}
                 >
-                  {/* The pose the player is on, playing or paused, shows a play mark in place of its
-                      number. (A pause mark read as "11".) */}
+                  {/* The pose the player is on shows play or pause in place of its number, in a small
+                      round badge (bare pause bars read as "11"). */}
                   <span className="num" aria-label={playing ? `${i + 1}, ${player.state.playing ? 'playing' : 'paused'}` : undefined}>
-                    {playing ? <PlayIcon /> : i + 1}
+                    {playing ? <span className="now">{player.state.playing ? <PlayIcon /> : <PauseIcon />}</span> : i + 1}
                   </span>
                   {/* Jumps playback here, paused, so the class can pick up from this pose. */}
                   <button className="row-main" onClick={() => player.goTo(i)} title="Jump here (paused)">
