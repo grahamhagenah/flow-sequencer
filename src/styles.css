@@ -70,10 +70,14 @@ h2 {
   background: var(--bg);
 }
 .bar h1 { flex: none; display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 600; letter-spacing: 0; line-height: 28px; }
+.bar .home { display: flex; align-items: center; gap: 8px; color: inherit; text-decoration: none; border-radius: 6px; }
+.bar .home:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .bar h1::after { content: '/'; margin-left: 8px; font-weight: 400; color: var(--border); }
 /* Title and status keep at least 320px; when the buttons don't fit beside them they wrap to a second line. */
 .bar-title { flex: 1 1 320px; min-width: 0; display: flex; align-items: center; gap: 12px; }
 .bar .nav { flex: none; }
+/* Where you are, in the spot the flow title takes in the builder. */
+.bar-page { font-size: 15px; font-weight: 500; }
 .bar > .nav { margin-left: auto; }
 .bar-actions { display: flex; align-items: center; gap: 16px; margin-left: auto; }
 .meta { color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -162,12 +166,13 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 .dialog::backdrop { background: rgba(0, 0, 0, 0.55); }
 .dialog h2 { margin: 0 0 8px; font-size: 18px; font-weight: 600; color: var(--text); letter-spacing: 0; text-transform: none; }
 .dialog p { margin: 0 0 24px; color: var(--muted); }
-.dialog-actions { display: flex; align-items: center; gap: 8px; }
+.dialog-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
 .dialog-actions button { padding: 8px 14px; white-space: nowrap; }
-/* Order on screen: the set-apart action, a gap, Cancel, then the main action. */
-.dialog-actions .aside { margin-right: auto; }
-.dialog-actions .cancel { order: 1; margin-left: auto; }
-.dialog-actions .aside ~ .cancel { margin-left: 0; }
+/* One even row on the right: the set-apart action, Cancel, then the main action.
+   The set-apart one (Discard) stands out by being a quiet red text button, not by spacing. */
+.dialog-actions .aside { background: none; border-color: transparent; }
+.dialog-actions .aside:hover:not(:disabled) { background: var(--surface-2); border-color: transparent; }
+.dialog-actions .cancel { order: 1; }
 .dialog-actions .main { order: 2; }
 button.danger { color: #e8a598; }
 button.danger:hover:not(:disabled) { border-color: #e8a598; }
@@ -201,8 +206,13 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .flow-meta { font-size: 13px; color: var(--muted); }
 .flow-desc { font-size: 13px; color: var(--text); margin: 2px 0; }
 .samples-head { margin-top: 32px; }
-.flow-actions { display: flex; gap: 6px; flex: none; }
-.flow-actions button { font-size: 13px; padding: 4px 10px; }
+.flow-actions { display: flex; gap: 2px; flex: none; }
+/* Quiet text buttons: no border until hovered, Delete only turns red on hover. */
+.flow-actions button { font-size: 13px; padding: 4px 8px; background: none; border-color: transparent; color: var(--muted); }
+.flow-actions button:hover:not(:disabled) { background: var(--surface-2); border-color: transparent; color: var(--text); }
+.flow-actions .delete:hover:not(:disabled) { color: #e8a598; }
+.new-flow { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; font-size: 13px; background: none; color: var(--muted); }
+.new-flow:hover:not(:disabled) { color: var(--text); }
 
 .current-pose {
   /* Room for a two-line cue, so the tiles below stay put from pose to pose. */
@@ -277,9 +287,76 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 }
 .tile-label { font-weight: 500; }
 .tile-to { font-size: 13px; color: var(--muted); }
-.samples-title { margin-top: 32px; }
-.tile.sample { min-height: 0; }
-.tile-desc { font-size: 13px; color: var(--text); }
+/* The empty sequence panel: how it works, recent flows, sample classes.
+   One spacing scale throughout: 32px between sections, 10px under each heading,
+   14px inside rows. */
+.get-started { display: flex; flex-direction: column; gap: 32px; padding: 4px 0 32px; container-type: inline-size; }
+/* .get-started prefix: the panel's own `.timeline ol` reset would otherwise zero this padding. */
+.get-started .how-it-works {
+  list-style: none;
+  margin: 0;
+  padding: 18px;
+  /* Always a vertical list. */
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.how-it-works li { display: flex; align-items: center; gap: 12px; font-size: 14px; line-height: 1.35; }
+.how-it-works .step { flex: none; }
+.how-it-works .step {
+  width: 26px;
+  height: 26px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 26px;
+  text-align: center;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border-radius: 50%;
+}
+.get-started h3 { margin: 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.gs-head { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.link-btn { padding: 0; background: none; border: none; font-size: 13px; color: var(--accent); }
+.link-btn:hover:not(:disabled) { text-decoration: underline; }
+.gs-list { list-style: none; margin: 0; padding: 0; }
+.gs-list > li { border-bottom: 1px solid var(--border); }
+.gs-item {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  width: calc(100% + 16px);
+  margin: 0 -8px;
+  padding: 14px 8px;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 0;
+}
+.gs-item:hover:not(:disabled) { background: var(--surface); }
+.gs-item .gs-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gs-open { font-size: 13px; color: var(--muted); }
+.gs-item:hover .gs-open { color: var(--accent); }
+.gs-sample { display: flex; align-items: center; gap: 16px; padding: 14px 0; }
+.gs-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.gs-title { font-weight: 600; }
+.gs-desc { font-size: 13px; color: var(--muted); }
+.gs-meta { margin-top: 3px; font-size: 12px; color: var(--muted); opacity: 0.8; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gs-item .gs-meta { margin-top: 0; }
+.gs-actions { flex: none; display: flex; gap: 6px; }
+.gs-actions button { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 13px; }
+/* A soft tint rather than solid green, so five of them in a column stay calm. */
+.gs-play { color: var(--accent); background: var(--accent-bg); border-color: transparent; font-weight: 500; }
+.gs-play:hover:not(:disabled) { border-color: var(--accent); }
+.gs-actions button:not(.gs-play) { background: none; color: var(--muted); }
+.gs-actions button:not(.gs-play):hover:not(:disabled) { color: var(--text); }
+/* Narrow panels: the buttons go under the text, so the description keeps the full width. */
+@container (max-width: 420px) {
+  .gs-sample { flex-wrap: wrap; row-gap: 10px; }
+  .gs-text { flex-basis: 100%; }
+}
 
 .timeline {
   order: -1;
@@ -293,6 +370,8 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .timeline-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 24px 0 10px; }
 .timeline-head h2 { margin: 0; }
 .timeline-head .meta { font-size: 13px; }
+/* Beside the heading, before the count, so it fits the row without changing its height. */
+.to-first { margin-right: auto; margin-left: 12px; font-size: 12px; line-height: inherit; }
 .pager { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .pager button { width: 28px; height: 28px; padding: 0; font-size: 16px; line-height: 1; }
 
@@ -303,6 +382,12 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   margin-top: auto;
   padding: 16px 0 calc(20px + env(safe-area-inset-bottom));
   background: var(--bg);
+  /* As wide as the rows (which reach 8px past the panel's padding for their hover
+     highlight), so rows scrolling underneath don't show at the sides. */
+  margin-left: -8px;
+  margin-right: -8px;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 .timeline ol { list-style: none; margin: 0; padding: 0; }
 .row {
@@ -393,8 +478,8 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   /* Stacked, the main action first and Cancel last. */
   .dialog-actions { flex-direction: column; align-items: stretch; }
   .dialog-actions .main { order: 0; }
-  .dialog-actions .aside { order: 1; margin-right: 0; }
-  .dialog-actions .cancel { order: 2; margin-left: 0; }
+  .dialog-actions .aside { order: 1; }
+  .dialog-actions .cancel { order: 2; }
 }
 
 @media (max-width: 760px) {
@@ -402,13 +487,15 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
      The title's 200px basis can't fit beside the name, so it starts the second line. */
   .bar { padding: 10px 16px; gap: 10px; }
   .bar h1::after { content: none; }
+  /* On the Flows page "My flows" shares the name's line, so keep the slash between them. */
+  .bar h1:has(+ .bar-page)::after { content: '/'; }
   .bar-actions { display: contents; }
   .flow-buttons { order: 1; margin-left: auto; }
   .bar-title { order: 2; flex: 1 1 200px; gap: 8px; }
   .status { min-width: 0; }
   .bar .nav { order: 3; }
   .app { height: auto; min-height: 100vh; min-height: 100dvh; }
-  .layout { grid-template-columns: 1fr; }
+  .layout { grid-template-columns: minmax(0, 1fr); }
   .builder { padding: 16px; overflow: visible; }
   .tiles { grid-template-columns: 1fr 1fr; }
   .flows { padding: 16px; }
@@ -416,5 +503,7 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   .flow-actions { width: 100%; }
   .tile { padding: 10px; }
   /* Phones stack the builder first, since its tiles are how a flow gets made. */
+  /* ...except while the flow is empty, when Get started is the easiest way in. */
+  .layout.empty .timeline { order: -1; border-top: none; border-bottom: 1px solid var(--border); }
   .timeline { order: 0; overflow: visible; border-right: none; border-top: 1px solid var(--border); padding: 0 16px; }
 }

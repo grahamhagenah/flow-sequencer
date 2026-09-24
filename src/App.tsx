@@ -2,8 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Builder } from './Builder';
 import type { SampleFlow } from './data/samples';
 import { Dialog, type DialogSpec } from './Dialog';
+import { unlockPlayback } from './player/conductor';
 import { FlowList } from './FlowList';
-import { CheckIcon, FlowsIcon, LinkIcon, PlusIcon, SaveIcon, UndoIcon } from './icons';
+import { ArrowLeftIcon, CheckIcon, LinkIcon, PlusIcon, SaveIcon, UndoIcon } from './icons';
 import { Logo } from './Logo';
 import { deleteFlow, listFlows, loadDraft, newId, putFlow, type SavedFlow, saveDraft } from './library';
 import { decodeSteps, encodeSteps, fromHash, shareUrl, toHash } from './link';
@@ -55,6 +56,10 @@ export function App() {
   const [view, setView] = useState<'builder' | 'flows'>('builder');
   const [copied, setCopied] = useState<string | null>(null);
   const [dialog, setDialog] = useState<DialogSpec | null>(null);
+  const [autoplay, setAutoplay] = useState(false);
+  /** Bumped each time a flow is opened, so the sequence list can start it on its first page. */
+  const [openCount, setOpenCount] = useState(0);
+  const lastOpen = useRef(0);
   const timelineRef = useRef<HTMLElement>(null);
 
   const steps = encodeSteps(seq);
@@ -71,10 +76,12 @@ export function App() {
 
   useEffect(() => {
     // Keep the newest step in view. Only the desktop timeline scrolls on its own;
-    // on phones it sits below the builder and this does nothing.
+    // on phones it sits below the builder and this does nothing. A flow that was
+    // just opened is left at its top (the list starts it on page one).
     const el = timelineRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [seq.length, view]);
+    if (lastOpen.current !== openCount) lastOpen.current = openCount;
+    else if (el) el.scrollTop = el.scrollHeight;
+  }, [seq.length, view, openCount]);
 
   useEffect(() => {
     if (!copied) return;
@@ -86,6 +93,7 @@ export function App() {
   const open = useCallback(
     (next: Opened) => {
       reset(next.seq);
+      setOpenCount((n) => n + 1);
       setId(next.id);
       setName(next.name);
       setNotice(next.notice);
@@ -170,8 +178,16 @@ export function App() {
   };
 
   // A sample opens as an unsaved copy, so the sample itself never changes.
-  const openSample = (f: SampleFlow) =>
-    guardUnsaved(`Open “${f.name}”?`, 'Save and open', () => open({ id: null, name: f.name, seq: f.seq, notice: null }));
+  const openSample = (f: SampleFlow, play = false) =>
+    guardUnsaved(`Open “${f.name}”?`, 'Save and open', () => {
+      open({ id: null, name: f.name, seq: f.seq, notice: null });
+      if (play) setAutoplay(true);
+    });
+
+  const playSample = (f: SampleFlow) => {
+    unlockPlayback(); // inside the click, so the voice can start once the flow is loaded
+    openSample(f, true);
+  };
 
   const duplicate = (f: SavedFlow) => {
     putFlow({ id: newId(), name: `${f.name} (copy)`, steps: f.steps, updatedAt: Date.now() });
@@ -203,7 +219,18 @@ export function App() {
       {/* One bar: the app name, the open flow's title and status, and everything you do with it. */}
       <header className="bar">
         <h1>
-          <Logo size={22} /> Flow Sequencer
+          {/* Home is the sequencer. A plain click never clears the open flow; opening it in a new tab starts fresh. */}
+          <a
+            className="home"
+            href="./"
+            onClick={(e) => {
+              if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+              e.preventDefault();
+              setView('builder');
+            }}
+          >
+            <Logo size={22} /> Flow Sequencer
+          </a>
         </h1>
         {view === 'builder' ? (
           <>
@@ -257,15 +284,18 @@ export function App() {
               onClick={() => setView('flows')}
               aria-label={`Flows, ${flows.length} saved`}
             >
-              <FlowsIcon /> Flows
+              Flows
               {flows.length > 0 && <span className="count">{flows.length}</span>}
             </button>
             </div>
           </>
         ) : (
-          <button className="nav" onClick={() => setView('builder')}>
-            Back to builder
-          </button>
+          <>
+            <span className="bar-page">My flows</span>
+            <button className="nav" onClick={() => setView('builder')}>
+              <ArrowLeftIcon /> Back to sequencer
+            </button>
+          </>
         )}
       </header>
 
@@ -279,7 +309,7 @@ export function App() {
           onCopyLink={(f) => copyLink(f.id, f.name, f.steps)}
           onDuplicate={duplicate}
           onDelete={remove}
-          onOpenSample={openSample}
+          onOpenSample={(f) => openSample(f)}
           onCopySampleLink={(f) => copyLink(f.id, f.name, encodeSteps(f.seq))}
         />
       ) : (
@@ -287,7 +317,14 @@ export function App() {
           seq={seq}
           set={set}
           timelineRef={timelineRef}
-          onOpenSample={openSample}
+          onOpenSample={(f) => openSample(f)}
+          onPlaySample={playSample}
+          recent={flows}
+          onOpenSaved={openSaved}
+          onSeeAll={() => setView('flows')}
+          autoplay={autoplay}
+          openCount={openCount}
+          onAutoplayStarted={() => setAutoplay(false)}
           banner={
             notice && (
               <div className="notice" role="status">

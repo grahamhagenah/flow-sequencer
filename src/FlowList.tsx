@@ -1,4 +1,5 @@
 import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
+import { PlusIcon } from './icons';
 import type { SavedFlow } from './library';
 import { decodeSteps } from './link';
 import { formatDuration, totalSeconds } from './sequence';
@@ -30,8 +31,10 @@ export function FlowList({
   return (
     <main className="flows">
       <div className="flows-head">
-        <h2>My flows</h2>
-        <button onClick={onNew}>New flow</button>
+        <h2>Saved flows</h2>
+        <button className="new-flow" onClick={onNew}>
+          <PlusIcon /> New flow
+        </button>
       </div>
       <p className="hint">
         Saved in this browser only, and Safari clears it after a week without a visit. Copy a flow’s link to keep
@@ -56,7 +59,9 @@ export function FlowList({
                 <div className="flow-actions">
                   <button onClick={() => onCopyLink(f)}>{copiedKey === f.id ? 'Copied' : 'Copy link'}</button>
                   <button onClick={() => onDuplicate(f)}>Duplicate</button>
-                  <button onClick={() => onDelete(f)}>Delete</button>
+                  <button className="delete" onClick={() => onDelete(f)}>
+                    Delete
+                  </button>
                 </div>
               </li>
             );

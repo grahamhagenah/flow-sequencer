@@ -1,7 +1,9 @@
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
 import { applySide, getPose, otherSide, outgoing, renderLabel, sideLabel, TRANSITION_BY_ID } from './data/graph';
 import { START_POSES } from './data/poses';
-import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
+import type { SampleFlow } from './data/samples';
+import { GetStarted } from './GetStarted';
+import type { SavedFlow } from './library';
 import { PlaybackDock } from './player/PlaybackDock';
 import { usePlayer } from './player/usePlayer';
 import { advance, formatDuration, mirror, mirrorRange, type Sequence, setBreaths, setLeadingSide, start, totalSeconds } from './sequence';
@@ -11,12 +13,26 @@ type SetSeq = (next: Sequence | ((prev: Sequence) => Sequence)) => void;
 /** Poses per page of the sequence list; shorter flows show in full. */
 const PAGE_SIZE = 20;
 
+/**
+ * The last flow-open (App's openCount) the list has started on page one. Kept
+ * outside the component because the builder unmounts while My flows is shown,
+ * and a flow opened from there must still start at the top.
+ */
+let handledOpen = 0;
+
 export function Builder({
   seq,
   set,
   banner,
   timelineRef,
   onOpenSample,
+  onPlaySample,
+  recent,
+  onOpenSaved,
+  onSeeAll,
+  autoplay,
+  onAutoplayStarted,
+  openCount,
 }: {
   seq: Sequence;
   set: SetSeq;
@@ -24,6 +40,16 @@ export function Builder({
   banner: ReactNode;
   timelineRef: React.RefObject<HTMLElement | null>;
   onOpenSample: (f: SampleFlow) => void;
+  onPlaySample: (f: SampleFlow) => void;
+  /** Saved flows, newest first, for the empty panel. */
+  recent: SavedFlow[];
+  onOpenSaved: (f: SavedFlow) => void;
+  onSeeAll: () => void;
+  /** Start playback as soon as the flow that was just opened is in place. */
+  autoplay: boolean;
+  onAutoplayStarted: () => void;
+  /** Changes whenever a different flow is opened. */
+  openCount: number;
 }) {
   const current = seq[seq.length - 1];
   const range = mirrorRange(seq);
@@ -32,6 +58,14 @@ export function Builder({
     : null;
 
   const player = usePlayer(seq);
+
+  // "Play" on a sample opens it and asks for playback; by the time this runs the
+  // player has the new flow. The click already unlocked audio (unlockPlayback).
+  useEffect(() => {
+    if (!autoplay || seq.length === 0) return;
+    onAutoplayStarted();
+    player.toggle();
+  }, [autoplay, seq]);
   const playingIndex = player.active ? player.state.index : -1;
 
   const rowBody = (i: number) => {
@@ -63,23 +97,39 @@ export function Builder({
     if (moved) timelineRef.current?.querySelector(`.row[data-index="${playingIndex}"]`)?.scrollIntoView({ block: 'nearest' });
   }, [playingIndex, timelineRef]);
 
-  // Long flows show a page of the list at a time. The page follows what you're
-  // doing: the newest pose while building, the playing one during a class.
-  // Turning pages by hand holds until that moves on.
+  // Long flows show a page of the list at a time. A newly opened flow starts on
+  // its first page; after that the page follows what you're doing: the newest
+  // pose while building, the playing one during a class. Turning pages by hand
+  // holds until that moves on.
   const pageCount = Math.ceil(seq.length / PAGE_SIZE);
   const focus = player.active ? player.state.index : seq.length - 1;
-  const [page, setPage] = useState(() => Math.max(0, Math.floor(focus / PAGE_SIZE)));
-  useEffect(() => setPage(Math.max(0, Math.floor(focus / PAGE_SIZE))), [focus]);
+  const [page, setPage] = useState(() => (openCount !== handledOpen ? 0 : Math.max(0, Math.floor(focus / PAGE_SIZE))));
+  // Only a real change of focus moves the page, not the effect running again
+  // (React re-runs effects on mount in development).
+  const lastFocus = useRef(focus);
+  useEffect(() => {
+    if (handledOpen !== openCount) {
+      handledOpen = openCount;
+      lastFocus.current = focus;
+      setPage(0);
+      if (timelineRef.current) timelineRef.current.scrollTop = 0;
+      return;
+    }
+    if (lastFocus.current === focus) return;
+    lastFocus.current = focus;
+    setPage(Math.max(0, Math.floor(focus / PAGE_SIZE)));
+  }, [focus, openCount, timelineRef]);
   const first = Math.min(page, Math.max(0, pageCount - 1)) * PAGE_SIZE;
   const shown = seq.slice(first, first + PAGE_SIZE);
-  const turnPage = (by: number) => {
-    setPage(first / PAGE_SIZE + by);
+  const goToPage = (p: number) => {
+    setPage(p);
     // Start the new page at its first pose. Only the desktop panel scrolls on its own.
     if (timelineRef.current) timelineRef.current.scrollTop = 0;
   };
+  const turnPage = (by: number) => goToPage(first / PAGE_SIZE + by);
 
   return (
-    <main className="layout">
+    <main className={current ? 'layout' : 'layout empty'}>
       <section className="builder">
         {banner}
 
@@ -134,23 +184,6 @@ export function Builder({
               })}
         </div>
 
-        {!current && (
-          <>
-            <h2 className="samples-title">Or start from a sample class</h2>
-            <div className="tiles samples">
-              {SAMPLE_FLOWS.map((f) => (
-                <button key={f.id} className="tile sample" onClick={() => onOpenSample(f)}>
-                  <span className="tile-label">{f.name}</span>
-                  <span className="tile-desc">{f.description}</span>
-                  <span className="tile-to">
-                    {f.seq.length} poses · {formatDuration(totalSeconds(f.seq))} of holds
-                  </span>
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-
         {/* Below the tiles, so it coming and going never moves them. */}
         {range && mirrorSide && (
           <button className="mirror" onClick={() => set(mirror)}>
@@ -166,7 +199,12 @@ export function Builder({
 
       <aside className="timeline" ref={timelineRef}>
         <div className="timeline-head">
-          <h2>Sequence</h2>
+          <h2>{seq.length ? 'Sequence' : 'Get started'}</h2>
+          {first > 0 && (
+            <button className="link-btn to-first" onClick={() => goToPage(0)}>
+              ↑ Back to first page
+            </button>
+          )}
           {seq.length > 0 && (
             <span className="meta">
               {seq.length} {seq.length === 1 ? 'pose' : 'poses'} · {formatDuration(totalSeconds(seq))}
@@ -174,7 +212,13 @@ export function Builder({
           )}
         </div>
         {seq.length === 0 ? (
-          <p className="hint">Your flow will build up here.</p>
+          <GetStarted
+            recent={recent}
+            onPlaySample={onPlaySample}
+            onOpenSample={onOpenSample}
+            onOpenSaved={onOpenSaved}
+            onSeeAll={onSeeAll}
+          />
         ) : (
           <ol start={first + 1}>
             {shown.map((s, j) => {

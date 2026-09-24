@@ -28,6 +28,16 @@ export interface PlayerSettings {
 const synth = typeof window !== 'undefined' && 'speechSynthesis' in window ? window.speechSynthesis : null;
 export const canSpeak = synth !== null;
 
+/**
+ * Lets sound and speech start a moment later, outside the click itself. Call it
+ * from a click that will start playback on the next render: some browsers (iOS
+ * Safari especially) only allow audio that begins inside a user gesture.
+ */
+export function unlockPlayback() {
+  unlockAudio();
+  synth?.speak(new SpeechSynthesisUtterance(''));
+}
+
 /** A generous guess at how long text takes to say, for when the browser never reports it finished. */
 const estimateMs = (text: string) => (text.split(/\s+/).length / 2.5) * 1000;
 
