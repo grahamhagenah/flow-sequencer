@@ -51,6 +51,7 @@ export function SinglePoseView({
           <h2 className="single-name">
             {pose.name}
             {pose.sided && !(via && namesSide(via.label)) && <span className="side">{sideLabel(step.side)}</span>}
+            {index === seq.length - 1 && <span className="last-tag">Last pose</span>}
           </h2>
           {/* Shown here even while SHOW_SANSKRIT keeps it out of the rows and the player. */}
           {pose.sanskrit && <span className="single-sanskrit">{pose.sanskrit}</span>}

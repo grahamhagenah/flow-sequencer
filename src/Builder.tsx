@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Composer, FirstPoseChoices, InsertChoices } from './Composer';
 import { getPose } from './data/graph';
+import { FIRST_POSE } from './data/poses';
 import type { SampleFlow } from './data/samples';
 import type { Transition } from './data/types';
 import { GetStarted } from './GetStarted';
@@ -41,7 +42,8 @@ const saveLayout = (layout: Layout) => {
 /**
  * The sequencer: the list of poses with the choices of what comes next under the
  * newest one, and the player below. While the flow is empty it shows the start
- * page instead, or (once asked) the first poses to choose from.
+ * page instead; building from scratch starts at Easy Seat, and removing it offers
+ * the other first poses.
  */
 
 export function Builder({
@@ -308,6 +310,7 @@ export function Builder({
             onBuild={() => {
               setChoosing(true);
               setLayout('list');
+              set(start(FIRST_POSE));
             }}
             recent={recent}
             resume={resume}

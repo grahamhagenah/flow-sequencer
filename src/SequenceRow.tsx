@@ -60,7 +60,7 @@ export function SequenceRow({
       <PoseFigure poseId={step.poseId} side={step.side} size={36} />
       {/* Jumps playback here, paused, so the class can pick up from this pose. */}
       <button className="row-main" onClick={onJump} title="Jump here (paused)">
-        <RowText step={step} index={index} />
+        <RowText step={step} index={index} last={isNewest} />
       </button>
       {/* The newest pose's breaths are edited in the Next heading; during a class, the
           pose it's on can be changed here. Both are hidden on phones. */}
@@ -84,11 +84,12 @@ export function SequenceRow({
 }
 
 /**
- * A row's lines: the move that led here, the pose, and (if shown) its Sanskrit name.
+ * A row's lines: the move that led here, the pose (tagged on the flow's last one), and
+ * (if shown) its Sanskrit name.
  * A line with nothing to show keeps its space (a no-break space), so every row
  * is the same height.
  */
-function RowText({ step, index }: { step: Step; index: number }) {
+function RowText({ step, index, last }: { step: Step; index: number; last: boolean }) {
   const p = getPose(step.poseId);
   const via = step.via === undefined ? undefined : TRANSITION_BY_ID.get(step.via);
   const move = via ? renderLabel(via.label, step.side) : '';
@@ -101,6 +102,7 @@ function RowText({ step, index }: { step: Step; index: number }) {
       <span className="row-name">
         {p.name}
         {p.sided && !(via && namesSide(via.label)) && <span className="side">{sideLabel(step.side)}</span>}
+        {last && <span className="last-tag">Last pose</span>}
       </span>
       {SHOW_SANSKRIT && <span className="row-sanskrit">{p.sanskrit ?? '\u00a0'}</span>}
     </>

@@ -1,23 +1,24 @@
 // Simple line drawings of each pose, drawn for this app (no outside artwork, so no
 // licence to follow). Each is a round head plus one path of strokes on a 48×48
-// grid, standing on a faint floor line at y 45. Side views face left; PoseFigure
-// mirrors the one-sided poses for the left side. poseArt.test.ts checks every
-// pose has one.
+// grid, standing on a faint floor line at y 45 (or, seen from above, on a faint mat).
+// Side views face left; PoseFigure mirrors the one-sided poses for the left side.
+// poseArt.test.ts checks every pose has one.
 
 export interface PoseArt {
   /** Centre of the head. */
   head: [number, number];
   /** The body, limbs and all, as stroked lines. */
   d: string;
-  /** Seen from above (a lying twist), so no floor line. */
-  noFloor?: boolean;
+  /** Seen from above (a lying twist): drawn on the whole mat rather than its edge. */
+  topView?: boolean;
 }
 
 export const POSE_ART: Record<string, PoseArt> = {
   // Lying on the back
   savasana: { head: [8, 39.5], d: 'M12 40.5h17M29 40.5l15-1.8M29 40.5l15 1.8M13.5 41l10 2.5' },
   'knees-to-chest': { head: [8, 39.5], d: 'M12 40.5h12M24 40.5 17 30h10M14 40l4-9' },
-  'supine-twist': { head: [8, 39.5], d: 'M12 40.5h14M26 40.5l7-5 8 7M14 40l-4-11' },
+  // Seen from above: arms wide in a T past the mat's edges, both knees dropped to one side.
+  'supine-twist': { head: [8, 24], d: 'M12 24h17M15.5 11v26M29 24l3 11h9', topView: true },
   'happy-baby': { head: [8, 39.5], d: 'M12 40.5h12M24 40.5 17 31V19M14 40l3-20' },
   bridge: { head: [9, 40.5], d: 'M13 42l13-10 8-2 3 13M14 43.5h12' },
   wheel: { head: [15, 35.5], d: 'M11 32Q16 18 24 17t10 9l4 17M11 32 8 43' },
@@ -36,7 +37,8 @@ export const POSE_ART: Record<string, PoseArt> = {
   table: { head: [8, 25], d: 'M12 28h20M12 28v15M32 28v15h12' },
   cat: { head: [9, 34], d: 'M12 30Q22 18 32 30M12 30v13M32 30v13h12' },
   cow: { head: [8, 23], d: 'M12 28Q22 36 32 28M12 28v15M32 28v15h12' },
-  child: { head: [15.5, 40], d: 'M26 43h15M26 43l10-8M36 35Q31 29 20 37M20 38.5 6 43' },
+  // Hips back on the heels, the back rounded over the thighs, arms long on the floor, forehead down.
+  child: { head: [11.5, 38.8], d: 'M24 43h16M24 43l14-6.5M38 36.5C37 28.5 26 25.5 18 35.5M18 35.5l-3 7.7H4' },
   thunderbolt: { head: [30, 15], d: 'M30 20v18M30 38l-16 4h18M30 23l-8 14' },
   camel: { head: [26.5, 15.5], d: 'M16 43V27M16 43h16M16 27q-2-10 6-13M21 15l10 27' },
   'thread-needle': { head: [11, 40.5], d: 'M32 28 15 38M32 28v15h12M19 36l1 7M15 39l15 4' },
@@ -62,7 +64,8 @@ export const POSE_ART: Record<string, PoseArt> = {
   // Standing
   mountain: { head: [24, 7], d: 'M24 12v15M24 27l-2.5 16M24 27l2.5 16M24 14l-4 13M24 14l4 13' },
   'upward-salute': { head: [24, 9], d: 'M24 14v14M24 28l-2.5 15M24 28l2.5 15M24 15 18 4M24 15l6-11' },
-  'forward-fold': { head: [21.5, 39.5], d: 'M28 22v21M28 22q-8 0-7 14M22 36l3 7' },
+  // Hips high over the feet, the back folded over, head hanging, hands down to the floor.
+  'forward-fold': { head: [19, 35.5], d: 'M30 19.5 28 43M30 19.5C22 17 17 22 19.5 30M21.5 30 26 43' },
   'halfway-lift': { head: [10, 25.5], d: 'M30 24v19M30 24l-16 1M16 25l6 11' },
   chair: { head: [21, 9.5], d: 'M20 43l-4-11 12-2M28 30l-6-16M23 16 14 5' },
   'twisted-chair': { head: [21, 10.5], d: 'M20 43l-4-11 12-2M28 30l-6-15M14 10l16 12' },

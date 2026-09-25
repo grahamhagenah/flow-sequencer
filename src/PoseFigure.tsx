@@ -25,7 +25,12 @@ export function PoseFigure({ poseId, side, size = 40 }: { poseId: string; side?:
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      {!art.noFloor && <path d="M4 45h40" strokeWidth={1.4} opacity={0.35} />}
+      {/* The mat: its edge in a side view, the whole of it from above. */}
+      {art.topView ? (
+        <rect x={2} y={14} width={44} height={20} rx={2} strokeWidth={1.4} opacity={0.35} />
+      ) : (
+        <path d="M4 45h40" strokeWidth={1.4} opacity={0.35} />
+      )}
       <g transform={mirrored ? 'matrix(-1 0 0 1 48 0)' : undefined}>
         <path d={art.d} />
         <circle cx={art.head[0]} cy={art.head[1]} r={3.3} fill="currentColor" stroke="none" />

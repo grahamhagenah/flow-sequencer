@@ -7,8 +7,8 @@ import { aboutMinutes, classMs } from './player/conductor';
 import { loadSettings } from './player/usePlayer';
 
 const SAMPLE_GROUPS = [
-  { title: 'Ready-made classes', peak: false },
-  { title: 'Peak pose classes', peak: true },
+  { title: 'Ready-made flows', peak: false },
+  { title: 'Peak pose flows', peak: true },
 ];
 
 /** How long a flow runs with the player's saved settings, voice included. */

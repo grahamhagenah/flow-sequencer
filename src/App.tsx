@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Builder, type Layout, type OpenLayout } from './Builder';
+import { FIRST_POSE } from './data/poses';
 import type { SampleFlow } from './data/samples';
 import { Dialog, type DialogSpec } from './Dialog';
 import { unlockPlayback } from './player/conductor';
@@ -8,7 +9,7 @@ import { ArrowLeftIcon, CheckIcon, FlowsIcon, LinkIcon, NewFlowIcon, PencilIcon,
 import { Logo } from './Logo';
 import { deleteFlow, listFlows, loadDraft, loadResume, newId, putFlow, type SavedFlow, saveDraft, saveResume } from './library';
 import { decodeSteps, encodeSteps, fromHash, shareUrl, toHash } from './link';
-import type { Sequence } from './sequence';
+import { type Sequence, start } from './sequence';
 import { useHistory } from './useHistory';
 import { useLongPressTips } from './useLongPressTips';
 
@@ -23,6 +24,7 @@ interface Opened {
 }
 
 const EMPTY: Opened = { id: null, name: '', seq: [], notice: null };
+const FRESH_STEPS = encodeSteps(start(FIRST_POSE));
 
 const droppedNotice = (dropped: number) =>
   dropped > 0
@@ -90,7 +92,9 @@ export function App() {
 
   const steps = encodeSteps(seq);
   const saved = id ? flows.find((f) => f.id === id) : undefined;
-  const dirty = saved ? saved.steps !== steps || saved.name !== name.trim() : seq.length > 0;
+  // A flow started from scratch and not yet touched: just its pre-chosen first pose.
+  const untouched = !id && !name.trim() && steps === FRESH_STEPS;
+  const dirty = saved ? saved.steps !== steps || saved.name !== name.trim() : seq.length > 0 && !untouched;
 
   // Keep the draft and the address bar in step with the flow, so a reload or a
   // bookmark always lands back here.
@@ -214,6 +218,10 @@ export function App() {
   const goHome = () => {
     if (view === 'flows') return setView('builder');
     if (seq.length === 0) return setChoosing(false);
+    if (untouched) {
+      forgetResume();
+      return open(EMPTY);
+    }
     guardUnsaved('Go to the start page?', 'Save and leave', ({ discarded, savedId }) => {
       if (discarded) forgetResume();
       else {

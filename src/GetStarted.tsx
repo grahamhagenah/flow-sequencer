@@ -16,7 +16,7 @@ const length = (seq: Parameters<typeof classMs>[0]) => {
   return classMs(seq, secondsPerBreath, chime);
 };
 
-/** What the sequence panel shows while the flow is empty: recent flows and classes to try. */
+/** What the sequence panel shows while the flow is empty: recent flows and ready-made ones to try. */
 export function GetStarted({
   onBuild,
   recent,
@@ -76,7 +76,7 @@ export function GetStarted({
 
       <section>
         <div className="gs-head">
-          <h3>Ready-made classes</h3>
+          <h3>Ready-made flows</h3>
         </div>
         <SampleList
           flows={rest.filter((f) => !f.peak)}
@@ -87,7 +87,7 @@ export function GetStarted({
 
       <section>
         <div className="gs-head">
-          <h3>Peak pose classes</h3>
+          <h3>Peak pose flows</h3>
         </div>
         <SampleList
           flows={rest.filter((f) => f.peak)}
@@ -172,7 +172,7 @@ function FeaturedClass({
   const fit = useFitCount(strip, STRIP_ITEM, STRIP_GAP, 8);
   return (
     <section className="featured" style={{ '--tone': color } as CSSProperties}>
-      <span className="featured-kicker">Featured class</span>
+      <span className="featured-kicker">A flow to try</span>
       <h3 className="featured-title">
         <span className="sample-icon">{icon}</span>
         {title}
@@ -191,7 +191,7 @@ function FeaturedClass({
       </div>
       <div className="sample-actions featured-actions">
         <button className="gs-play" onClick={() => onPlaySample(flow)} aria-label={`Play ${flow.name}`}>
-          <PlayIcon /> Play class
+          <PlayIcon /> Play flow
         </button>
         <button onClick={() => onOpenSample(flow)} aria-label={`Open ${flow.name}`}>
           Open

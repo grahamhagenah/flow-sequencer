@@ -101,5 +101,8 @@ export const POSES: Pose[] = [
 /** Poses offered when a sequence is empty. */
 export const START_POSES = ['savasana', 'easy-seat', 'child', 'table', 'down-dog', 'mountain'];
 
+/** Where a flow built from scratch begins, already chosen (removing it offers the others). */
+export const FIRST_POSE = 'easy-seat';
+
 /** Whether pose names show their Sanskrit too (in the rows, the player and the first-pose choices). Off for now; the single-pose view always shows it. */
 export const SHOW_SANSKRIT = false;
