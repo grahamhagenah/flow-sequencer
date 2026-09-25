@@ -1,7 +1,7 @@
 import { type CSSProperties, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { applySide, getPose, otherSide, outgoing, renderLabel, routesFrom, sideLabel, TRANSITION_BY_ID } from './data/graph';
 import { POSES, START_POSES } from './data/poses';
-import type { Base, Transition } from './data/types';
+import type { Base, Side, Transition } from './data/types';
 import type { SampleFlow } from './data/samples';
 import { GetStarted, HowItWorks } from './GetStarted';
 import { PoseFigure } from './PoseFigure';
@@ -119,11 +119,11 @@ export function Builder({
     return (
       <>
         <span className="via" title={move || undefined}>
-          {move || '\u00a0'}
+          {via ? <MoveLabel label={via.label} side={s.side} /> : '\u00a0'}
         </span>
         <span className="row-name">
           {p.name}
-          {p.sided && <span className="side">{sideLabel(s.side)}</span>}
+          {p.sided && !(via && namesSide(via.label)) && <span className="side">{sideLabel(s.side)}</span>}
         </span>
         <span className="row-sanskrit">{p.sanskrit ?? '\u00a0'}</span>
       </>
@@ -349,10 +349,12 @@ export function Builder({
                   >
                     <PoseFigure poseId={o.move.to} side={side} />
                     <span className="tile-text">
-                      <span className="tile-label">{renderLabel(o.move.label, side)}</span>
+                      <span className="tile-label">
+                        <MoveLabel label={o.move.label} side={side} />
+                      </span>
                       <span className="tile-to">
                         {to.name}
-                        {to.sided && ` · ${sideLabel(side)}`}
+                        {to.sided && !namesSide(o.move.label) && ` · ${sideLabel(side)}`}
                       </span>
                     </span>
                   </button>
@@ -371,10 +373,12 @@ export function Builder({
                   >
                     <PoseFigure poseId={t.to} side={side} />
                     <span className="tile-text">
-                      <span className="tile-label">{renderLabel(t.label, side)}</span>
+                      <span className="tile-label">
+                        <MoveLabel label={t.label} side={side} />
+                      </span>
                       <span className="tile-to">
                         {to.name}
-                        {to.sided && ` · ${sideLabel(side)}`}
+                        {to.sided && !namesSide(t.label) && ` · ${sideLabel(side)}`}
                       </span>
                     </span>
                   </button>
@@ -522,11 +526,12 @@ export function Builder({
                   </button>
                   {/* The newest pose's breaths are edited in the Next heading; during a class, the
                       pose it's on can be changed here. */}
-                  {playing ? (
-                    <Stepper value={s.breaths} onChange={(n) => set((q) => setBreaths(q, i, n))} />
-                  ) : (
-                    <span className="row-breaths">{s.breaths === 1 ? '1 breath' : `${s.breaths} breaths`}</span>
-                  )}
+                  {/* On phones the playing row shows its breaths as plain text too (the stepper is
+                      hidden there in the CSS). */}
+                  {playing && <Stepper value={s.breaths} onChange={(n) => set((q) => setBreaths(q, i, n))} />}
+                  <span className={playing ? 'row-breaths phone-only' : 'row-breaths'}>
+                    {s.breaths === 1 ? '1 breath' : `${s.breaths} breaths`}
+                  </span>
                   <button
                     className="row-more"
                     aria-label={`Edit pose ${i + 1}`}
@@ -671,6 +676,30 @@ export function pagesToShow(count: number, current: number): (number | null)[] {
   const middle = [current - 1, current, current + 1].map((p) => Math.min(count - 2, Math.max(1, p)));
   const pages = [...new Set([0, ...middle, count - 1])];
   return pages.flatMap((p, i) => (i > 0 && p - pages[i - 1] > 1 ? [null, p] : [p]));
+}
+
+/** Whether a move's label says which side the pose it leads to is on ({side} / {Side}). */
+const namesSide = (label: string) => /\{[sS]ide\}/.test(label);
+
+/**
+ * A move's label with the pose's side picked out, e.g. "Drop knees to the *right*",
+ * so it can stand in for a separate Right/Left tag. ({other} is the opposite limb or
+ * direction, not the pose's side, so it stays plain.)
+ */
+function MoveLabel({ label, side }: { label: string; side: Side }) {
+  return (
+    <>
+      {label.split(/(\{[sS]ide\})/).map((part, k) =>
+        namesSide(part) ? (
+          <span key={k} className="side-word">
+            {renderLabel(part, side)}
+          </span>
+        ) : (
+          renderLabel(part, side)
+        ),
+      )}
+    </>
+  );
 }
 
 /** An unsided pose whose next moves include a sided one, so the side is still open. */

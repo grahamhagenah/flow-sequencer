@@ -8,8 +8,10 @@
   --rule: color-mix(in srgb, var(--border) 55%, var(--bg));
   --text: #e6e8eb;
   --muted: #9aa1ab;
-  --accent: #8fb8a8;
-  --accent-bg: #15221d;
+  /* Warm apricot, like early sun. */
+  --accent: #f2b27a;
+  --accent-bg: #261b12;
+  --danger: #f08a8a;
   color-scheme: dark;
 }
 
@@ -39,8 +41,8 @@ button {
 button:hover:not(:disabled) { border-color: var(--muted); }
 button:disabled { opacity: 0.4; cursor: default; }
 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-button.primary { background: var(--accent); border-color: var(--accent); color: #0f1714; font-weight: 600; }
-button.primary:hover:not(:disabled) { background: #a3c8b9; border-color: #a3c8b9; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #1f1409; font-weight: 600; }
+button.primary:hover:not(:disabled) { background: #f6c597; border-color: #f6c597; }
 
 select {
   font: inherit;
@@ -179,8 +181,8 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 .dialog-actions .aside:hover:not(:disabled) { background: var(--surface-2); border-color: transparent; }
 .dialog-actions .cancel { order: 1; }
 .dialog-actions .main { order: 2; }
-button.danger { color: #e8a598; }
-button.danger:hover:not(:disabled) { border-color: #e8a598; }
+button.danger { color: var(--danger); }
+button.danger:hover:not(:disabled) { border-color: var(--danger); }
 
 .notice {
   display: flex;
@@ -215,7 +217,7 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 /* Quiet text buttons: no border until hovered, Delete only turns red on hover. */
 .flow-actions button { font-size: 13px; padding: 4px 8px; background: none; border-color: transparent; color: var(--muted); }
 .flow-actions button:hover:not(:disabled) { background: var(--surface-2); border-color: transparent; color: var(--text); }
-.flow-actions .delete:hover:not(:disabled) { color: #e8a598; }
+.flow-actions .delete:hover:not(:disabled) { color: var(--danger); }
 .new-flow { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; font-size: 13px; background: none; color: var(--muted); }
 .new-flow:hover:not(:disabled) { color: var(--text); }
 
@@ -507,6 +509,8 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .via { font-size: 12px; color: var(--muted); }
 .row .via { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .row-name .side { font-size: 11px; }
+/* The side named in a move's words, in place of a Right/Left tag. */
+.side-word { color: var(--accent); font-weight: 600; }
 
 /* The ⋯ on each row: hidden until the row is hovered (always faintly there on touch),
    but it keeps its space, so nothing moves when it shows. */
@@ -582,6 +586,7 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .stepper .count { min-width: 22px; white-space: nowrap; text-align: center; font-variant-numeric: tabular-nums; color: var(--text); font-size: 15px; }
 .stepper .unit { color: var(--muted); font-size: 13px; }
 .row-breaths { flex: none; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.row-breaths.phone-only { display: none; }
 
 .play-dock {
   padding: 14px;
@@ -671,6 +676,9 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   /* No row numbers on phones (the playing row keeps its green edge), so the pose
      drawings can be bigger. */
   .row .num { display: none; }
+  /* The playing row shows its breaths, not the − + stepper. */
+  .row .stepper { display: none; }
+  .row-breaths.phone-only { display: inline; }
   .row .pose-figure { width: 40px; height: 40px; margin-left: 0; }
   /* Phones stack the sequence first, then the tiles to add to it below. */
   .timeline { overflow: visible; border-right: none; border-bottom: 1px solid var(--border); padding: 0 16px 16px; }
@@ -681,7 +689,7 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
    (Last in the file, so it beats the 760px rules.) */
 @container builder (max-width: 470px) {
   .tiles, .route { grid-template-columns: 1fr 1fr; }
-  .tile { flex-direction: column; align-items: flex-start; gap: 6px; height: 148px; }
+  .tile { flex-direction: column; align-items: flex-start; gap: 6px; height: 160px; }
   .tile-text { align-self: stretch; }
   /* The breaths and side controls get their own line under the heading: breaths (and
      Default) on the left, the − nudged so its glyph lines up with the heading; the side
@@ -690,7 +698,7 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   .next-controls .leading { margin-left: auto; }
   .next-controls .stepper { margin-left: -6px; }
   .tile-label { font-size: 14px; }
-  .tile .pose-figure { width: 32px; height: 32px; }
+  .tile .pose-figure { width: 44px; height: 44px; margin-left: -4px; }
 }
 
 /* Phones: text a step larger throughout, where there's room for it. The tiles keep

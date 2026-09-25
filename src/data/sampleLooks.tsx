@@ -79,6 +79,6 @@ const LOOKS: Record<string, SampleLook> = {
   'dancer-peak': { icon: <PersonBalancing />, color: '#f08fc0' },
 };
 
-const FALLBACK: SampleLook = { icon: <Sun />, color: '#8fb8a8' };
+const FALLBACK: SampleLook = { icon: <Sun />, color: '#f2b27a' };
 
 export const sampleLook = (id: string): SampleLook => LOOKS[id] ?? FALLBACK;
