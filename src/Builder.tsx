@@ -4,7 +4,6 @@ import { POSES, START_POSES } from './data/poses';
 import type { Base, Transition } from './data/types';
 import type { SampleFlow } from './data/samples';
 import { GetStarted, HowItWorks } from './GetStarted';
-import { PauseIcon, PlayIcon } from './icons';
 import { PoseFigure } from './PoseFigure';
 import type { SavedFlow } from './library';
 import { PlaybackDock } from './player/PlaybackDock';
@@ -515,11 +514,7 @@ export function Builder({
                     player.goTo(i);
                   }}
                 >
-                  {/* The pose the player is on shows play or pause in place of its number, in a small
-                      round badge (bare pause bars read as "11"). */}
-                  <span className="num" aria-label={playing ? `${i + 1}, ${player.state.playing ? 'playing' : 'paused'}` : undefined}>
-                    {playing ? <span className="now">{player.state.playing ? <PlayIcon /> : <PauseIcon />}</span> : i + 1}
-                  </span>
+                  <span className="num">{i + 1}</span>
                   <PoseFigure poseId={s.poseId} side={s.side} size={30} />
                   {/* Jumps playback here, paused, so the class can pick up from this pose. */}
                   <button className="row-main" onClick={() => player.goTo(i)} title="Jump here (paused)">

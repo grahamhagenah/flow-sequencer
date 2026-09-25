@@ -1,14 +1,15 @@
 :root {
-  --bg: #121417;
-  --surface: #1b1e23;
-  --surface-2: #23272e;
-  --border: #2f343c;
+  /* Near-black page; tiles, the player and controls a step or two lighter. */
+  --bg: #08090b;
+  --surface: #131519;
+  --surface-2: #1c1f24;
+  --border: #2a2e35;
   /* Dividers between list items and under headings: softer than --border, which edges panels. */
   --rule: color-mix(in srgb, var(--border) 55%, var(--bg));
   --text: #e6e8eb;
   --muted: #9aa1ab;
   --accent: #8fb8a8;
-  --accent-bg: #1f2e29;
+  --accent-bg: #15221d;
   color-scheme: dark;
 }
 
@@ -491,16 +492,6 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   transition: --progress 250ms linear;
 }
 .row.playing .row-name { color: var(--accent); }
-.row.playing .num { display: flex; justify-content: flex-end; color: var(--accent); }
-.row.playing .num .now {
-  display: inline-grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--accent) 22%, transparent);
-}
-.row.playing .num svg { width: 12px; height: 12px; }
 .num { width: 22px; flex: none; color: var(--muted); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
 .row-main {
   flex: 1;
@@ -677,9 +668,9 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   .flow { flex-wrap: wrap; row-gap: 6px; }
   .flow-actions { width: 100%; }
   .tile { padding: 10px; }
-  /* No row numbers or play/pause badge on phones (the playing row keeps its green edge),
-     so the pose drawings can be bigger. */
-  .row .num, .row.playing .num { display: none; }
+  /* No row numbers on phones (the playing row keeps its green edge), so the pose
+     drawings can be bigger. */
+  .row .num { display: none; }
   .row .pose-figure { width: 40px; height: 40px; margin-left: 0; }
   /* Phones stack the sequence first, then the tiles to add to it below. */
   .timeline { overflow: visible; border-right: none; border-bottom: 1px solid var(--border); padding: 0 16px 16px; }
