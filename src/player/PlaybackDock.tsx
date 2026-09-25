@@ -64,6 +64,8 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
           {pose.name}
           {pose.sided && <span className="side">{sideLabel(step.side)}</span>}
         </span>
+        {/* Shown here even on phones, where the sequence rows leave it out. */}
+        {pose.sanskrit && <span className="play-sanskrit">{pose.sanskrit}</span>}
       </div>
       <p className="play-cue">{pose.cue}</p>
       <p className="play-next">

@@ -600,6 +600,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .play-progress div { height: 100%; background: var(--accent); transition: width 250ms linear; }
 
 .play-pose { margin-top: 6px; }
+.play-sanskrit { display: block; margin-top: 1px; font-size: 13px; font-style: italic; color: var(--muted); }
 .play-pose-name { font-size: 17px; font-weight: 600; }
 .play-pose-step { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* Two lines kept for the cue whatever its length, so the dock never changes height. */
@@ -689,7 +690,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
    (Last in the file, so it beats the 760px rules.) */
 @container builder (max-width: 470px) {
   .tiles, .route { grid-template-columns: 1fr 1fr; }
-  .tile { flex-direction: column; align-items: flex-start; gap: 6px; height: 160px; }
+  .tile { flex-direction: column; align-items: flex-start; gap: 6px; height: 172px; }
   .tile-text { align-self: stretch; }
   /* The breaths and side controls get their own line under the heading: breaths (and
      Default) on the left, the − nudged so its glyph lines up with the heading; the side
@@ -698,7 +699,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .next-controls .leading { margin-left: auto; }
   .next-controls .stepper { margin-left: -6px; }
   .tile-label { font-size: 14px; }
-  .tile .pose-figure { width: 44px; height: 44px; margin-left: -4px; }
+  .tile .pose-figure { width: 60px; height: 60px; margin: -4px 0 -2px -6px; }
 }
 
 /* Phones: text a step larger throughout, where there's room for it. The tiles keep
@@ -711,7 +712,11 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .timeline-head .meta, .next-from { font-size: 14px; }
   .pager, .pager button { font-size: 14px; }
   .pager button { min-width: 28px; height: 28px; }
-  .via, .row-sanskrit { font-size: 13px; }
+  .via { font-size: 13px; }
+  /* Rows leave out the Sanskrit name on phones; the player shows it for the current pose. */
+  .row-sanskrit { display: none; }
+  .row { min-height: 60px; }
+  .play-sanskrit { font-size: 14px; }
   .row-breaths { font-size: 14px; }
   .row-name .side { font-size: 12px; }
   .row-menu button { font-size: 16px; padding: 10px 12px; }
@@ -732,4 +737,14 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .play-settings, .play-settings select { font-size: 14px; }
 
   .flows .hint, .flow-meta, .flow-desc, .flow-actions button { font-size: 14px; }
+
+  /* Under "Choose the next pose": thumb-sized − + and Right/Left. */
+  .next-head { margin-bottom: 14px; }
+  .next-controls { gap: 16px; }
+  .next-controls .stepper { gap: 6px; margin-left: 0; }
+  .next-controls .stepper button { width: 44px; height: 44px; font-size: 22px; background: var(--surface); }
+  .next-controls .stepper .count { font-size: 17px; }
+  .next-controls .stepper .unit { font-size: 15px; }
+  .leading { gap: 8px; }
+  .leading button { min-height: 44px; padding: 0 18px; font-size: 15px; }
 }
