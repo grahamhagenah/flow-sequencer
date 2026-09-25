@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { breathCue } from './chime';
+import { breathCue, chime } from './chime';
 
 vi.mock('./chime', async (load) => ({
   ...(await load<typeof import('./chime')>()),
@@ -9,7 +9,7 @@ vi.mock('./chime', async (load) => ({
 import { outgoing } from '../data/graph';
 import { advance, type Sequence, setBreaths, start } from '../sequence';
 import { classMs, closingMs, Conductor, type PlayerState, speechMs } from './conductor';
-import { announcement } from './script';
+import { announcement, announcementParts } from './script';
 
 function go(seq: Sequence, to: string): Sequence {
   return advance(seq, outgoing(seq[seq.length - 1].poseId).find((t) => t.to === to)!);
@@ -34,7 +34,7 @@ describe('conductor', () => {
   beforeEach(() => vi.useFakeTimers());
   afterEach(() => vi.useRealTimers());
 
-  const flow = go(setBreaths(start('mountain'), 0, 2), 'upward-salute'); // 2 breaths, then 1
+  const flow = setBreaths(go(setBreaths(start('mountain'), 0, 2), 'upward-salute'), 1, 2); // 2 breaths each
   const setup = () => {
     const states: PlayerState[] = [];
     const c = new Conductor(flow, { secondsPerBreath: 1, chime: true, breathTone: true, voice: null }, (s) => states.push(s));
@@ -103,7 +103,7 @@ describe('conductor', () => {
     expect(breathCue).not.toHaveBeenCalled();
     vi.advanceTimersByTime(1000);
     expect(breathCue).toHaveBeenCalledTimes(1);
-    vi.advanceTimersByTime(1000); // the hold ends; the next pose has 1 breath, so no cue
+    vi.advanceTimersByTime(1000); // the hold ends; the next pose's first breath has no cue
     until('holding');
     vi.advanceTimersByTime(900);
     expect(breathCue).toHaveBeenCalledTimes(1);
@@ -152,5 +152,46 @@ describe('conductor', () => {
     c.prev();
     until('holding');
     expect(last()).toMatchObject({ index: 0, phase: 'holding' });
+  });
+
+  describe('one breath, one movement', () => {
+    // Mountain (2 breaths), then a sweep up to Upward Salute for a single breath.
+    const salute = setBreaths(go(setBreaths(start('mountain'), 0, 2), 'upward-salute'), 1, 1);
+    const at = (secondsPerBreath: number) => {
+      const states: PlayerState[] = [];
+      const c = new Conductor(salute, { secondsPerBreath, chime: true, breathTone: true, voice: null }, (s) => states.push(s));
+      const last = () => states[states.length - 1];
+      c.goTo(1, true);
+      return { c, last };
+    };
+
+    it('says only the movement', () => {
+      expect(announcementParts(salute, 1)).toEqual(['Inhale, sweep arms up.']);
+    });
+
+    it('starts the breath as the movement is said, with no chime', () => {
+      vi.mocked(chime).mockClear();
+      const { last } = at(5);
+      expect(last()).toMatchObject({ index: 1, phase: 'holding', speechTotal: 0 });
+      expect(chime).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(4990);
+      expect(last().index).toBe(1);
+      vi.advanceTimersByTime(20);
+      expect(last().phase).toBe('closing'); // it was the last step
+    });
+
+    it('waits for the voice when the movement takes longer to say than the breath', () => {
+      const { last } = at(1); // a 1s breath, about 1.6s of speech
+      vi.advanceTimersByTime(1100);
+      expect(last()).toMatchObject({ index: 1, phase: 'holding', holdElapsed: 1000 });
+      vi.advanceTimersByTime(600);
+      expect(last().phase).toBe('closing');
+    });
+
+    it('counts a flow step as its breath or its words, whichever is longer', () => {
+      const lead = speechMs(salute, 0, true) + 2 * 5000 + closingMs();
+      expect(classMs(salute, 5, true)).toBe(lead + 5000);
+      expect(classMs(salute, 1, true)).toBe(speechMs(salute, 0, true) + 2000 + speechMs(salute, 1, true) + closingMs());
+    });
   });
 });

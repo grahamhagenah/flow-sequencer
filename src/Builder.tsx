@@ -188,6 +188,12 @@ export function Builder({
 
   // The ⋯ menu on a row: where it opens, and for which step.
   const [menu, setMenu] = useState<{ index: number; anchor: DOMRect } | null>(null);
+  // A newly opened flow starts fresh, not halfway through an insert.
+  useEffect(() => {
+    if (!justOpened) return;
+    setInsertAt(null);
+    setMenu(null);
+  }, [justOpened]);
 
   // Adding a pose always shows it, even mid-class (when the page otherwise follows
   // the playing pose). The newest row is marked in the CSS (.row.current).
@@ -247,8 +253,20 @@ export function Builder({
               {current ? 'Next' : 'Start'}
               {current && (
                 <span className="next-from">
-                  · from {getPose(current.poseId).name}
-                  {getPose(current.poseId).sided && ` (${current.side})`}
+                  · from{' '}
+                  {/* Names the pose by its number, and shows it: a flow opens on its first
+                      page, where the newest pose usually isn't. */}
+                  <button
+                    className="link-btn from-pose"
+                    onClick={() => {
+                      setPage(Math.floor((seq.length - 1) / PAGE_SIZE));
+                      setJustAdded({ index: seq.length - 1 });
+                    }}
+                    title="Show this pose in the sequence"
+                  >
+                    {seq.length} {getPose(current.poseId).name}
+                    {getPose(current.poseId).sided && ` (${current.side})`}
+                  </button>
                 </span>
               )}
             </h2>

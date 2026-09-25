@@ -65,12 +65,17 @@ const sunA = (f: FlowBuilder) =>
     .path(['down-dog', 5], ['forward-fold', 1, 'Jump'], 'halfway-lift', ['forward-fold', 1])
     .path(['upward-salute', 1, 'Rise'], ['mountain', 2]);
 
+// As taught: from each Warrior I, hands down and straight into the vinyasa, with
+// one breath in down dog between and the long hold only at the end.
 const sunB = (f: FlowBuilder) => {
-  f.path(['chair', 3], ['forward-fold', 1], 'halfway-lift', ['chaturanga', 1, 'jump back'], 'up-dog', ['down-dog', 2]);
-  f.lead('right').path(['warrior-1', 3, 'rise to Warrior I'], ['down-dog', 1, 'Hands down']);
-  vinyasa(f);
-  f.lead('left').path(['warrior-1', 3, 'rise to Warrior I'], ['down-dog', 1, 'Hands down']);
-  vinyasa(f);
+  const warrior = (side: 'right' | 'left', dogBreaths: number) =>
+    f
+      .lead(side)
+      .path(['warrior-1', 3, 'rise to Warrior I'], ['plank', 1, 'step back to plank'], 'chaturanga', 'up-dog')
+      .path(['down-dog', dogBreaths]);
+  f.path(['chair', 3], ['forward-fold', 1], 'halfway-lift', ['chaturanga', 1, 'jump back'], 'up-dog', ['down-dog', 1]);
+  warrior('right', 1);
+  warrior('left', 5);
   f.path(['forward-fold', 1, 'Jump'], 'halfway-lift', ['forward-fold', 1], ['chair', 3])
     .path(['mountain', 2, 'Straighten legs, hands']);
 };
@@ -113,7 +118,7 @@ function slowHips() {
   f.lead('right').go('thread-needle', 8).go('table', 2).lead('left').go('thread-needle', 8).go('table', 2);
   f.go('down-dog', 8);
   f.bothSides((f) =>
-    f.path(['three-leg-dog', 2], ['low-lunge', 8, 'lower back knee'], ['half-split', 8], ['low-lunge', 4])
+    f.path(['three-leg-dog', 2], ['low-lunge', 5, 'lower back knee'], ['lizard', 8], ['half-split', 8], ['low-lunge', 4])
       .path(['three-leg-dog', 2, 'Step'], ['pigeon', 15], ['down-dog', 5]),
   );
   f.path(['table', 2, 'Lower knees'], ['easy-seat', 3, 'Swing'], ['bound-angle', 12], ['staff', 2]);
@@ -153,7 +158,8 @@ function powerFlow() {
   f.path(['child', 8], ['table', 2], ['easy-seat', 2, 'Swing'], ['savasana', 2, 'Lower down'], ['bridge', 3, 'Bend']);
   f.path(['wheel', 5], ['knees-to-chest', 3, 'hug'], ['bridge', 2], ['wheel', 5], ['knees-to-chest', 5, 'hug']);
   f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
-  f.path(['knees-to-chest', 3, 'Bring'], ['savasana', 30]);
+  f.path(['knees-to-chest', 3, 'Bring'], ['shoulder-stand', 10], ['plow', 6], ['shoulder-stand', 2], ['fish', 5]);
+  f.path(['savasana', 30]);
   return f.seq;
 }
 
@@ -192,7 +198,7 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
   {
     id: 'slow-hips',
     name: 'Slow Hip Opening · floor',
-    description: 'Long holds low to the ground: lunges, half splits and pigeon on each side.',
+    description: 'Long holds low to the ground: lunge, lizard, half split and pigeon on each side.',
     seq: slowHips(),
   },
   {
@@ -204,7 +210,7 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
   {
     id: 'power-flow',
     name: 'Power Flow · strong',
-    description: 'Sun A and B, warrior III and side plank each side, crow, then deep backbends.',
+    description: 'Sun A and B, warrior III and side plank each side, crow, deep backbends, then shoulder stand.',
     seq: powerFlow(),
   },
   {

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { getPose, sideLabel } from '../data/graph';
 import { BackIcon, ForwardIcon, PauseIcon, PlayIcon, SettingsIcon, StopIcon } from '../icons';
 import { formatDuration, type Sequence } from '../sequence';
-import { canSpeak, classMs, closingMs, speakSample, speechMs } from './conductor';
+import { canSpeak, classMs, closingMs, speakSample, stepMs } from './conductor';
 import { betterVoiceTip } from './voices';
 import { BREATH_CHOICES, type Playback } from './usePlayer';
 
@@ -27,7 +27,7 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
   const totalMs = classMs(seq, settings.secondsPerBreath, settings.chime);
   const stepsBefore = seq
     .slice(0, index)
-    .reduce((sum, s, i) => sum + speechMs(seq, i, settings.chime) + s.breaths * breathMs, 0);
+    .reduce((sum, _, i) => sum + stepMs(seq, i, settings.secondsPerBreath, settings.chime), 0);
   const elapsedMs = !active
     ? 0
     : state.phase === 'done'

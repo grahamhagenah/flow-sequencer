@@ -1,6 +1,6 @@
 import type { Sequence } from '../sequence';
 import { breathCue, chime, CHIME_LEAD_MS, unlockAudio } from './chime';
-import { announcementParts, CLOSING, PHRASE_GAP_MS } from './script';
+import { announcementParts, CLOSING, isFlowStep, PHRASE_GAP_MS } from './script';
 
 // Walks a flow step by step: chime, speak the step's announcement, then hold the pose
 // for its breaths, then move on. Plain timers and the browser's built-in
@@ -55,11 +55,15 @@ const RATE = 0.9;
 /** A realistic guess at how long the voice takes to say text: about 150 words a minute at RATE. */
 const sayMs = (text: string) => (words(text) / 2.5) * 1000;
 
-/** Expected time for step i's chime and spoken announcement, pauses included, before its hold begins. */
+/**
+ * Expected time for step i's chime and spoken announcement, pauses included. It
+ * comes before the hold, except on a one-breath flow step, where it's said
+ * during the breath (and there's no chime).
+ */
 export function speechMs(seq: Sequence, i: number, chimeOn: boolean): number {
   const parts = announcementParts(seq, i);
   return (
-    (chimeOn ? CHIME_LEAD_MS : 0) +
+    (chimeOn && !isFlowStep(seq, i) ? CHIME_LEAD_MS : 0) +
     parts.reduce((sum, p) => sum + sayMs(p), 0) +
     (parts.length - 1) * PHRASE_GAP_MS
   );
@@ -78,11 +82,17 @@ export function speakSample(voice: SpeechSynthesisVoice | null) {
   synth.speak(u);
 }
 
+/** Expected time for step i: its announcement then its hold, or on a flow step whichever is longer. */
+export function stepMs(seq: Sequence, i: number, secondsPerBreath: number, chimeOn: boolean): number {
+  const speech = speechMs(seq, i, chimeOn);
+  const hold = seq[i].breaths * secondsPerBreath * 1000;
+  return isFlowStep(seq, i) ? Math.max(speech, hold) : speech + hold;
+}
+
 /** Expected length of a whole class: every step's announcement and hold, then the closing words. */
 export function classMs(seq: Sequence, secondsPerBreath: number, chimeOn: boolean): number {
   if (seq.length === 0) return 0;
-  const steps = seq.reduce((sum, s, i) => sum + speechMs(seq, i, chimeOn) + s.breaths * secondsPerBreath * 1000, 0);
-  return steps + closingMs();
+  return seq.reduce((sum, _, i) => sum + stepMs(seq, i, secondsPerBreath, chimeOn), 0) + closingMs();
 }
 
 /** A class length for lists and headings: "about 27 min". */
@@ -109,6 +119,13 @@ export class Conductor {
   private ticker: ReturnType<typeof setInterval> | undefined;
   private holdStartedAt = 0;
   private speechStartedAt = 0;
+  /**
+   * On a flow step the movement is spoken during the breath: the step moves on
+   * once both are over. Set while that speech is still going, and once the
+   * breath has run out before it.
+   */
+  private awaitingSpeech = false;
+  private holdOver = false;
   /** Utterances being spoken. Chrome drops onend if one is garbage collected, so hold on to them. */
   private live = new Set<SpeechSynthesisUtterance>();
 
@@ -145,6 +162,8 @@ export class Conductor {
     if (holdTotal === this.state.holdTotal) return;
     if (this.state.phase === 'holding' && this.state.playing) {
       const spent = Math.min(holdTotal, performance.now() - this.holdStartedAt);
+      // The timers dropped below include a flow step's speech; let it finish without waiting on it.
+      this.awaitingSpeech = false;
       // Drop the old hold's timers (end, breath tones, ticker) and start them afresh.
       this.token++;
       this.timers.forEach(clearTimeout);
@@ -221,6 +240,17 @@ export class Conductor {
   }
 
   private announce(index: number) {
+    if (isFlowStep(this.seq, index)) {
+      // Speak the movement and start the breath together.
+      this.update({ phase: 'holding', holdElapsed: 0, holdTotal: this.holdMs(index), speechElapsed: 0, speechTotal: 0 });
+      this.awaitingSpeech = true;
+      this.holdOver = false;
+      this.speakParts(announcementParts(this.seq, index), () => {
+        this.awaitingSpeech = false;
+        if (this.holdOver) this.moveOn();
+      });
+      return this.hold();
+    }
     const speechTotal = speechMs(this.seq, index, this.settings.chime);
     this.speechStartedAt = performance.now();
     this.update({ phase: 'speaking', holdElapsed: 0, holdTotal: this.holdMs(index), speechElapsed: 0, speechTotal });
@@ -253,9 +283,15 @@ export class Conductor {
     this.ticker = setInterval(() => this.update({ holdElapsed: this.elapsed() }), 250);
     this.later(remaining, () => {
       this.stopTicker();
-      if (this.state.index < this.seq.length - 1) this.goTo(this.state.index + 1, true);
-      else this.close();
+      this.update({ holdElapsed: this.state.holdTotal });
+      if (this.awaitingSpeech) this.holdOver = true;
+      else this.moveOn();
     });
+  }
+
+  private moveOn() {
+    if (this.state.index < this.seq.length - 1) this.goTo(this.state.index + 1, true);
+    else this.close();
   }
 
   private close() {
@@ -303,6 +339,8 @@ export class Conductor {
 
   private abandon() {
     this.token++;
+    this.awaitingSpeech = false;
+    this.holdOver = false;
     this.timers.forEach(clearTimeout);
     this.timers = [];
     this.stopTicker();

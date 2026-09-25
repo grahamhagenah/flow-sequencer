@@ -8,6 +8,9 @@ import type { Pose } from './types';
 //   half split, head to knee                           – the straight front leg
 //   side plank                                         – the supporting hand
 //   twists, thread the needle                          – the direction of the twist / threaded arm
+//   runner's lunge, lizard, revolved triangle           – the front foot
+//   dancer, eagle                                      – the standing foot
+//   cow face                                           – the top knee
 
 export const POSES: Pose[] = [
   // Supine
@@ -74,6 +77,23 @@ export const POSES: Pose[] = [
   { id: 'warrior-3', name: 'Warrior III', sanskrit: 'Virabhadrasana III', base: 'standing', sided: true, breaths: 3, cue: 'Balance on one leg, body and back leg parallel to the floor.' },
   { id: 'pyramid', name: 'Pyramid', sanskrit: 'Parsvottanasana', base: 'standing', sided: true, breaths: 5, cue: 'Short stance, both legs straight, fold over the front leg.' },
   { id: 'tree', name: 'Tree', sanskrit: 'Vrksasana', base: 'standing', sided: true, breaths: 5, cue: 'Foot to inner thigh or calf, never the knee, hands at heart.' },
+
+  // Added later: grouped here by where the body is, like the rest.
+  { id: 'fish', name: 'Fish', sanskrit: 'Matsyasana', base: 'supine', sided: false, breaths: 5, cue: 'Forearms under you, lift the chest, the crown of the head rests lightly.' },
+  { id: 'shoulder-stand', name: 'Shoulder Stand', sanskrit: 'Salamba Sarvangasana', base: 'supine', sided: false, breaths: 10, cue: 'Hands support the back, legs reach up, keep the neck still.' },
+  { id: 'plow', name: 'Plow', sanskrit: 'Halasana', base: 'supine', sided: false, breaths: 8, cue: 'Feet lower overhead toward the floor, hands support the back.' },
+  { id: 'lotus', name: 'Lotus', sanskrit: 'Padmasana', base: 'seated', sided: false, breaths: 10, cue: 'Each foot on the opposite thigh, or one for half lotus, spine tall.' },
+  { id: 'half-lord-fishes', name: 'Half Lord of the Fishes', sanskrit: 'Ardha Matsyendrasana', base: 'seated', sided: true, breaths: 6, cue: 'One knee up, foot crossed over, twist toward the raised knee.' },
+  { id: 'cow-face', name: 'Cow Face', sanskrit: 'Gomukhasana', base: 'seated', sided: true, breaths: 6, cue: 'Knees stacked, one arm up and one down, hands reach for each other behind.' },
+  { id: 'hero', name: 'Hero', sanskrit: 'Virasana', base: 'kneeling', sided: false, breaths: 8, cue: 'Knees together, sit between the heels, spine tall.' },
+  { id: 'lizard', name: 'Lizard', sanskrit: 'Utthan Pristhasana', base: 'kneeling', sided: true, breaths: 8, cue: 'Both hands inside the front foot, forearms down if they reach.' },
+  { id: 'runners-lunge', name: 'Runner’s Lunge', sanskrit: 'Utthita Ashwa Sanchalanasana', base: 'hands', sided: true, breaths: 3, cue: 'Hands frame the front foot, back leg long and lifted.' },
+  { id: 'dolphin', name: 'Dolphin', sanskrit: 'Ardha Pincha Mayurasana', base: 'hands', sided: false, breaths: 5, cue: 'Forearms down, hips high, head hangs free.' },
+  { id: 'headstand', name: 'Headstand', sanskrit: 'Salamba Sirsasana', base: 'hands', sided: false, breaths: 10, cue: 'Forearms down, fingers laced, lift through the shoulders, not the neck.' },
+  { id: 'handstand', name: 'Handstand', sanskrit: 'Adho Mukha Vrksasana', base: 'hands', sided: false, breaths: 3, cue: 'Shoulders over wrists, reach up through the legs.' },
+  { id: 'dancer', name: 'Dancer', sanskrit: 'Natarajasana', base: 'standing', sided: true, breaths: 4, cue: 'Hold the back foot, kick it into the hand, reach forward.' },
+  { id: 'eagle', name: 'Eagle', sanskrit: 'Garudasana', base: 'standing', sided: true, breaths: 5, cue: 'Sit low, wrap the legs and the arms, elbows lift.' },
+  { id: 'revolved-triangle', name: 'Revolved Triangle', sanskrit: 'Parivrtta Trikonasana', base: 'standing', sided: true, breaths: 5, cue: 'Hips square, opposite hand down, twist open to the sky.' },
 ];
 
 /** Poses offered when a sequence is empty. */

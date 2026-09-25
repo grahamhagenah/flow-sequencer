@@ -453,6 +453,8 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .row.current { background: color-mix(in srgb, var(--accent) 7%, transparent); }
 .row.current:hover:not(.playing) { background: color-mix(in srgb, var(--accent) 11%, var(--surface)); }
 .row-sanskrit { font-size: 12px; font-style: italic; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.next-from .from-pose { font-size: inherit; color: var(--muted); }
+.next-from .from-pose:hover:not(:disabled) { color: var(--accent); }
 .next-from { margin-left: 6px; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 13px; }
 /* Room for the pinned play button or dock when the playing row scrolls into view. */
 .row { scroll-margin-bottom: 220px; }

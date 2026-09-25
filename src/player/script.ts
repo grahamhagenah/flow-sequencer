@@ -20,6 +20,8 @@ export function spokenPose(seq: Sequence, i: number): string {
 export function announcementParts(seq: Sequence, i: number): string[] {
   const step = seq[i];
   const via = step.via === undefined ? undefined : TRANSITION_BY_ID.get(step.via);
+  // One breath, one movement: just the movement, said as it's done.
+  if (isFlowStep(seq, i)) return [`${renderLabel(via!.label, step.side)}.`];
   const parts =
     i === 0 || !via
       ? [`Begin in ${spokenPose(seq, i)}.`]
@@ -27,6 +29,15 @@ export function announcementParts(seq: Sequence, i: number): string[] {
   parts.push(getPose(step.poseId).cue);
   if (step.breaths > 1) parts.push(`Hold for ${spell(step.breaths)} breaths.`);
   return parts;
+}
+
+/**
+ * A step held for a single breath, as in a salutation: the voice says only the
+ * movement, with no chime, and saying it is part of that breath rather than
+ * coming before it. (The first step always gets its full introduction.)
+ */
+export function isFlowStep(seq: Sequence, i: number): boolean {
+  return i > 0 && seq[i].breaths === 1 && seq[i].via !== undefined;
 }
 
 /** The whole announcement as one line of text. */

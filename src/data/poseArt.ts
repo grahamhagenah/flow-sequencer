@@ -78,4 +78,21 @@ export const POSE_ART: Record<string, PoseArt> = {
   'warrior-3': { head: [6, 28], d: 'M26 43V28M26 28H10M26 28h17M12 28.5l6 5' },
   pyramid: { head: [12, 37.5], d: 'M24 28 12 43M24 28l14 15M24 28q-8 1-11 6M20 29l8-3' },
   tree: { head: [24, 9.5], d: 'M24 15.5 15.5 11l7-8.5M24 15.5l8.5-4.5-7-8.5M24 14v14M24 28v15M24 28l9 3-8 4' },
+
+  // Added later
+  fish: { head: [10, 40.5], d: 'M44 43H28q-7-14-15-6M20 34l2 9' },
+  'shoulder-stand': { head: [8, 40.5], d: 'M14 41l1-17 1-19M14 42.5h8l-5-12' },
+  plow: { head: [34, 40.5], d: 'M29 41l-2-19 17 20M28 42.5H14' },
+  lotus: { head: [24, 12], d: 'M24 17v19M24 36l-14 6 16-4M24 36l14 6-16-4M24 20l-11 18M24 20l11 18' },
+  'half-lord-fishes': { head: [26.5, 12], d: 'M24 17v19M24 38l-12 4h18M24 38l8-10-2 15M24 22l7 8M24 22l-9 14 1 7' },
+  'cow-face': { head: [24, 12], d: 'M24 17v19M12 43l24-5M12 38l24 5M24 20l6-6-3 8M24 20l-6 6 7-2' },
+  hero: { head: [24, 13], d: 'M24 18v18M24 38l-9 5H8M24 38l9 5h7M24 22l-5 14M24 22l5 14' },
+  lizard: { head: [8, 36.5], d: 'M27 34l-11-1-3 10M27 34l7 9h10M27 34l-15 2M14 37v5H5' },
+  'runners-lunge': { head: [10, 25], d: 'M28 30H17l-3 13M28 30l16 12M28 30l-14-3M14 28l-2 15' },
+  dolphin: { head: [19, 38], d: 'M5 43h8l3-10 12-21 14 31' },
+  headstand: { head: [24, 39.5], d: 'M14 43l10-8 10 8M24 35V4' },
+  handstand: { head: [24, 33], d: 'M19 43l5-15 5 15M24 28V4' },
+  dancer: { head: [11.5, 13], d: 'M22 43V28M22 28l-8-11M15 18 5 10M22 28l10 3 5-14M16 19l20-2' },
+  eagle: { head: [24, 8], d: 'M24 13v15M24 28l-4 8 4 7M24 28l5 6-8 4M24 16l5 3-4-8' },
+  'revolved-triangle': { head: [8, 30.5], d: 'M24 29 10 43M24 29l14 14M24 29l-12 1M13 13v29' },
 };
