@@ -89,7 +89,7 @@ export function App() {
     // just opened is left at its top (the list starts it on page one).
     const el = timelineRef.current;
     if (lastOpen.current !== openCount) lastOpen.current = openCount;
-    else if (el) el.scrollTop = el.scrollHeight;
+    else if (el && seq.length > 0) el.scrollTop = el.scrollHeight; // not the start page
   }, [seq.length, view, openCount]);
 
   useEffect(() => {

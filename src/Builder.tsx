@@ -3,7 +3,7 @@ import { applySide, getPose, otherSide, outgoing, renderLabel, routesFrom, sideL
 import { POSES, START_POSES } from './data/poses';
 import type { Base, Side, Transition } from './data/types';
 import type { SampleFlow } from './data/samples';
-import { GetStarted, HowItWorks } from './GetStarted';
+import { GetStarted } from './GetStarted';
 import { PoseFigure } from './PoseFigure';
 import { useIsPhone } from './useIsPhone';
 import type { Draft, SavedFlow } from './library';
@@ -188,6 +188,14 @@ export function Builder({
 
   // Inserting between two poses: while set, the tiles offer what fits after this step.
   const [insertAt, setInsertAt] = useState<number | null>(null);
+  // An empty flow shows the start page until "Start a new sequence" opens the empty sequencer.
+  const [choosing, setChoosing] = useState(false);
+  useEffect(() => setChoosing(false), [openCount]);
+  // Each of the two views starts at its top (the panel scrolls on desktop, the page on phones).
+  useEffect(() => {
+    if (timelineRef.current) timelineRef.current.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }, [choosing, timelineRef]);
   const inserting = insertAt !== null && insertAt < seq.length - 1;
   useEffect(() => {
     if (insertAt !== null && !inserting) setInsertAt(null);
@@ -287,36 +295,10 @@ export function Builder({
   const onLastPage = first + pageSize >= seq.length;
 
   return (
-    <main className={current ? 'layout building' : 'layout empty'}>
-      {/* Only while the flow is empty: how to start, and the poses to start from. Once
-          there's a pose, the choices of what comes next sit in the sequence, under it. */}
-      {!current && (
-        <section className="builder">
-          {banner}
-          <HowItWorks />
-          <div className="next-head">
-            <h2>Choose a starting pose</h2>
-          </div>
-          <div className="tiles">
-            {START_POSES.map((id) => {
-              const p = getPose(id);
-              return (
-                <button key={id} className="tile" onClick={() => set(start(id))}>
-                  <PoseFigure poseId={id} />
-                  <span className="tile-text">
-                    <span className="tile-label">{p.name}</span>
-                    {p.sanskrit && <span className="tile-to">{p.sanskrit}</span>}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
+    <main className="layout building">
       <aside className="timeline" ref={timelineRef}>
-        {current && banner}
-        <div className={seq.length ? 'timeline-head' : 'timeline-head empty-head'}>
+        {banner}
+        <div className={seq.length || choosing ? 'timeline-head' : 'timeline-head empty-head'}>
           <h2>Sequence</h2>
           {/* Quiet ‹ 2 of 8 › beside the heading, for flows longer than a page. */}
           {pageCount > 1 && (
@@ -349,8 +331,34 @@ export function Builder({
             </span>
           )}
         </div>
-        {seq.length === 0 ? (
+        {seq.length === 0 && choosing ? (
+          // A blank sequence: its first choices, the poses a flow can start from, in the
+          // composer's place under the (still empty) list.
+          <section className="composer" aria-label="Choose the first pose">
+            <div className="next-head">
+              <h2>Choose the first pose</h2>
+            </div>
+            <div className="next-options">
+              {START_POSES.map((id) => {
+                const p = getPose(id);
+                return (
+                  <button key={id} className="next-option" onClick={() => set(start(id))}>
+                    <PoseFigure poseId={id} size={34} />
+                    <span className="next-option-text">
+                      <span className="next-option-move">{p.name}</span>
+                      {p.sanskrit && <span className="next-option-pose">{p.sanskrit}</span>}
+                    </span>
+                    <span className="next-option-add" aria-hidden="true">
+                      +
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        ) : seq.length === 0 ? (
           <GetStarted
+            onBuild={() => setChoosing(true)}
             recent={recent}
             resume={resume}
             onResume={onResume}

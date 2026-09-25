@@ -1,7 +1,7 @@
 import { type CSSProperties, useState } from 'react';
 import { sampleLook } from './data/sampleLooks';
 import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
-import { PlayIcon } from './icons';
+import { PlayIcon, PlusIcon } from './icons';
 import { PoseFigure } from './PoseFigure';
 import type { Draft, SavedFlow } from './library';
 import { decodeSteps } from './link';
@@ -18,6 +18,7 @@ const length = (seq: Parameters<typeof classMs>[0]) => {
 
 /** What the sequence panel shows while the flow is empty: recent flows and classes to try. */
 export function GetStarted({
+  onBuild,
   recent,
   resume,
   onResume,
@@ -26,6 +27,7 @@ export function GetStarted({
   onOpenSaved,
   onSeeAll,
 }: {
+  onBuild: () => void;
   recent: SavedFlow[];
   resume: Draft | null;
   onResume: () => void;
@@ -39,9 +41,11 @@ export function GetStarted({
   const rest = SAMPLE_FLOWS.filter((f) => f.id !== featured.id);
   return (
     <div className="get-started">
-      {resume && <ResumeFlow draft={resume} onResume={onResume} />}
-
       <FeaturedClass flow={featured} onPlaySample={onPlaySample} onOpenSample={onOpenSample} />
+
+      <BuildYourOwn onBuild={onBuild} />
+
+      {resume && <ResumeFlow draft={resume} onResume={onResume} />}
 
       {recent.length > 0 && (
         <section>
@@ -154,7 +158,7 @@ function FeaturedClass({
       <p className="featured-desc">{flow.description}</p>
       <div className="featured-poses" aria-hidden="true">
         {posePreview(flow, 8).map((s) => (
-          <PoseFigure key={s.poseId} poseId={s.poseId} side={s.side} size={36} />
+          <PoseFigure key={s.poseId} poseId={s.poseId} side={s.side} size={44} />
         ))}
       </div>
       <div className="sample-actions featured-actions">
@@ -216,25 +220,17 @@ export function SampleList({
   );
 }
 
-/** An invitation to build a flow from scratch, and how, shown above the starting poses while the flow is empty. */
-export function HowItWorks() {
+/** The way to a blank sequence: one line on how building works, and a button to begin. */
+function BuildYourOwn({ onBuild }: { onBuild: () => void }) {
   return (
-    <div className="how-it-works-card">
-      <h2>Build your own sequence</h2>
-      <ol className="how-it-works">
-        <li>
-          <span className="step">1</span>
-          <span>Pick a starting pose below</span>
-        </li>
-        <li>
-          <span className="step">2</span>
-          <span>Tap the moves that follow, one pose at a time</span>
-        </li>
-        <li>
-          <span className="step">3</span>
-          <span>Save it, share it, or press play and follow along</span>
-        </li>
-      </ol>
-    </div>
+    <section className="build-own">
+      <div className="build-own-text">
+        <h3>Build your own sequence</h3>
+        <p>Pick a starting pose, then tap the moves that follow, one pose at a time.</p>
+      </div>
+      <button className="gs-play build-own-btn" onClick={onBuild}>
+        <PlusIcon /> Start a new sequence
+      </button>
+    </section>
   );
 }
