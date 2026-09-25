@@ -122,7 +122,8 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 /* Fixed width for the longest status, so the title and buttons don't shift as it changes. */
 .status { font-size: 13px; color: var(--muted); white-space: nowrap; min-width: 7.5em; text-align: right; }
 .flow-buttons { display: flex; gap: 4px; }
-.bar .nav { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; background: none; color: var(--muted); }
+/* A quiet link back, no box: just the arrow and its words (only the arrow on phones). */
+.bar .nav { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 8px; font-size: 14px; background: none; border: none; color: var(--muted); }
 .bar .nav:hover { color: var(--text); }
 
 /* Its saved-flows count, as a small badge on the icon's corner. */
@@ -218,6 +219,9 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .flows-head { display: flex; align-items: center; justify-content: space-between; margin: 4px 0 12px; padding-bottom: 10px; border-bottom: 1px solid var(--rule); }
 .flows-head h2 { margin: 0; }
 .flows .hint { font-size: 13px; margin-bottom: 16px; }
+/* Where flows are kept: a small notice set apart from the list, with an info mark. */
+.storage-note { display: flex; align-items: flex-start; gap: 10px; margin: 0 0 16px; padding: 10px 14px; font-size: 13px; line-height: 1.45; color: var(--muted); background: color-mix(in srgb, var(--surface) 70%, var(--bg)); border: 1px solid var(--rule); border-radius: 10px; }
+.storage-note .icon { flex: none; width: 16px; height: 16px; margin-top: 1px; color: var(--accent); }
 .flows .empty { color: var(--muted); padding: 24px 0; }
 .flows ul { list-style: none; margin: 0; padding: 0; }
 .flow { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
@@ -330,7 +334,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .build-own-text { display: flex; flex-direction: column; gap: 4px; flex: 1 1 280px; }
 .get-started .build-own h3 { font-size: 16px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--text); }
 .build-own p { margin: 0; font-size: 14px; line-height: 1.45; color: var(--muted); }
-.build-own-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px 8px 12px; font-size: 15px; }
+.build-own-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 20px 0 16px; font-size: 15px; }
 .build-own-btn .icon, .build-own-btn svg { color: var(--accent); }
 .get-started h3 { margin: 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
 .gs-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
@@ -390,7 +394,8 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .featured-poses { display: flex; flex-wrap: wrap; gap: 0 14px; height: 44px; margin-top: 14px; overflow: hidden; color: var(--muted); }
 .featured-poses .pose-figure { color: var(--muted); }
 .featured-actions { margin-top: 16px; }
-.featured-actions .gs-play { padding: 8px 18px 8px 14px; font-size: 15px; }
+.featured-actions .gs-play { min-height: 46px; padding: 0 22px 0 18px; font-size: 15px; }
+.featured-actions button:not(.gs-play) { min-height: 46px; font-size: 15px; }
 @container (min-width: 400px) {
   .sample-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   /* In two columns, short lines read better than ones stretched across a wide column.
@@ -417,14 +422,15 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 }
 /* Play is a small, quiet button with no colour: grey ▶, and on hover just a brighter
    border (not the green of .gs-play elsewhere). Open is plain grey text beside it. */
-.sample-actions { display: flex; align-items: center; gap: 14px; margin-top: 8px; }
-.sample-actions button { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; }
-.sample-actions .gs-play { padding: 4px 12px 4px 10px; }
-.sample-actions .gs-play .icon { width: 12px; height: 12px; }
+/* Big enough to press easily; Open's padding widens its target without a visible box. */
+.sample-actions { display: flex; align-items: center; gap: 4px; margin-top: 12px; }
+.sample-actions button { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; font-size: 14px; font-weight: 500; }
+.sample-actions .gs-play { padding: 0 18px 0 14px; }
+.sample-actions .gs-play .icon { width: 14px; height: 14px; }
 .sample-actions .gs-play .icon { color: var(--muted); }
 .sample-actions .gs-play:hover:not(:disabled), .sample-actions .gs-play:focus-visible { color: var(--text); background: var(--surface); border-color: var(--muted); }
 .sample-actions .gs-play:hover .icon, .sample-actions .gs-play:focus-visible .icon { color: var(--text); }
-.sample-actions button:not(.gs-play) { padding: 4px 0; color: var(--muted); background: none; border: none; }
+.sample-actions button:not(.gs-play) { padding: 0 14px; color: var(--muted); background: none; border: none; }
 .sample-actions button:not(.gs-play):hover:not(:disabled) { color: var(--text); text-decoration: underline; }
 
 
@@ -779,7 +785,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .flow-buttons { order: 1; margin-left: auto; }
   .bar-title { order: 2; flex: 1 1 200px; gap: 8px; }
   .status { min-width: 0; }
-  .bar .nav { order: 3; }
+  .bar .nav { order: 3; margin-left: auto; }
   .app { height: auto; min-height: 100vh; min-height: 100dvh; }
   .layout { grid-template-columns: minmax(0, 1fr); }
   .builder { padding: 0 16px 16px; overflow: visible; }
@@ -850,7 +856,9 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 
   .sample-title { font-size: 16px; }
   .sample-meta { font-size: 13px; }
-  .sample-desc, .sample-actions button { font-size: 14px; }
+  .sample-desc, .sample-actions button { font-size: 15px; }
+  .sample-actions button { min-height: 44px; }
+  .featured-actions button:not(.gs-play), .featured-actions .gs-play, .build-own-btn { min-height: 48px; }
   .route select { font-size: 15px; }
   .mirror .sub, .tiles-empty { font-size: 14px; }
 
@@ -861,7 +869,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .play-next { font-size: 14px; }
   .play-settings, .play-settings select { font-size: 14px; }
 
-  .flows .hint, .flow-meta, .flow-desc, .flow-actions button { font-size: 14px; }
+  .storage-note, .flows .hint, .flow-meta, .flow-desc, .flow-actions button { font-size: 14px; }
 
   /* Header: taller targets for the icon buttons and Flows, as wide as fits beside the
      name (a 44px square each would push the icons onto a line of their own). */
@@ -869,7 +877,9 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .flow-buttons { gap: 0; }
   .icon-btn { width: 34px; height: 44px; }
   .icon-btn svg { width: 20px; height: 20px; }
-  .bar .nav { height: 40px; }
+  /* No back button on phones (the logo goes back); it keeps its room, invisible, so the
+     bar stays as tall as the start page's, with its 44px icons. */
+  .bar .nav { visibility: hidden; width: 0; height: 44px; padding: 0; }
 
   /* Under "Choose the next pose": thumb-sized − + and Right/Left. */
   /* The choices' controls on a line of their own under the heading: breaths left, side right. */

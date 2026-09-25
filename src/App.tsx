@@ -64,6 +64,9 @@ export function App() {
   /** Bumped each time a flow is opened, so the sequence list can start it on its first page. */
   const [openCount, setOpenCount] = useState(0);
   const [resume, setResume] = useState(loadResume);
+  // An empty flow shows the start page until "Start a new sequence" opens the empty sequencer.
+  const [choosing, setChoosing] = useState(false);
+  useEffect(() => setChoosing(false), [openCount]);
   const forgetResume = () => {
     saveResume(null);
     setResume(null);
@@ -255,6 +258,8 @@ export function App() {
         </h1>
         {view === 'builder' ? (
           <>
+            {/* The start page has no flow yet, so no name for it. */}
+            {(seq.length > 0 || choosing) && (
             <div className="bar-title">
               {/* The name is editable in place; the pencil says so, and clicking it (it's inside the label) edits it. */}
               <label className="name-field" title="Rename this flow">
@@ -270,6 +275,7 @@ export function App() {
               </label>
               <span className="status">{status}</span>
             </div>
+            )}
             <div className="bar-actions">
             {/* Icon-only; data-tip is the hover/focus tooltip and aria-label the spoken name. */}
             <div className="flow-buttons">
@@ -319,8 +325,8 @@ export function App() {
         ) : (
           <>
             <span className="bar-page">My flows</span>
-            <button className="nav" onClick={() => setView('builder')}>
-              <ArrowLeftIcon /> Back to sequencer
+            <button className="nav" onClick={() => setView('builder')} aria-label="Back to sequencer">
+              <ArrowLeftIcon /> <span className="nav-text">Back to sequencer</span>
             </button>
           </>
         )}
@@ -353,6 +359,8 @@ export function App() {
           onSeeAll={() => setView('flows')}
           autoplay={autoplay}
           openCount={openCount}
+          choosing={choosing}
+          setChoosing={setChoosing}
           onAutoplayStarted={() => setAutoplay(false)}
           banner={
             notice && (

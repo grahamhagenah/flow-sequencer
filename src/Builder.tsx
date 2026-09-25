@@ -64,6 +64,8 @@ export function Builder({
   autoplay,
   onAutoplayStarted,
   openCount,
+  choosing,
+  setChoosing,
 }: {
   seq: Sequence;
   set: SetSeq;
@@ -84,6 +86,9 @@ export function Builder({
   onAutoplayStarted: () => void;
   /** Changes whenever a different flow is opened. */
   openCount: number;
+  /** An empty flow shows the start page until "Start a new sequence" opens the empty sequencer. */
+  choosing: boolean;
+  setChoosing: (on: boolean) => void;
 }) {
   const current = seq[seq.length - 1];
   const range = mirrorRange(seq);
@@ -188,9 +193,6 @@ export function Builder({
 
   // Inserting between two poses: while set, the tiles offer what fits after this step.
   const [insertAt, setInsertAt] = useState<number | null>(null);
-  // An empty flow shows the start page until "Start a new sequence" opens the empty sequencer.
-  const [choosing, setChoosing] = useState(false);
-  useEffect(() => setChoosing(false), [openCount]);
   // Each of the two views starts at its top (the panel scrolls on desktop, the page on phones).
   useEffect(() => {
     if (timelineRef.current) timelineRef.current.scrollTop = 0;
