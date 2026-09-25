@@ -132,6 +132,8 @@ h2 {
 .bar-title { flex: 1 1 320px; min-width: 0; display: flex; align-items: center; gap: var(--space-3); }
 /* Where you are, in the spot the flow title takes in the builder. */
 .bar-page { font-weight: 500; }
+/* The start page's tagline beside the app's name, where a flow's name goes otherwise. */
+.bar-tagline { min-width: 0; font-size: var(--text-md); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bar > .nav { margin-left: auto; }
 .meta { color: var(--muted); font-variant-numeric: tabular-nums; }
 
@@ -360,7 +362,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .build-own { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4) var(--space-5); padding: var(--space-5); border: 1px dashed var(--border); }
 .build-own-text { display: flex; flex-direction: column; gap: var(--space-1); flex: 1 1 280px; }
 .get-started .build-own h3 { margin: 0; font-size: var(--text-lg); font-weight: 600; color: var(--text); }
-.build-own p { margin: 0; font-size: var(--text-sm); line-height: 1.45; color: var(--muted); }
+.build-own p { margin: 0; font-size: var(--text-md); line-height: 1.45; color: var(--muted); }
 .build-own-btn { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; padding: 0 var(--space-5) 0 var(--space-4); }
 .build-own-btn .icon, .build-own-btn svg { color: var(--accent); }
 .gs-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: var(--space-3); }
@@ -381,10 +383,10 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 }
 .gs-item:hover:not(:disabled) { background: var(--surface-2); }
 .gs-item .gs-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.gs-open { font-size: var(--text-sm); color: var(--muted); }
+.gs-open { font-size: var(--text-md); color: var(--muted); }
 .gs-item:hover .gs-open { color: var(--accent); }
 .gs-title { font-weight: 600; }
-.gs-meta { font-size: var(--text-xs); color: var(--muted); opacity: 0.8; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gs-meta { font-size: var(--text-sm); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* Quiet until hovered: only the ▶ is apricot at rest; the whole button turns apricot on hover or focus. */
 .gs-play { color: var(--text); background: none; border-color: var(--border); font-weight: 500; }
 .gs-play .icon { color: var(--accent); }
@@ -413,8 +415,8 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .get-started h3.featured-title { display: flex; align-items: center; gap: var(--space-3); margin: 0; font-size: var(--text-2xl); line-height: 1.2; font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--text); }
 /* The icon grows with the title. */
 .featured-title .sample-icon svg { width: 1em; height: 1em; }
-.featured .sample-meta { font-size: var(--text-sm); }
-.featured-desc { margin: 0; font-size: var(--text-md); line-height: 1.55; color: var(--muted); max-width: 48ch; }
+.featured .sample-meta { font-size: var(--text-md); }
+.featured-desc { margin: 0; font-size: var(--text-lg); line-height: 1.55; color: var(--muted); max-width: 48ch; }
 /* One line of whole drawings, as many as fit (all eight on wider screens): any that
    would wrap to a second line are cut off with it. */
 .featured-poses { display: flex; flex-wrap: wrap; gap: 0 var(--space-4); height: 44px; margin-top: var(--space-2); overflow: hidden; }
@@ -425,20 +427,20 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .sample-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   /* In two columns, short lines read better than ones stretched across a wide column.
      A single column (phones) uses the full width. */
-  .sample-desc { max-width: 40ch; }
+  .sample-desc { max-width: 44ch; }
 }
 .sample-card { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-4) var(--space-4) var(--space-3); transition: border-color 0.15s; }
 .sample-card:hover { border-color: var(--border); }
-.sample-title { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-md); font-weight: 600; line-height: 1.3; }
+.sample-title { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-lg); font-weight: 600; line-height: 1.3; }
 .sample-icon { flex: none; display: inline-flex; color: var(--tone); }
 .sample-icon svg { width: var(--icon-md); height: var(--icon-md); }
-.sample-meta { font-size: var(--text-xs); color: var(--muted); white-space: nowrap; }
+.sample-meta { font-size: var(--text-sm); color: var(--muted); white-space: nowrap; }
 /* Up to three lines; the full text is in the tooltip. */
 .sample-desc {
   flex: 1;
-  margin-top: 2px;
-  font-size: var(--text-sm);
-  line-height: 1.45;
+  margin-top: var(--space-1);
+  font-size: var(--text-md);
+  line-height: 1.5;
   color: var(--muted);
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -812,7 +814,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .bar h1:has(+ .bar-title)::after { content: none; }
   .flow-buttons { order: 1; gap: 0; }
   .bar-title { order: 2; flex: 1 1 200px; }
-  .status { display: none; }
+  .status, .bar-tagline { display: none; }
   /* Taller targets for the icon buttons, as wide as fits beside the name (a 44px square
      each would push them onto a line of their own). */
   .icon-btn { width: 34px; height: 44px; }

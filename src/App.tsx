@@ -286,7 +286,9 @@ export function App() {
         </h1>
         {view === 'builder' ? (
           <>
-            {/* The start page has no flow yet, so no name for it. */}
+            {/* The start page has no flow yet, so no name for it; the app's tagline instead
+                (on wider screens). */}
+            {seq.length === 0 && !choosing && <span className="bar-tagline">Build a yoga flow, one pose at a time</span>}
             {(seq.length > 0 || choosing) && (
               <div className="bar-title">
                 {/* The name is editable in place; the pencil says so, and clicking it (it's inside the label) edits it. */}
