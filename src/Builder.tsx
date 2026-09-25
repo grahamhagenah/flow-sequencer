@@ -14,7 +14,14 @@ import { Pager, SequenceRow } from './SequenceRow';
 import { SinglePoseView } from './SinglePoseView';
 import { usePaging } from './usePaging';
 
-type Layout = 'single' | 'list';
+export type Layout = 'single' | 'list';
+/** A view asked for by an open (App's openCount `count`): Open asks for the list, Play for one pose. */
+export interface OpenLayout {
+  count: number;
+  layout: Layout;
+}
+/** The last open whose view has been applied: kept outside, like handledOpen, as the builder remounts. */
+let appliedOpenLayout = 0;
 const LAYOUT_KEY = 'nextpose:layout';
 const loadLayout = (): Layout => {
   try {
@@ -52,6 +59,7 @@ export function Builder({
   autoplay,
   onAutoplayStarted,
   openCount,
+  openLayout,
   choosing,
   setChoosing,
 }: {
@@ -74,6 +82,8 @@ export function Builder({
   onAutoplayStarted: () => void;
   /** Changes whenever a different flow is opened. */
   openCount: number;
+  /** The view the latest open asked for, if any. */
+  openLayout: OpenLayout | null;
   /** An empty flow shows the start page until "Start a new sequence" opens the empty sequencer. */
   choosing: boolean;
   setChoosing: (on: boolean) => void;
@@ -229,6 +239,12 @@ export function Builder({
     saveLayout(next);
     setMenu(null); // a row's menu belongs to the list
   };
+  // A flow opened with Open shows the list; with Play, one pose at a time (once per open).
+  useEffect(() => {
+    if (!openLayout || openLayout.count !== openCount || appliedOpenLayout === openCount) return;
+    appliedOpenLayout = openCount;
+    setLayout(openLayout.layout);
+  }, [openCount, openLayout]);
   const single = layout === 'single' && seq.length > 0;
   // The pose shown in single view: the playing one during a class, else the one stepped to.
   const [viewIndex, setViewIndex] = useState(0);
@@ -240,16 +256,13 @@ export function Builder({
     if (player.active) return by > 0 ? player.next() : player.prev();
     setViewIndex((i) => Math.max(0, Math.min(seq.length - 1, Math.min(i, seq.length - 1) + by)));
   };
-  // During a class, the breath being taken on the pose in view (for its ring and count).
+  // During a class, the breath being taken on the pose in view.
   const liveBreath = (() => {
-    const { index, phase, holdElapsed, holdTotal } = player.state;
+    const { index, phase, holdElapsed } = player.state;
     if (!player.active || index !== singleIndex || (phase !== 'speaking' && phase !== 'holding')) return null;
     const breathMs = player.settings.secondsPerBreath * 1000;
     const holding = phase === 'holding';
-    return {
-      breath: holding ? Math.min(seq[index].breaths, Math.floor(holdElapsed / breathMs) + 1) : null,
-      fraction: holding && holdTotal ? Math.min(1, holdElapsed / holdTotal) : 0,
-    };
+    return { breath: holding ? Math.min(seq[index].breaths, Math.floor(holdElapsed / breathMs) + 1) : null };
   })();
   // ← and → step through the poses in single view (not while typing).
   useEffect(() => {
@@ -311,7 +324,6 @@ export function Builder({
             onStep={stepSingle}
             secondsPerBreath={player.settings.secondsPerBreath}
             live={liveBreath}
-            onShow={(i) => (player.active ? player.goTo(i) : setViewIndex(i))}
             onBreaths={(n) => set((q) => setBreaths(q, singleIndex, n))}
           />
         ) : (
@@ -374,7 +386,12 @@ export function Builder({
         {seq.length > 0 && (
           <div className="play-footer">
             {/* In single view, Play starts from the pose on screen. */}
-            <PlaybackDock seq={seq} player={player} startAt={single ? singleIndex : 0} />
+            <PlaybackDock
+              seq={seq}
+              player={player}
+              startAt={single ? singleIndex : 0}
+              onBrowse={single ? stepSingle : undefined}
+            />
           </div>
         )}
       </aside>

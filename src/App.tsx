@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Builder } from './Builder';
+import { Builder, type Layout, type OpenLayout } from './Builder';
 import type { SampleFlow } from './data/samples';
 import { Dialog, type DialogSpec } from './Dialog';
 import { unlockPlayback } from './player/conductor';
@@ -18,6 +18,8 @@ interface Opened {
   name: string;
   seq: Sequence;
   notice: string | null;
+  /** Which view it opens in: the list from Open, one pose at a time from Play. Otherwise the last one used. */
+  layout?: Layout;
 }
 
 const EMPTY: Opened = { id: null, name: '', seq: [], notice: null };
@@ -118,10 +120,15 @@ export function App() {
     return () => clearTimeout(t);
   }, [copied]);
 
+  // Which view the latest open asked for, and for which open (see Builder).
+  const [openLayout, setOpenLayout] = useState<OpenLayout | null>(null);
+  const openCountRef = useRef(openCount);
+  openCountRef.current = openCount;
   const open = useCallback(
     (next: Opened) => {
       reset(next.seq);
       setOpenCount((n) => n + 1);
+      setOpenLayout(next.layout ? { count: openCountRef.current + 1, layout: next.layout } : null);
       setChoosing(false);
       setId(next.id);
       setName(next.name);
@@ -223,21 +230,21 @@ export function App() {
     if (!resume) return;
     guardUnsaved('Open the earlier flow?', 'Save and open', () => {
       forgetResume();
-      open({ id: resume.id, name: resume.name, seq: decodeSteps(resume.steps).seq, notice: null });
+      open({ id: resume.id, name: resume.name, seq: decodeSteps(resume.steps).seq, notice: null, layout: 'list' });
     });
   };
 
   const openSaved = (f: SavedFlow) => {
     if (f.id === id) return setView('builder');
     guardUnsaved(`Open “${f.name}”?`, 'Save and open', () =>
-      open({ id: f.id, name: f.name, seq: decodeSteps(f.steps).seq, notice: null }),
+      open({ id: f.id, name: f.name, seq: decodeSteps(f.steps).seq, notice: null, layout: 'list' }),
     );
   };
 
   // A sample opens as an unsaved copy, so the sample itself never changes.
   const openSample = (f: SampleFlow, play = false) =>
     guardUnsaved(`Open “${f.name}”?`, 'Save and open', () => {
-      open({ id: null, name: f.name, seq: f.seq, notice: null });
+      open({ id: null, name: f.name, seq: f.seq, notice: null, layout: play ? 'single' : 'list' });
       if (play) setAutoplay(true);
     });
 
@@ -398,6 +405,7 @@ export function App() {
           onSeeAll={() => setView('flows')}
           autoplay={autoplay}
           openCount={openCount}
+          openLayout={openLayout}
           choosing={choosing}
           setChoosing={setChoosing}
           onAutoplayStarted={() => setAutoplay(false)}

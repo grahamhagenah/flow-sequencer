@@ -13,7 +13,18 @@ import { BREATH_CHOICES, type Playback } from './usePlayer';
  * and controls that can't do anything yet are greyed out, so pressing Play
  * changes what the dock says but never its shape.
  */
-export function PlaybackDock({ seq, player, startAt = 0 }: { seq: Sequence; player: Playback; startAt?: number }) {
+export function PlaybackDock({
+  seq,
+  player,
+  startAt = 0,
+  onBrowse,
+}: {
+  seq: Sequence;
+  player: Playback;
+  startAt?: number;
+  /** Before a class starts, lets back and forward step through the poses (the single-pose view). */
+  onBrowse?: (by: -1 | 1) => void;
+}) {
   const { state, active, settings } = player;
   const [showSettings, setShowSettings] = useState(false);
   // Phones show a slim bar until it's tapped open, so the player doesn't cover the list.
@@ -83,8 +94,8 @@ export function PlaybackDock({ seq, player, startAt = 0 }: { seq: Sequence; play
   const backButton = (
     <button
       className="play-skip"
-      onClick={player.prev}
-      disabled={!active || index === 0}
+      onClick={() => (!active && onBrowse ? onBrowse(-1) : player.prev())}
+      disabled={(!active && !onBrowse) || index === 0}
       aria-label="Previous pose"
       title="Previous pose"
     >
@@ -94,8 +105,8 @@ export function PlaybackDock({ seq, player, startAt = 0 }: { seq: Sequence; play
   const forwardButton = (
     <button
       className="play-skip"
-      onClick={player.next}
-      disabled={!active || index >= seq.length - 1}
+      onClick={() => (!active && onBrowse ? onBrowse(1) : player.next())}
+      disabled={(!active && !onBrowse) || index >= seq.length - 1}
       aria-label="Next pose"
       title="Next pose"
     >

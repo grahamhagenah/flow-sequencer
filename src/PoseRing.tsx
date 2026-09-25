@@ -1,6 +1,6 @@
 /**
- * A ring that fills as the current pose's breaths go by (`fraction`, 0 to 1): in the
- * player, and around the pose's drawing in the single-pose view during a class.
+ * A ring that fills as the current pose's breaths go by (`fraction`, 0 to 1), beside
+ * the pose in the player.
  */
 export function PoseRing({ fraction, size = 36, className }: { fraction: number; size?: number; className?: string }) {
   const r = 15;
