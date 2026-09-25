@@ -310,7 +310,7 @@ export function App() {
           onDuplicate={duplicate}
           onDelete={remove}
           onOpenSample={(f) => openSample(f)}
-          onCopySampleLink={(f) => copyLink(f.id, f.name, encodeSteps(f.seq))}
+          onPlaySample={playSample}
         />
       ) : (
         <Builder

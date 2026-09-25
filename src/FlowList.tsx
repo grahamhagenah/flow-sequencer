@@ -1,4 +1,5 @@
 import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
+import { SampleList } from './GetStarted';
 import { PlusIcon } from './icons';
 import type { SavedFlow } from './library';
 import { decodeSteps } from './link';
@@ -6,8 +7,8 @@ import { aboutMinutes, classMs } from './player/conductor';
 import { loadSettings } from './player/usePlayer';
 
 const SAMPLE_GROUPS = [
-  { title: 'Ready-made classes', hint: 'Complete classes to play as they are or open and make your own.', peak: false },
-  { title: 'Peak pose classes', hint: 'Each works up to one harder pose, then winds down.', peak: true },
+  { title: 'Ready-made classes', peak: false },
+  { title: 'Peak pose classes', peak: true },
 ];
 
 /** How long a flow runs with the player's saved settings, voice included. */
@@ -26,7 +27,7 @@ export function FlowList({
   onDuplicate,
   onDelete,
   onOpenSample,
-  onCopySampleLink,
+  onPlaySample,
 }: {
   flows: SavedFlow[];
   currentId: string | null;
@@ -38,7 +39,7 @@ export function FlowList({
   onDuplicate: (f: SavedFlow) => void;
   onDelete: (f: SavedFlow) => void;
   onOpenSample: (f: SampleFlow) => void;
-  onCopySampleLink: (f: SampleFlow) => void;
+  onPlaySample: (f: SampleFlow) => void;
 }) {
   return (
     <main className="flows">
@@ -86,23 +87,11 @@ export function FlowList({
           <div className="flows-head samples-head">
             <h2>{g.title}</h2>
           </div>
-          <p className="hint">{g.hint}</p>
-          <ul>
-            {SAMPLE_FLOWS.filter((f) => !!f.peak === g.peak).map((f) => (
-              <li key={f.id} className="flow">
-                <button className="flow-main" onClick={() => onOpenSample(f)}>
-                  <span className="flow-title">{f.name}</span>
-                  <span className="flow-desc">{f.description}</span>
-                  <span className="flow-meta">
-                    {f.seq.length} poses · {aboutMinutes(length(f.seq))}
-                  </span>
-                </button>
-                <div className="flow-actions">
-                  <button onClick={() => onCopySampleLink(f)}>{copiedKey === f.id ? 'Copied' : 'Copy link'}</button>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <SampleList
+            flows={SAMPLE_FLOWS.filter((f) => !!f.peak === g.peak)}
+            onPlaySample={onPlaySample}
+            onOpenSample={onOpenSample}
+          />
         </section>
       ))}
     </main>
