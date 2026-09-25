@@ -3,7 +3,7 @@ import { sampleLook } from './data/sampleLooks';
 import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
 import { PlayIcon } from './icons';
 import { PoseFigure } from './PoseFigure';
-import type { SavedFlow } from './library';
+import type { Draft, SavedFlow } from './library';
 import { decodeSteps } from './link';
 import { aboutMinutes, classMs } from './player/conductor';
 import { loadSettings } from './player/usePlayer';
@@ -19,12 +19,16 @@ const length = (seq: Parameters<typeof classMs>[0]) => {
 /** What the sequence panel shows while the flow is empty: recent flows and classes to try. */
 export function GetStarted({
   recent,
+  resume,
+  onResume,
   onPlaySample,
   onOpenSample,
   onOpenSaved,
   onSeeAll,
 }: {
   recent: SavedFlow[];
+  resume: Draft | null;
+  onResume: () => void;
   onPlaySample: (f: SampleFlow) => void;
   onOpenSample: (f: SampleFlow) => void;
   onOpenSaved: (f: SavedFlow) => void;
@@ -35,6 +39,8 @@ export function GetStarted({
   const rest = SAMPLE_FLOWS.filter((f) => f.id !== featured.id);
   return (
     <div className="get-started">
+      {resume && <ResumeFlow draft={resume} onResume={onResume} />}
+
       <FeaturedClass flow={featured} onPlaySample={onPlaySample} onOpenSample={onOpenSample} />
 
       {recent.length > 0 && (
@@ -86,6 +92,30 @@ export function GetStarted({
         />
       </section>
     </div>
+  );
+}
+
+/** The flow that was open last time, offered at the top of the start page. */
+function ResumeFlow({ draft, onResume }: { draft: Draft; onResume: () => void }) {
+  const seq = decodeSteps(draft.steps).seq;
+  if (seq.length === 0) return null;
+  return (
+    <section>
+      <div className="gs-head">
+        <h3>Continue where you left off</h3>
+      </div>
+      <ul className="gs-list">
+        <li>
+          <button className="gs-item" onClick={onResume}>
+            <span className="gs-title">{draft.name.trim() || 'Untitled flow'}</span>
+            <span className="gs-meta">
+              {seq.length} {seq.length === 1 ? 'pose' : 'poses'} · {aboutMinutes(length(seq))}
+            </span>
+            <span className="gs-open">Open ›</span>
+          </button>
+        </li>
+      </ul>
+    </section>
   );
 }
 

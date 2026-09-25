@@ -22,6 +22,8 @@ export interface Draft {
 // Keys keep the app's first name so flows saved before the rename still load.
 const FLOWS_KEY = 'nextpose:flows';
 const DRAFT_KEY = 'nextpose:draft';
+/** The flow that was open when the app was last opened at its bare address (see App's initial). */
+const RESUME_KEY = 'nextpose:resume';
 
 function read<T>(key: string): T | null {
   try {
@@ -67,4 +69,15 @@ export function loadDraft(): Draft | null {
 
 export function saveDraft(draft: Draft) {
   write(DRAFT_KEY, draft);
+}
+
+/** The flow put aside when the app opened at its bare address, offered to pick up again. */
+export function loadResume(): Draft | null {
+  const d = read<Draft>(RESUME_KEY);
+  return d && typeof d.steps === 'string' && d.steps && typeof d.name === 'string' ? d : null;
+}
+
+export function saveResume(draft: Draft | null) {
+  if (draft) write(RESUME_KEY, draft);
+  else localStorage.removeItem(RESUME_KEY);
 }

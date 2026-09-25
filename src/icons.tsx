@@ -41,6 +41,24 @@ export const LinkIcon = () => (
   </Icon>
 );
 
+export const PencilIcon = () => (
+  <Icon>
+    <path d="M17 3a2.8 2.8 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5z" />
+  </Icon>
+);
+
+/** A stack of flows: the Flows page, as an icon on phones. */
+export const FlowsIcon = () => (
+  <Icon>
+    <path d="M8 6h12" />
+    <path d="M8 12h12" />
+    <path d="M8 18h12" />
+    <path d="M4 6h.01" />
+    <path d="M4 12h.01" />
+    <path d="M4 18h.01" />
+  </Icon>
+);
+
 export const PlusIcon = () => (
   <Icon>
     <path d="M12 5v14" />

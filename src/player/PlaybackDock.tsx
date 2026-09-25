@@ -112,6 +112,75 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
     );
   }
 
+  const stopButton = (
+    <button className="play-side" onClick={player.stop} disabled={!active} aria-label="Stop" title="Stop">
+      <StopIcon />
+    </button>
+  );
+  const settingsButton = (
+    <button
+      onClick={() => setShowSettings(!showSettings)}
+      aria-expanded={showSettings}
+      aria-label="Voice settings"
+      title="Voice settings"
+      className={showSettings ? 'play-side toggled' : 'play-side'}
+    >
+      <SettingsIcon />
+    </button>
+  );
+  const upNext = nextPose ? (
+    <>
+      Up next: <span>{nextPose.name}</span>
+      {nextPose.sided && ` · ${sideLabel(next.side)}`}
+    </>
+  ) : (
+    'Last pose'
+  );
+
+  // Wider screens: one slim bar, like a music app's, rather than a tall panel. What's
+  // playing on the left, the controls in the middle, the time on the right, and the
+  // voice settings opening above it.
+  if (!phone) {
+    return (
+      <div className="play-dock play-bar">
+        <div className="play-progress" aria-hidden="true">
+          <div style={{ width: progress }} />
+        </div>
+        {showSettings && <VoiceSettings player={player} />}
+        <div className="play-bar-row">
+          <div className="play-bar-now">
+            <span className="play-bar-top">
+              <span className="play-label">{label}</span>
+              <span className="play-pose-step">
+                {index + 1} of {seq.length}
+              </span>
+            </span>
+            <span className="play-pose-name">
+              {pose.name}
+              {pose.sided && <span className="side">{sideLabel(step.side)}</span>}
+            </span>
+            <span className="play-bar-cue" title={pose.cue}>
+              {pose.cue}
+            </span>
+          </div>
+          <div className="play-controls">
+            {stopButton}
+            {backButton}
+            {playButton}
+            {forwardButton}
+            {settingsButton}
+          </div>
+          <div className="play-bar-side">
+            <span className="play-bar-times">
+              {formatDuration(Math.round(elapsedMs / 1000))} <span className="play-bar-sep">/</span> {timeLeft}
+            </span>
+            <span className="play-next">{upNext}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="play-dock">
       <div className="play-status">
@@ -134,16 +203,7 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
         {pose.sanskrit && <span className="play-sanskrit">{pose.sanskrit}</span>}
       </div>
       <p className="play-cue">{pose.cue}</p>
-      <p className="play-next">
-        {nextPose ? (
-          <>
-            Up next: <span>{nextPose.name}</span>
-            {nextPose.sided && ` · ${sideLabel(next.side)}`}
-          </>
-        ) : (
-          'Last pose'
-        )}
-      </p>
+      <p className="play-next">{upNext}</p>
 
       {/* Like a podcast player: the bar, with time played under its left end and time left under its right. */}
       <div className="play-progress" aria-hidden="true">
@@ -156,21 +216,11 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
 
       {/* Transport in the middle, the big round play button at its centre; stop and settings at the ends. */}
       <div className="play-controls">
-        <button className="play-side" onClick={player.stop} disabled={!active} aria-label="Stop" title="Stop">
-          <StopIcon />
-        </button>
+        {stopButton}
         {backButton}
         {playButton}
         {forwardButton}
-        <button
-          onClick={() => setShowSettings(!showSettings)}
-          aria-expanded={showSettings}
-          aria-label="Voice settings"
-          title="Voice settings"
-          className={showSettings ? 'play-side toggled' : 'play-side'}
-        >
-          <SettingsIcon />
-        </button>
+        {settingsButton}
       </div>
 
       {showSettings && <VoiceSettings player={player} />}

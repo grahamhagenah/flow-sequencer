@@ -4,9 +4,9 @@ import type { SampleFlow } from './data/samples';
 import { Dialog, type DialogSpec } from './Dialog';
 import { unlockPlayback } from './player/conductor';
 import { FlowList } from './FlowList';
-import { ArrowLeftIcon, CheckIcon, LinkIcon, PlusIcon, SaveIcon, UndoIcon } from './icons';
+import { ArrowLeftIcon, CheckIcon, FlowsIcon, LinkIcon, PencilIcon, PlusIcon, SaveIcon, UndoIcon } from './icons';
 import { Logo } from './Logo';
-import { deleteFlow, listFlows, loadDraft, newId, putFlow, type SavedFlow, saveDraft } from './library';
+import { deleteFlow, listFlows, loadDraft, loadResume, newId, putFlow, type SavedFlow, saveDraft, saveResume } from './library';
 import { decodeSteps, encodeSteps, fromHash, shareUrl, toHash } from './link';
 import type { Sequence } from './sequence';
 import { useHistory } from './useHistory';
@@ -24,7 +24,11 @@ const droppedNotice = (dropped: number) =>
     ? `This link had ${dropped} ${dropped === 1 ? 'step' : 'steps'} at the end that couldn’t be loaded, probably moves that have since changed. The rest is here.`
     : null;
 
-/** A share link wins over the stored draft, unless it is the draft (a reload). */
+/**
+ * A link (or a reload, whose address is the flow's link) opens that flow. The bare
+ * address opens the start page: a flow that was in progress is put aside to offer
+ * again there ("Continue where you left off") rather than opened.
+ */
 function initial(): Opened {
   const draft = loadDraft();
   const linked = fromHash(location.hash);
@@ -32,7 +36,7 @@ function initial(): Opened {
     const isDraft = draft && linked.dropped === 0 && draft.steps === encodeSteps(linked.seq) && draft.name === linked.name;
     return { id: isDraft ? draft.id : null, name: linked.name, seq: linked.seq, notice: droppedNotice(linked.dropped) };
   }
-  if (draft) return { id: draft.id, name: draft.name, seq: decodeSteps(draft.steps).seq, notice: null };
+  if (draft?.steps) saveResume(draft);
   return { id: null, name: '', seq: [], notice: null };
 }
 
@@ -59,6 +63,11 @@ export function App() {
   const [autoplay, setAutoplay] = useState(false);
   /** Bumped each time a flow is opened, so the sequence list can start it on its first page. */
   const [openCount, setOpenCount] = useState(0);
+  const [resume, setResume] = useState(loadResume);
+  const forgetResume = () => {
+    saveResume(null);
+    setResume(null);
+  };
   const lastOpen = useRef(0);
   const timelineRef = useRef<HTMLElement>(null);
 
@@ -168,7 +177,19 @@ export function App() {
   };
 
   const newFlow = () =>
-    guardUnsaved('Start a new flow?', 'Save and start new', () => open({ id: null, name: '', seq: [], notice: null }));
+    guardUnsaved('Start a new flow?', 'Save and start new', () => {
+      forgetResume();
+      open({ id: null, name: '', seq: [], notice: null });
+    });
+
+  // Picks up the flow put aside when the app opened at its bare address.
+  const openResume = () => {
+    if (!resume) return;
+    guardUnsaved('Open the earlier flow?', 'Save and open', () => {
+      forgetResume();
+      open({ id: resume.id, name: resume.name, seq: decodeSteps(resume.steps).seq, notice: null });
+    });
+  };
 
   const openSaved = (f: SavedFlow) => {
     if (f.id === id) return setView('builder');
@@ -235,14 +256,18 @@ export function App() {
         {view === 'builder' ? (
           <>
             <div className="bar-title">
-              <input
-                className="flow-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Untitled flow"
-                aria-label="Flow name"
-                maxLength={80}
-              />
+              {/* The name is editable in place; the pencil says so, and clicking it (it's inside the label) edits it. */}
+              <label className="name-field" title="Rename this flow">
+                <input
+                  className="flow-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Untitled flow"
+                  aria-label="Flow name"
+                  maxLength={80}
+                />
+                <PencilIcon />
+              </label>
               <span className="status">{status}</span>
             </div>
             <div className="bar-actions">
@@ -278,15 +303,17 @@ export function App() {
               >
                 <PlusIcon />
               </button>
+              {/* The Flows page, with a badge for how many are saved. */}
+              <button
+                className="icon-btn flows-icon"
+                onClick={() => setView('flows')}
+                aria-label={`Flows, ${flows.length} saved`}
+                data-tip="My flows"
+              >
+                <FlowsIcon />
+                {flows.length > 0 && <span className="icon-count">{flows.length}</span>}
+              </button>
             </div>
-            <button
-              className="nav"
-              onClick={() => setView('flows')}
-              aria-label={`Flows, ${flows.length} saved`}
-            >
-              Flows
-              {flows.length > 0 && <span className="count">{flows.length}</span>}
-            </button>
             </div>
           </>
         ) : (
@@ -320,6 +347,8 @@ export function App() {
           onOpenSample={(f) => openSample(f)}
           onPlaySample={playSample}
           recent={flows}
+          resume={resume}
+          onResume={openResume}
           onOpenSaved={openSaved}
           onSeeAll={() => setView('flows')}
           autoplay={autoplay}
