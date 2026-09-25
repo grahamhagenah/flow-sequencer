@@ -4,6 +4,7 @@ import { SHOW_SANSKRIT } from '../data/poses';
 import { BackIcon, ChevronIcon, ForwardIcon, PauseIcon, PlayIcon, SettingsIcon, StopIcon } from '../icons';
 import { formatDuration, type Sequence } from '../sequence';
 import { canSpeak, classMs, closingMs, speakSample, stepMs } from './conductor';
+import { PoseRing } from '../PoseRing';
 import { useIsPhone } from '../useIsPhone';
 import { BREATH_CHOICES, type Playback } from './usePlayer';
 
@@ -12,14 +13,15 @@ import { BREATH_CHOICES, type Playback } from './usePlayer';
  * and controls that can't do anything yet are greyed out, so pressing Play
  * changes what the dock says but never its shape.
  */
-export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback }) {
+export function PlaybackDock({ seq, player, startAt = 0 }: { seq: Sequence; player: Playback; startAt?: number }) {
   const { state, active, settings } = player;
   const [showSettings, setShowSettings] = useState(false);
   // Phones show a slim bar until it's tapped open, so the player doesn't cover the list.
   const phone = useIsPhone();
   const [open, setOpen] = useState(false);
 
-  const index = active ? state.index : 0;
+  // Before a class starts, the pose it will start from.
+  const index = active ? state.index : Math.min(startAt, seq.length - 1);
   const step = seq[index];
   const pose = getPose(step.poseId);
   const next = seq[index + 1];
@@ -55,10 +57,25 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
 
   const primaryLabel = state.playing ? 'Pause' : !active ? 'Play sequence' : state.phase === 'done' ? 'Play again' : 'Resume';
 
-  const progress = `${totalMs ? (elapsedMs / totalMs) * 100 : 0}%`;
+  // The ring beside the pose: its breaths, filling through the hold. It stays empty while
+  // the voice announces the pose (how long that takes is only estimated, so a fill that
+  // included it would stall), and full once the class is done.
+  const holdFraction =
+    active && state.phase === 'done'
+      ? 1
+      : active && state.phase === 'holding' && state.holdTotal
+        ? Math.min(1, state.holdElapsed / state.holdTotal)
+        : 0;
+  // Keyed by the step, so a new pose starts its ring from empty rather than winding it back.
+  const ring = <PoseRing key={index} fraction={holdFraction} />;
   const timeLeft = `−${formatDuration(Math.round(Math.max(0, totalMs - elapsedMs) / 1000))}`;
   const playButton = (
-    <button className="primary play-main" onClick={player.toggle} aria-label={primaryLabel} title={primaryLabel}>
+    <button
+      className="primary play-main"
+      onClick={() => (!active && startAt > 0 ? player.playFrom(index) : player.toggle())}
+      aria-label={primaryLabel}
+      title={primaryLabel}
+    >
       {state.playing ? <PauseIcon /> : <PlayIcon />}
     </button>
   );
@@ -89,19 +106,20 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
   if (phone && !open) {
     return (
       <div className="play-dock play-mini">
-        <div className="play-progress" aria-hidden="true">
-          <div style={{ width: progress }} />
-        </div>
         <div className="play-mini-row">
           <button className="play-mini-open" onClick={() => setOpen(true)} aria-label="Open the player" aria-expanded={false}>
+            {ring}
             <span className="play-mini-text">
-              <span className="play-label">{label}</span>
+              {/* The time left shares the label's line, leaving the pose's name the width. */}
+              <span className="play-mini-top">
+                <span className="play-label">{label}</span>
+                <span className="play-mini-time">{timeLeft}</span>
+              </span>
               <span className="play-pose-name">
                 {pose.name}
                 {pose.sided && <span className="side">{sideLabel(step.side)}</span>}
               </span>
             </span>
-            <span className="play-mini-time">{timeLeft}</span>
           </button>
           <div className="play-mini-controls">
             {backButton}
@@ -144,12 +162,11 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
   if (!phone) {
     return (
       <div className="play-dock play-bar">
-        <div className="play-progress" aria-hidden="true">
-          <div style={{ width: progress }} />
-        </div>
         {showSettings && <VoiceSettings player={player} />}
         <div className="play-bar-row">
           <div className="play-bar-now">
+            {ring}
+            <div className="play-bar-text">
             <span className="play-bar-top">
               <span className="play-label">{label}</span>
               <span className="play-pose-step">
@@ -163,6 +180,7 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
             <span className="play-bar-cue" title={pose.cue}>
               {pose.cue}
             </span>
+            </div>
           </div>
           <div className="play-controls">
             {stopButton}
@@ -196,6 +214,7 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
         )}
       </div>
       <div className="play-pose">
+        {ring}
         <span className="play-pose-name">
           {pose.name}
           {pose.sided && <span className="side">{sideLabel(step.side)}</span>}
@@ -205,10 +224,7 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
       <p className="play-cue">{pose.cue}</p>
       <p className="play-next">{upNext}</p>
 
-      {/* Like a podcast player: the bar, with time played under its left end and time left under its right. */}
-      <div className="play-progress" aria-hidden="true">
-        <div style={{ width: progress }} />
-      </div>
+      {/* Time played on the left, time left on the right, like a podcast player's. */}
       <div className="play-times">
         <span>{formatDuration(Math.round(elapsedMs / 1000))}</span>
         <span>{timeLeft}</span>

@@ -1,4 +1,3 @@
-import type { CSSProperties } from 'react';
 import { MoveLabel, namesSide, Stepper } from './choices';
 import { getPose, renderLabel, sideLabel, TRANSITION_BY_ID } from './data/graph';
 import { SHOW_SANSKRIT } from './data/poses';
@@ -8,8 +7,7 @@ import type { Step } from './sequence';
 
 /**
  * One pose in the sequence list. Clicking anywhere on it jumps playback there
- * (paused); the ⋯ opens its edits. While it plays, the row fills with its
- * `progress` (0–100) and its breaths can be changed in place.
+ * (paused); the ⋯ opens its edits. While it plays, its breaths can be changed in place.
  */
 export function SequenceRow({
   step,
@@ -19,7 +17,6 @@ export function SequenceRow({
   played,
   insertAfter,
   menuOpen,
-  progress,
   onJump,
   onBreaths,
   onMenu,
@@ -33,7 +30,6 @@ export function SequenceRow({
   /** An insert is being chosen right after this row. */
   insertAfter: boolean;
   menuOpen: boolean;
-  progress: number;
   onJump: () => void;
   onBreaths: (n: number) => void;
   onMenu: (anchor: DOMRect) => void;
@@ -52,7 +48,6 @@ export function SequenceRow({
     <li
       data-index={index}
       className={className}
-      style={playing ? ({ '--progress': `${progress}%` } as CSSProperties) : undefined}
       aria-current={playing ? 'step' : undefined}
       // The whole row jumps there, not just its text; the breaths control keeps its own clicks.
       // (The text is a real button, for the keyboard.)

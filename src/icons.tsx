@@ -153,3 +153,20 @@ export const MoreIcon = () => (
     <circle cx="19" cy="12" r="1.6" />
   </svg>
 );
+
+export const TrashIcon = () => (
+  <Icon>
+    <path d="M4 7h16M10 11v6M14 11v6" />
+    <path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12" />
+    <path d="M9 7V4h6v3" />
+  </Icon>
+);
+
+/** Cut the flow here: everything from this pose on goes. */
+export const ScissorsIcon = () => (
+  <Icon>
+    <circle cx="6" cy="6" r="3" />
+    <circle cx="6" cy="18" r="3" />
+    <path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12" />
+  </Icon>
+);

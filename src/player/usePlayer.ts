@@ -138,6 +138,11 @@ export function usePlayer(seq: Sequence) {
       setActive(true);
       conductor.current?.goTo(i, false);
     },
+    /** Moves to step i and plays from there. Call from a click, as for toggle. */
+    playFrom: (i: number) => {
+      setActive(true);
+      conductor.current?.goTo(i, true);
+    },
     stop: () => {
       conductor.current?.stop();
       setActive(false);

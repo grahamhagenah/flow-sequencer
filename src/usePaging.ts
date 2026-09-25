@@ -18,16 +18,20 @@ let handledOpen = 0;
  * Long flows show a page of the list at a time. A newly opened flow starts on
  * its first page; after that the page follows `focus` (the newest pose while
  * building, the playing one during a class). Turning pages by hand holds until
- * that moves on.
+ * that moves on. While building, the page only follows the newest pose forward (as
+ * poses are added): removing one leaves you on the page you were on.
  */
 export function usePaging({
   length,
   focus,
+  followBack,
   openCount,
   panelRef,
 }: {
   length: number;
   focus: number;
+  /** Follow `focus` back too (during a class, when skipping back), not only forward. */
+  followBack: boolean;
   openCount: number;
   panelRef: RefObject<HTMLElement | null>;
 }) {
@@ -50,10 +54,12 @@ export function usePaging({
       return;
     }
     if (lastFocus.current === focus && lastPageSize.current === pageSize) return;
+    const movedBack = lastPageSize.current === pageSize && focus < lastFocus.current;
     lastPageSize.current = pageSize;
     lastFocus.current = focus;
+    if (movedBack && !followBack) return;
     setPage(Math.max(0, Math.floor(focus / pageSize)));
-  }, [focus, openCount, pageSize, panelRef]);
+  }, [focus, followBack, openCount, pageSize, panelRef]);
 
   /** The index of the first step on the page shown. */
   const first = Math.min(page, Math.max(0, pageCount - 1)) * pageSize;

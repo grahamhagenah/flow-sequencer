@@ -130,6 +130,14 @@ export function removeStep(seq: Sequence, i: number): Removal | null {
 }
 
 /** Everything before step i. */
+/**
+ * Whether `next` is `prev` with steps added at the end (a pose added, "Get to", the
+ * mirror), as opposed to growing some other way, like an undo bringing back a removed
+ * pose. Steps are never changed in place, so the same objects mean the same steps.
+ */
+export const isAppend = (prev: Sequence, next: Sequence): boolean =>
+  next.length > prev.length && prev.every((s, i) => next[i] === s);
+
 export const cutFrom = (seq: Sequence, i: number): Sequence => seq.slice(0, i);
 
 export interface Insertion {

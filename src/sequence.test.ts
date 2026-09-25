@@ -6,6 +6,7 @@ import {
   cutFrom,
   insertAfter,
   insertOptions,
+  isAppend,
   mirror,
   mirrorRange,
   removeStep,
@@ -130,6 +131,17 @@ describe('editing the middle', () => {
       expectValid(next);
     }
     expect(insertOptions(seq, 1)).toEqual([]);
+  });
+
+  it('tells poses added at the end from other growth', () => {
+    const flow = go(go(start('mountain'), 'upward-salute'), 'forward-fold');
+    const longer = go(flow, 'halfway-lift');
+    expect(isAppend(flow, longer)).toBe(true);
+    expect(isAppend(flow, setBreaths(longer, longer.length - 1, 4))).toBe(true);
+    // Undoing a removal brings back the old flow: longer, but not added at the end.
+    const removed = removeStep(longer, 1)!.seq;
+    expect(isAppend(removed, longer)).toBe(false);
+    expect(isAppend(longer, flow)).toBe(false);
   });
 
   it('cuts the flow at a pose', () => {

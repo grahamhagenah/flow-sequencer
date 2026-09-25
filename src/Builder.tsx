@@ -9,9 +9,27 @@ import { aboutMinutes, classMs } from './player/conductor';
 import { PlaybackDock } from './player/PlaybackDock';
 import { usePlayer } from './player/usePlayer';
 import { RowMenu } from './RowMenu';
-import { advance, insertAfter, type Sequence, type SetSeq, setBreaths, start } from './sequence';
+import { advance, insertAfter, isAppend, type Sequence, type SetSeq, setBreaths, start } from './sequence';
 import { Pager, SequenceRow } from './SequenceRow';
+import { SinglePoseView } from './SinglePoseView';
 import { usePaging } from './usePaging';
+
+type Layout = 'single' | 'list';
+const LAYOUT_KEY = 'nextpose:layout';
+const loadLayout = (): Layout => {
+  try {
+    return localStorage.getItem(LAYOUT_KEY) === 'list' ? 'list' : 'single';
+  } catch {
+    return 'single';
+  }
+};
+const saveLayout = (layout: Layout) => {
+  try {
+    localStorage.setItem(LAYOUT_KEY, layout);
+  } catch {
+    // Not remembered; single view next time.
+  }
+};
 
 /**
  * The sequencer: the list of poses with the choices of what comes next under the
@@ -82,9 +100,22 @@ export function Builder({
     if (moved) timelineRef.current?.querySelector(`.row[data-index="${playingIndex}"]`)?.scrollIntoView({ block: 'nearest' });
   }, [playingIndex, timelineRef]);
 
+  // While building, the list follows the newest pose only as poses are added at the end;
+  // a removal, or an undo that brings one back, leaves the page where it is.
+  const buildFocus = useRef(seq.length - 1);
+  const focusSeq = useRef(seq);
+  const focusOpen = useRef(openCount);
+  if (focusSeq.current !== seq || focusOpen.current !== openCount) {
+    const fresh = focusOpen.current !== openCount || isAppend(focusSeq.current, seq);
+    buildFocus.current = fresh ? seq.length - 1 : Math.min(buildFocus.current, seq.length - 1);
+    focusSeq.current = seq;
+    focusOpen.current = openCount;
+  }
+
   const { page, pageSize, pageCount, first, onLastPage, justOpened, goToPage, showStep } = usePaging({
     length: seq.length,
-    focus: player.active ? player.state.index : seq.length - 1,
+    focus: player.active ? player.state.index : buildFocus.current,
+    followBack: player.active,
     openCount,
     panelRef: timelineRef,
   });
@@ -107,8 +138,13 @@ export function Builder({
 
   // Inserting between two poses: while set, the choices under that row offer what fits there.
   const [insertAt, setInsertAt] = useState<number | null>(null);
-  // Each of the two views starts at its top (the panel scrolls on desktop, the page on phones).
+  // Switching between the start page and the empty sequencer starts the new view at its
+  // top (the panel scrolls on desktop, the page on phones). Only on a real switch, not
+  // on mount, which would undo the scroll to the newest pose on coming back from Flows.
+  const lastChoosing = useRef(choosing);
   useEffect(() => {
+    if (lastChoosing.current === choosing) return;
+    lastChoosing.current = choosing;
     if (timelineRef.current) timelineRef.current.scrollTop = 0;
     window.scrollTo(0, 0);
   }, [choosing, timelineRef]);
@@ -155,18 +191,21 @@ export function Builder({
   });
 
   // Adding a pose always shows it, even mid-class (when the page otherwise follows
-  // the playing pose). The newest row is marked in the CSS (.row.current).
-  const lastLength = useRef(seq.length);
+  // the playing pose): at the end, or where it was inserted. The newest row is marked
+  // in the CSS (.row.current). Other growth (an undo bringing back a removed pose)
+  // leaves the view alone.
+  const lastSeq = useRef(seq);
   const [justAdded, setJustAdded] = useState<{ index: number } | null>(null);
   useEffect(() => {
-    const grew = seq.length > lastLength.current && !justOpened;
-    lastLength.current = seq.length;
-    const target = revealAt.current ?? seq.length - 1;
+    const inserted = revealAt.current;
+    const added = !justOpened && (inserted !== null || isAppend(lastSeq.current, seq));
+    lastSeq.current = seq;
     revealAt.current = null;
-    if (!grew) return;
+    if (!added) return;
+    const target = inserted ?? seq.length - 1;
     showStep(target);
     setJustAdded({ index: target });
-  }, [seq.length, justOpened]);
+  }, [seq, justOpened]);
   useEffect(() => {
     // A pose added at the end is kept in view by keepChoicesInPlace; an inserted one
     // (or one shown from elsewhere) is scrolled to here.
@@ -181,12 +220,49 @@ export function Builder({
   }, [inserting, insertAt, timelineRef]);
 
   const shown = seq.slice(first, first + pageSize);
-  const { holdElapsed, holdTotal, speechElapsed, speechTotal } = player.state;
-  // The whole step, the voice's announcement as well as the hold, so the bar moves from
-  // the moment the step starts (as the player's clock does) rather than waiting for
-  // the voice to finish. (A one-breath step speaks during its breath: speechTotal is 0.)
-  const stepTotal = speechTotal + holdTotal;
-  const progress = stepTotal ? ((speechElapsed + holdElapsed) / stepTotal) * 100 : 0;
+
+  // List or single-pose view. Single is the default, for following a flow; the list is
+  // where it's built, so starting a new sequence opens that. The choice is remembered.
+  const [layout, setLayoutState] = useState<Layout>(loadLayout);
+  const setLayout = (next: Layout) => {
+    setLayoutState(next);
+    saveLayout(next);
+    setMenu(null); // a row's menu belongs to the list
+  };
+  const single = layout === 'single' && seq.length > 0;
+  // The pose shown in single view: the playing one during a class, else the one stepped to.
+  const [viewIndex, setViewIndex] = useState(0);
+  useEffect(() => {
+    if (justOpened) setViewIndex(0);
+  }, [justOpened]);
+  const singleIndex = Math.min(player.active ? player.state.index : viewIndex, seq.length - 1);
+  const stepSingle = (by: -1 | 1) => {
+    if (player.active) return by > 0 ? player.next() : player.prev();
+    setViewIndex((i) => Math.max(0, Math.min(seq.length - 1, Math.min(i, seq.length - 1) + by)));
+  };
+  // During a class, the breath being taken on the pose in view (for its ring and count).
+  const liveBreath = (() => {
+    const { index, phase, holdElapsed, holdTotal } = player.state;
+    if (!player.active || index !== singleIndex || (phase !== 'speaking' && phase !== 'holding')) return null;
+    const breathMs = player.settings.secondsPerBreath * 1000;
+    const holding = phase === 'holding';
+    return {
+      breath: holding ? Math.min(seq[index].breaths, Math.floor(holdElapsed / breathMs) + 1) : null,
+      fraction: holding && holdTotal ? Math.min(1, holdElapsed / holdTotal) : 0,
+    };
+  })();
+  // ← and → step through the poses in single view (not while typing).
+  useEffect(() => {
+    if (!single) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === 'ArrowLeft') stepSingle(-1);
+      else if (e.key === 'ArrowRight') stepSingle(1);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
 
   return (
     <main className="layout">
@@ -194,11 +270,21 @@ export function Builder({
         {banner}
         <div className={seq.length || choosing ? 'timeline-head' : 'timeline-head empty-head'}>
           <h2>Sequence</h2>
-          {pageCount > 1 && <Pager page={first / pageSize} pageCount={pageCount} onPage={goToPage} />}
+          {!single && pageCount > 1 && <Pager page={first / pageSize} pageCount={pageCount} onPage={goToPage} />}
           {seq.length > 0 && (
-            <span className="meta">
-              {seq.length} {seq.length === 1 ? 'pose' : 'poses'} ·{' '}
-              {aboutMinutes(classMs(seq, player.settings.secondsPerBreath, player.settings.chime))}
+            <span className="timeline-head-end">
+              <span className="meta">
+                {seq.length} {seq.length === 1 ? 'pose' : 'poses'} ·{' '}
+                {aboutMinutes(classMs(seq, player.settings.secondsPerBreath, player.settings.chime))}
+              </span>
+              <span className="layout-toggle" role="group" aria-label="View">
+                <button aria-pressed={single} onClick={() => setLayout('single')} title="One pose at a time">
+                  One pose
+                </button>
+                <button aria-pressed={!single} onClick={() => setLayout('list')} title="The whole list, to edit">
+                  List
+                </button>
+              </span>
             </span>
           )}
         </div>
@@ -206,7 +292,10 @@ export function Builder({
           <FirstPoseChoices onPick={(id) => set(start(id))} />
         ) : seq.length === 0 ? (
           <GetStarted
-            onBuild={() => setChoosing(true)}
+            onBuild={() => {
+              setChoosing(true);
+              setLayout('list');
+            }}
             recent={recent}
             resume={resume}
             onResume={onResume}
@@ -214,6 +303,16 @@ export function Builder({
             onOpenSample={onOpenSample}
             onOpenSaved={onOpenSaved}
             onSeeAll={onSeeAll}
+          />
+        ) : single ? (
+          <SinglePoseView
+            seq={seq}
+            index={singleIndex}
+            onStep={stepSingle}
+            secondsPerBreath={player.settings.secondsPerBreath}
+            live={liveBreath}
+            onShow={(i) => (player.active ? player.goTo(i) : setViewIndex(i))}
+            onBreaths={(n) => set((q) => setBreaths(q, singleIndex, n))}
           />
         ) : (
           <ol start={first + 1}>
@@ -230,7 +329,6 @@ export function Builder({
                   played={player.active && i < playingIndex}
                   insertAfter={inserting && i === insertAt}
                   menuOpen={menu?.index === i}
-                  progress={playing ? progress : 0}
                   onJump={() => player.goTo(i)}
                   onBreaths={(n) => set((q) => setBreaths(q, i, n))}
                   onMenu={(anchor) => setMenu(menu?.index === i ? null : { index: i, anchor })}
@@ -256,6 +354,7 @@ export function Builder({
         {/* What comes next, right under the newest pose (on the last page; from any
             other page, a way there). */}
         {current &&
+          !single &&
           (onLastPage ? (
             <Composer
               seq={seq}
@@ -274,16 +373,20 @@ export function Builder({
           ))}
         {seq.length > 0 && (
           <div className="play-footer">
-            <PlaybackDock seq={seq} player={player} />
+            {/* In single view, Play starts from the pose on screen. */}
+            <PlaybackDock seq={seq} player={player} startAt={single ? singleIndex : 0} />
           </div>
         )}
       </aside>
       {menu && menu.index < seq.length && (
         <RowMenu
+          key={menu.index}
           seq={seq}
           index={menu.index}
           anchor={menu.anchor}
           onClose={() => setMenu(null)}
+          onBreaths={(n) => set((q) => setBreaths(q, menu.index, n))}
+          onPlayFrom={() => player.playFrom(menu.index)}
           onInsert={() => setInsertAt(menu.index)}
           onRemove={(next) => set(next)}
         />

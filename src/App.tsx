@@ -98,13 +98,18 @@ export function App() {
     history.replaceState(null, '', url);
   }, [id, name, steps, seq.length]);
 
+  // Coming back from the Flows page, show the newest pose and its choices. Only the
+  // desktop panel scrolls on its own (on phones the page does, and this does nothing).
+  // Edits scroll nothing here: the builder keeps the choices in place as poses are
+  // added, and leaves the view alone on a removal. A flow that was just opened is left
+  // at its top (the list starts it on page one), and so is the start page.
+  const lastView = useRef(view);
   useEffect(() => {
-    // Keep the newest step in view. Only the desktop panel scrolls on its own (on
-    // phones the page does, and this does nothing). A flow that was just opened is
-    // left at its top (the list starts it on page one), and so is the start page.
     const el = timelineRef.current;
+    const cameBack = view !== lastView.current;
+    lastView.current = view;
     if (lastOpen.current !== openCount) lastOpen.current = openCount;
-    else if (el && seq.length > 0) el.scrollTop = el.scrollHeight;
+    else if (el && seq.length > 0 && cameBack) el.scrollTop = el.scrollHeight;
   }, [seq.length, view, openCount]);
 
   useEffect(() => {

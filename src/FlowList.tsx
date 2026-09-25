@@ -52,8 +52,8 @@ export function FlowList({
       <p className="storage-note">
         <InfoIcon />
         <span>
-          Saved in this browser only, and Safari clears it after a week without a visit. Copy a flow’s link to keep
-          it for good or open it on another device.
+          Saved in this browser only, and Safari clears it after a week away. Copy a flow’s link to keep it or open
+          it elsewhere.
         </span>
       </p>
       {flows.length === 0 ? (

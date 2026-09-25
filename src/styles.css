@@ -237,11 +237,13 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 .dialog h2 { margin: 0 0 var(--space-2); font-size: var(--text-lg); font-weight: 600; color: var(--text); letter-spacing: 0; text-transform: none; }
 .dialog p { margin: 0 0 var(--space-5); color: var(--muted); }
 .dialog-actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-2); }
-.dialog-actions button { padding: var(--space-2) var(--space-4); white-space: nowrap; }
-/* One even row on the right: the set-apart action, Cancel, then the main action.
-   The set-apart one (Discard) stands out by being a quiet red text button, not by spacing. */
-.dialog-actions .aside { background: none; border-color: transparent; }
-.dialog-actions .aside:hover:not(:disabled) { background: var(--surface-2); border-color: transparent; }
+.dialog-actions button { min-height: 40px; padding: 0 var(--space-4); white-space: nowrap; }
+/* Cancel and the main action together on the right, the main one last; a set-apart
+   action (Discard) on its own at the left, as quiet red text, well away from them.
+   Cancel is quiet too, so the main action is the one filled button. */
+.dialog-actions .aside { margin-right: auto; margin-left: calc(-1 * var(--space-4)); }
+.dialog-actions .aside, .dialog-actions .cancel { background: none; border-color: transparent; }
+.dialog-actions .aside:hover:not(:disabled), .dialog-actions .cancel:hover:not(:disabled) { background: var(--surface-2); border-color: transparent; }
 .dialog-actions .cancel { order: 1; }
 .dialog-actions .main { order: 2; }
 button.danger { color: var(--danger); }
@@ -484,6 +486,58 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .timeline-head h2 { margin: 0; }
 .timeline-head .meta { font-size: var(--text-sm); }
 .timeline-head.empty-head { display: none; }
+/* The pose count and the view toggle, at the heading's right. */
+.timeline-head-end { display: flex; align-items: center; gap: var(--space-3); margin-left: auto; }
+/* One pose at a time, or the list: two small words, the chosen one lit. */
+.layout-toggle { display: flex; gap: 2px; padding: 2px; background: var(--surface); border-radius: var(--radius-sm); }
+.layout-toggle button { height: 28px; padding: 0 var(--space-3); font-size: var(--text-sm); font-weight: 500; white-space: nowrap; color: var(--muted); background: none; border: none; border-radius: 6px; }
+.layout-toggle button:hover:not(:disabled) { color: var(--text); }
+.layout-toggle button[aria-pressed='true'] { color: var(--accent); background: var(--surface-2); }
+
+/* One pose at a time: the pose large, its words beside it (under it on phones), and
+   what's next below. */
+.single { display: flex; flex-direction: column; gap: var(--space-5); padding: var(--space-5) 0 var(--space-6); }
+.single-nav { display: flex; align-items: center; justify-content: space-between; }
+.single-nav button { display: inline-grid; place-items: center; width: 40px; height: 40px; padding: 0; color: var(--soft); background: none; border: none; border-radius: 50%; }
+.single-nav button svg { width: var(--icon-md); height: var(--icon-md); }
+.single-nav button:hover:not(:disabled) { color: var(--text); background: var(--surface-2); }
+.single-count { font-size: var(--text-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
+.single-count span { font-weight: 400; color: var(--muted); }
+.single-pose { display: flex; align-items: center; gap: var(--space-6); }
+.single-figure > .pose-figure { color: var(--accent); }
+.single-text { min-width: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.single-via { font-size: var(--text-md); color: var(--muted); }
+.timeline .single-name { margin: 0; font-size: var(--text-2xl); font-weight: 700; line-height: 1.2; letter-spacing: 0; text-transform: none; color: var(--text); }
+.single-name .side { font-size: var(--text-sm); }
+.single-sanskrit { margin-top: calc(-1 * var(--space-1)); font-size: var(--text-lg); font-style: italic; color: var(--muted); }
+.single-cue { margin: var(--space-1) 0 0; font-size: var(--text-lg); line-height: 1.5; color: var(--soft); max-width: 44ch; }
+/* Its breaths, quietly under the words. */
+.single-edit { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-2); font-size: var(--text-sm); color: var(--muted); }
+/* The poses either side, under a rule: quiet, a little brighter on hover. */
+.single-around { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--rule); }
+.single-neighbour { min-width: 0; display: flex; align-items: center; gap: var(--space-3); padding: 0; text-align: left; background: none; border: none; border-radius: 0; opacity: 0.75; }
+.single-neighbour:hover:not(:disabled) { opacity: 1; }
+.single-neighbour.right { justify-content: flex-end; text-align: right; }
+.single-neighbour > svg.icon { flex: none; width: var(--icon-md); height: var(--icon-md); color: var(--muted); }
+.single-neighbour .pose-figure { width: 32px; height: 32px; }
+.single-neighbour-text { min-width: 0; display: flex; flex-direction: column; }
+.single-neighbour-label { font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.single-neighbour-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.single-end { margin: 0; align-self: center; font-size: var(--text-sm); color: var(--muted); }
+/* A strip of the poses around this one, this one lit and underlined. */
+.single-strip { display: flex; justify-content: center; gap: var(--space-1); margin-top: calc(-1 * var(--space-3)); }
+.single-strip button { display: grid; place-items: center; width: 44px; height: 48px; padding: 0; background: none; border: none; border-bottom: 2px solid transparent; border-radius: 0; opacity: 0.6; }
+.single-strip button:hover:not(:disabled) { opacity: 1; }
+.single-strip button.current { opacity: 1; border-bottom-color: var(--accent); }
+.single-strip button.current .pose-figure { color: var(--accent); }
+/* The drawing, with the breath ring around it during a class. */
+.single-figure { position: relative; flex: none; display: grid; place-items: center; width: 200px; height: 200px; }
+.single-figure > * { grid-area: 1 / 1; }
+.single-figure .single-ring circle { stroke-width: 0.9; }
+/* The breath being taken, during a class. */
+.single-breath { font-size: var(--text-lg); font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+.single-breath span { font-weight: 400; color: var(--muted); }
+.single-time { color: var(--muted); }
 .timeline-head.empty-head + .get-started { padding-top: var(--space-5); }
 .pager { display: flex; align-items: center; gap: var(--space-1); margin-right: auto; margin-left: var(--space-3); font-size: var(--text-sm); color: var(--muted); font-variant-numeric: tabular-nums; }
 .pager span { min-width: 3.2em; text-align: center; }
@@ -536,30 +590,11 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 }
 .row-name { font-weight: 500; }
 .row.current .row-name { color: var(--accent); }
-/* The newest pose: a faint steady tint, like a cursor. It moves down as poses are
-   added; no animation, and no edge (that marks the playing pose). */
-.row.current { background: color-mix(in srgb, var(--accent) 4%, transparent); }
-.row.current:hover:not(.playing) { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+/* The newest pose is marked only by its apricot drawing and name, no background. */
 .row-sanskrit { font-size: var(--text-xs); font-style: italic; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .row.played .row-main { opacity: 0.45; }
-/* Registered so it can be animated: progress arrives in 250ms ticks (see
-   conductor.ts), and gliding between them over the same 250ms reads as one
-   continuous fill. */
-@property --progress {
-  syntax: '<percentage>';
-  inherits: false;
-  initial-value: 0%;
-}
-.row.playing {
-  /* A faint apricot wash for the part of the pose that's done. */
-  background: linear-gradient(
-    to right,
-    color-mix(in srgb, var(--accent) 7%, transparent) var(--progress),
-    transparent var(--progress)
-  );
-  box-shadow: inset 3px 0 0 var(--accent);
-  transition: --progress 250ms linear;
-}
+/* The playing pose: an apricot edge (its progress is the ring in the player). */
+.row.playing { box-shadow: inset 3px 0 0 var(--accent); }
 .row.playing .row-name { color: var(--accent); }
 .num { width: 22px; flex: none; color: var(--muted); font-size: var(--text-xs); text-align: right; font-variant-numeric: tabular-nums; }
 .row-main {
@@ -609,16 +644,39 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   z-index: 20;
   display: flex;
   flex-direction: column;
-  min-width: 240px;
+  width: 288px;
+  max-width: calc(100vw - var(--space-4));
   padding: var(--space-1);
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.5);
 }
-.row-menu button { padding: var(--space-2) var(--space-3); font-size: var(--text-md); text-align: left; background: none; border: none; border-radius: 6px; }
-.row-menu button:hover:not(:disabled) { background: var(--surface); }
-.row-menu .why { padding: 0 var(--space-3) var(--space-2); font-size: var(--text-xs); color: var(--muted); }
+/* Which pose it is: its drawing, name, and place in the flow. */
+.row-menu-head { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-3) var(--space-2); }
+.row-menu-head .pose-figure { color: var(--accent); }
+.row-menu-title { min-width: 0; display: flex; flex-direction: column; }
+.row-menu-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row-menu-sub { font-size: var(--text-xs); color: var(--muted); }
+/* Its breaths, changed in place (the menu stays open). */
+.row-menu-breaths { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin: 0 var(--space-1) var(--space-1); padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3); font-size: var(--text-sm); color: var(--muted); background: var(--surface); border-radius: var(--radius-sm); }
+.row-menu-breaths .stepper { gap: var(--space-2); }
+.row-menu-breaths .stepper button { width: 32px; height: 32px; background: var(--surface-2); }
+.row-menu-breaths .stepper button:hover:not(:disabled) { background: var(--border); }
+.row-menu-breaths .stepper .count { min-width: 5.5em; }
+/* The actions, each with its icon. */
+.row-menu-items { display: flex; flex-direction: column; margin-top: var(--space-1); padding-top: var(--space-1); border-top: 1px solid var(--border); }
+.row-menu-items button { display: flex; align-items: center; gap: var(--space-3); min-height: 40px; padding: var(--space-2) var(--space-3); font-size: var(--text-md); text-align: left; background: none; border: none; border-radius: var(--radius-sm); }
+.row-menu-items button:hover:not(:disabled) { background: var(--surface); }
+.row-menu-items button svg { flex: none; width: var(--icon-sm); height: var(--icon-sm); color: var(--muted); }
+.row-menu-items button:hover:not(:disabled) svg { color: var(--text); }
+.row-menu-items button.danger svg { color: var(--danger); }
+/* A label with a quiet second line under it (why an action can't be done). */
+.row-menu-label { display: flex; flex-direction: column; }
+.row-menu-note { font-size: var(--text-xs); color: var(--muted); }
+/* A disabled action fades, but its note stays readable. */
+.row-menu-items button:disabled { opacity: 1; color: var(--muted); }
+.row-menu-items button:disabled svg { opacity: 0.5; }
 
 /* "Get to": a roomier select with its own chevron, in the choices' colours. */
 .route { margin-top: var(--space-3); }
@@ -702,10 +760,10 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 
 /* The wider-screen player bar: what's playing, the controls, and the time, on one line
    under a progress line along its top edge. */
-.play-bar { padding: 0 var(--space-4) var(--space-3); overflow: hidden; }
-.play-bar .play-progress { height: 3px; margin: 0 calc(-1 * var(--space-4)) var(--space-3); border-radius: 0; }
+.play-bar { padding: var(--space-3) var(--space-4); overflow: hidden; }
 .play-bar-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: var(--space-5); }
-.play-bar-now { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.play-bar-now { min-width: 0; display: flex; align-items: center; gap: var(--space-3); }
+.play-bar-text { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .play-bar-top { display: flex; align-items: baseline; gap: var(--space-2); }
 .play-bar .play-pose-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .play-bar-cue { font-size: var(--text-sm); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -723,13 +781,14 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .play-bar .play-settings { margin: 0 0 var(--space-3); padding: 0 0 var(--space-3); border-top: none; border-bottom: 1px solid var(--border); }
 
 /* The phone mini player: a progress line along its top edge, what's playing, and play/pause. */
-.play-mini { padding: 0 var(--space-3) var(--space-2); overflow: hidden; }
-.play-mini .play-progress { height: 3px; margin: 0 calc(-1 * var(--space-3)) var(--space-2); border-radius: 0; }
+.play-mini { padding: var(--space-2) var(--space-3); overflow: hidden; }
 .play-mini-row { display: flex; align-items: center; gap: var(--space-3); }
-/* What's playing on the left, the time left beside it, centred against both lines. */
-.play-mini-open { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--space-3); padding: var(--space-1) 0; text-align: left; background: none; border: none; }
+/* What's playing on the left, after its breath ring: the label and time left, then the pose. */
+.play-mini-open { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: var(--space-1) 0; text-align: left; background: none; border: none; }
+.play-mini-open .pose-ring { width: 30px; height: 30px; }
 .play-mini-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.play-mini-time { flex: none; font-size: var(--text-sm); color: var(--muted); font-variant-numeric: tabular-nums; }
+.play-mini-top { display: flex; align-items: baseline; gap: var(--space-2); white-space: nowrap; overflow: hidden; }
+.play-mini-time { font-size: var(--text-xs); color: var(--muted); font-variant-numeric: tabular-nums; }
 .play-mini .play-pose-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Back, play/pause and forward on the right, like a podcast app's mini player. */
 .play-mini-controls { flex: none; display: flex; align-items: center; gap: 2px; }
@@ -741,10 +800,14 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .play-mini .play-skip svg { width: var(--icon-lg); height: var(--icon-lg); }
 .play-mini .play-skip:disabled { opacity: 0.3; }
 .play-label { font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
-.play-progress { height: 4px; margin: var(--space-3) 0 6px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
-.play-progress div { height: 100%; background: var(--accent); transition: width 250ms linear; }
+/* The ring beside the pose in the player: its breaths, filling through the hold. The
+   progress arrives in 250ms ticks, and gliding between them reads as one steady fill. */
+.pose-ring { flex: none; }
+.pose-ring circle { fill: none; stroke-width: 3; }
+.pose-ring-track { stroke: var(--surface-2); }
+.pose-ring-fill { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 250ms linear; }
 
-.play-pose { margin-top: 6px; }
+.play-pose { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-2); }
 .play-sanskrit { display: block; margin-top: 1px; font-size: var(--text-sm); font-style: italic; color: var(--muted); }
 .play-pose-name { font-size: var(--text-lg); font-weight: 600; }
 .play-pose-step { font-size: var(--text-xs); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -753,7 +816,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .play-next { margin: var(--space-2) 0 0; font-size: var(--text-sm); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .play-next span { color: var(--text); }
 
-.play-times { display: flex; justify-content: space-between; font-size: var(--text-xs); color: var(--muted); font-variant-numeric: tabular-nums; }
+.play-times { margin-top: var(--space-3); display: flex; justify-content: space-between; font-size: var(--text-xs); color: var(--muted); font-variant-numeric: tabular-nums; }
 
 /* A podcast player's row: skip buttons either side of a big round play button in the
    middle, stop and settings smaller at the ends. Round, borderless, easy to hit. */
@@ -787,11 +850,13 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .test-voice:hover:not(:disabled) { color: var(--text); }
 
 @media (max-width: 480px) {
-  /* Stacked, the main action first and Cancel last. */
-  .dialog-actions { flex-direction: column; align-items: stretch; }
+  /* Stacked full width: the main action, then Cancel (boxed, so it reads as a button),
+     then Discard last, as red text, furthest from the thumb's first reach. */
+  .dialog-actions { flex-direction: column; align-items: stretch; gap: var(--space-2); }
+  .dialog-actions button { min-height: 48px; }
   .dialog-actions .main { order: 0; }
-  .dialog-actions .aside { order: 1; }
-  .dialog-actions .cancel { order: 2; }
+  .dialog-actions .cancel { order: 1; background: var(--surface-2); border-color: var(--border); }
+  .dialog-actions .aside { order: 2; margin: 0; }
 }
 
 @media (max-width: 760px) {
@@ -834,6 +899,14 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   /* The pager sits in the middle of the heading's line, whatever the heading beside it. */
   .timeline-head { display: grid; grid-template-columns: 1fr auto 1fr; }
   .pager { grid-column: 2; margin: 0; }
+  .timeline-head-end { grid-column: 3; justify-self: end; }
+  .layout-toggle button { height: 36px; }
+  .single-pose { flex-direction: column; align-items: flex-start; gap: var(--space-4); }
+  .single-figure { width: 160px; height: 160px; margin-left: -12px; }
+  .single-figure > .pose-figure { width: 132px; height: 132px; }
+  .single-figure > .single-ring { width: 160px; height: 160px; }
+  .single-figure > .single-ring + .pose-figure { width: 104px; height: 104px; }
+  .single-neighbour-name { font-size: var(--text-sm); }
   .pager button { width: 40px; height: 40px; }
 
   /* No row numbers on phones (the playing row keeps its apricot edge), so the pose
@@ -846,7 +919,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .row-more { width: 44px; height: 44px; margin-right: -10px; }
   .row-more svg { width: var(--icon-md); height: var(--icon-md); }
   .row .pose-figure { width: 40px; height: 40px; margin-left: 0; }
-  .row-menu button { padding: 10px var(--space-3); }
+  .row-menu-items button { min-height: 48px; }
 
   /* Text links get a thumb-sized target, invisibly, so nothing around them moves. */
   .link-btn::after { content: ''; position: absolute; inset: -12px -8px; }
