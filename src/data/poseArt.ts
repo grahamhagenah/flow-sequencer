@@ -94,5 +94,6 @@ export const POSE_ART: Record<string, PoseArt> = {
   handstand: { head: [24, 33], d: 'M19 43l5-15 5 15M24 28V4' },
   dancer: { head: [11.5, 13], d: 'M22 43V28M22 28l-8-11M15 18 5 10M22 28l10 3 5-14M16 19l20-2' },
   eagle: { head: [24, 8], d: 'M24 13v15M24 28l-4 8 4 7M24 28l5 6-8 4M24 16l5 3-4-8' },
+  'bird-of-paradise': { head: [22, 8], d: 'M22 13v15M22 28l1 15M22 28 6 10M22 17l-7 3' },
   'revolved-triangle': { head: [8, 30.5], d: 'M24 29 10 43M24 29l14 14M24 29l-12 1M13 13v29' },
 };

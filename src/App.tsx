@@ -133,6 +133,7 @@ export function App() {
     setFlows(listFlows());
     setId(flow.id);
     setName(flow.name);
+    return flow;
   };
 
   /**
@@ -184,6 +185,37 @@ export function App() {
       forgetResume();
       open({ id: null, name: '', seq: [], notice: null });
     });
+
+  // The logo: from the Flows page, back to the sequencer; from a flow, the start page,
+  // with the flow offered there under "Continue where you left off" unless its changes
+  // were discarded.
+  const goHome = () => {
+    if (view === 'flows') return setView('builder');
+    if (seq.length === 0) return setChoosing(false);
+    const leave = (keep: boolean, flowId = id) => {
+      if (keep) {
+        const d = { id: flowId, name: name.trim(), steps };
+        saveResume(d);
+        setResume(d);
+      } else forgetResume();
+      open({ id: null, name: '', seq: [], notice: null });
+    };
+    if (!dirty) return leave(true);
+    setDialog({
+      title: 'Go to the start page?',
+      body: `“${name.trim() || 'Untitled flow'}” has changes that aren’t saved.`,
+      actions: [
+        {
+          label: 'Save and leave',
+          kind: 'primary',
+          run: () => {
+            leave(true, save().id);
+          },
+        },
+        { label: 'Discard changes', kind: 'danger', run: () => leave(false) },
+      ],
+    });
+  };
 
   // Picks up the flow put aside when the app opened at its bare address.
   const openResume = () => {
@@ -243,14 +275,14 @@ export function App() {
       {/* One bar: the app name, the open flow's title and status, and everything you do with it. */}
       <header className="bar">
         <h1>
-          {/* Home is the sequencer. A plain click never clears the open flow; opening it in a new tab starts fresh. */}
+          {/* Home is the start page (see goHome); opening it in a new tab starts fresh there too. */}
           <a
             className="home"
             href="./"
             onClick={(e) => {
               if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
               e.preventDefault();
-              setView('builder');
+              goHome();
             }}
           >
             <Logo size={22} /> Flow Sequencer

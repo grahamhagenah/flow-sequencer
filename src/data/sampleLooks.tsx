@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 
 // Icons and colours for the sample classes. The icons are Phosphor Icons'
-// duotone "Sun Horizon", "Waves", "Moon Stars", "Fire", "Leaf", "Sun", "Bird" and
-// "Person Simple Tai Chi" (phosphoricons.com), MIT License, Copyright (c) 2023
+// duotone "Sun Horizon", "Waves", "Moon Stars", "Fire", "Leaf", "Sun", "Bird",
+// "Person Simple Tai Chi", "Rainbow" and "Flower Tulip" (phosphoricons.com), MIT License, Copyright (c) 2023
 // Phosphor Icons. The peak pose classes take an icon after their peak pose.
 
 const SunHorizon = () => (
@@ -54,10 +54,40 @@ const Bird = () => (
   </svg>
 );
 
+// A small stack of balanced stones, drawn for this app in the same duotone style.
+const Stones = () => (
+  <svg width="22" height="22" viewBox="0 0 256 256" aria-hidden="true">
+    <g fill="currentColor" opacity="0.2">
+      <ellipse cx="128" cy="196" rx="84" ry="28" />
+      <ellipse cx="128" cy="130" rx="56" ry="22" />
+      <ellipse cx="128" cy="76" rx="32" ry="18" />
+    </g>
+    <g fill="none" stroke="currentColor" strokeWidth="16">
+      <ellipse cx="128" cy="196" rx="84" ry="28" />
+      <ellipse cx="128" cy="130" rx="56" ry="22" />
+      <ellipse cx="128" cy="76" rx="32" ry="18" />
+    </g>
+  </svg>
+);
+
 const PersonBalancing = () => (
   <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
     <path d="M152,48a24,24,0,1,1-24-24A24,24,0,0,1,152,48Z" opacity="0.2" />
     <path d="M128,80A32,32,0,1,0,96,48,32,32,0,0,0,128,80Zm0-48a16,16,0,1,1-16,16A16,16,0,0,1,128,32Zm96,72a8,8,0,0,1-8,8H136v26.72l51.15,21.93A8,8,0,0,1,192,168v48a8,8,0,0,1-16,0V173.28l-46.45-19.91L53.35,222a8,8,0,1,1-10.7-11.9L120,140.44V112H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,104Z" />
+  </svg>
+);
+
+const Rainbow = () => (
+  <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+    <path d="M240,168v16H176V168a48,48,0,0,0-96,0v16H16V168a112,112,0,0,1,224,0Z" opacity="0.2" />
+    <path d="M184,168v16a8,8,0,0,1-16,0V168a40,40,0,0,0-80,0v16a8,8,0,0,1-16,0V168a56,56,0,0,1,112,0ZM128,80a88.1,88.1,0,0,0-88,88v16a8,8,0,0,0,16,0V168a72,72,0,0,1,144,0v16a8,8,0,0,0,16,0V168A88.1,88.1,0,0,0,128,80Zm0-32A120.13,120.13,0,0,0,8,168v16a8,8,0,0,0,16,0V168a104,104,0,0,1,208,0v16a8,8,0,0,0,16,0V168A120.13,120.13,0,0,0,128,48Z" />
+  </svg>
+);
+
+const FlowerTulip = () => (
+  <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+    <path d="M169.23,66v0A80,80,0,0,0,128,136,80,80,0,0,0,86.77,66v0C100,38,128,24,128,24S156,38,169.23,66Z" opacity="0.2" />
+    <path d="M208,48a87.48,87.48,0,0,0-35.36,7.43c-15.1-25.37-39.92-38-41.06-38.59a8,8,0,0,0-7.16,0c-1.14.58-26,13.22-41.06,38.59A87.48,87.48,0,0,0,48,48a8,8,0,0,0-8,8V96a88.11,88.11,0,0,0,80,87.63v35.43L83.58,200.84a8,8,0,1,0-7.16,14.32l48,24a8,8,0,0,0,7.16,0l48-24a8,8,0,0,0-7.16-14.32L136,219.06V183.63A88.11,88.11,0,0,0,216,96V56A8,8,0,0,0,208,48ZM128,33.21c6.65,4.08,21.08,14.19,30.64,30A88.46,88.46,0,0,0,128,99.36,88.4,88.4,0,0,0,97.36,63.19C106.93,47.4,121.35,37.29,128,33.21ZM56,96V64.44A72.1,72.1,0,0,1,120,136v31.56A72.1,72.1,0,0,1,56,96Zm144,0a72.1,72.1,0,0,1-64,71.56V136a72.1,72.1,0,0,1,64-71.56Z" />
   </svg>
 );
 
@@ -75,8 +105,11 @@ const LOOKS: Record<string, SampleLook> = {
   'power-flow': { icon: <Fire />, color: '#f5866a' },
   'midday-reset': { icon: <Leaf />, color: '#72d19a' },
   'sun-salutations': { icon: <Sun />, color: '#f4d25a' },
+  'steady-balance': { icon: <Stones />, color: '#b8d86a' },
   'crow-peak': { icon: <Bird />, color: '#7fb2f0' },
   'dancer-peak': { icon: <PersonBalancing />, color: '#f08fc0' },
+  'wheel-peak': { icon: <Rainbow />, color: '#5cc8b0' },
+  'bird-of-paradise-peak': { icon: <FlowerTulip />, color: '#fb9a4b' },
 };
 
 const FALLBACK: SampleLook = { icon: <Sun />, color: '#f2b27a' };

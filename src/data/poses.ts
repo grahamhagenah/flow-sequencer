@@ -10,6 +10,7 @@ import type { Pose } from './types';
 //   twists, thread the needle                          – the direction of the twist / threaded arm
 //   runner's lunge, lizard, revolved triangle           – the front foot
 //   dancer, eagle                                      – the standing foot
+//   bird of paradise                                   – the lifted (bound) leg
 //   cow face                                           – the top knee
 
 export const POSES: Pose[] = [
@@ -93,6 +94,7 @@ export const POSES: Pose[] = [
   { id: 'handstand', name: 'Handstand', sanskrit: 'Adho Mukha Vrksasana', base: 'hands', sided: false, breaths: 3, cue: 'Shoulders over wrists, reach up through the legs.' },
   { id: 'dancer', name: 'Dancer', sanskrit: 'Natarajasana', base: 'standing', sided: true, breaths: 4, cue: 'Hold the back foot, kick it into the hand, reach forward.' },
   { id: 'eagle', name: 'Eagle', sanskrit: 'Garudasana', base: 'standing', sided: true, breaths: 5, cue: 'Sit low, wrap the legs and the arms, elbows lift.' },
+  { id: 'bird-of-paradise', name: 'Bird of Paradise', sanskrit: 'Svarga Dvijasana', base: 'standing', sided: true, breaths: 4, cue: 'Keep the bind, stand tall on one leg, straighten the lifted leg.' },
   { id: 'revolved-triangle', name: 'Revolved Triangle', sanskrit: 'Parivrtta Trikonasana', base: 'standing', sided: true, breaths: 5, cue: 'Hips square, opposite hand down, twist open to the sky.' },
 ];
 

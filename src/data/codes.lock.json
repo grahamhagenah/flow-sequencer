@@ -67,7 +67,8 @@
     "handstand",
     "dancer",
     "eagle",
-    "revolved-triangle"
+    "revolved-triangle",
+    "bird-of-paradise"
   ],
   "transitions": {
     "1": "savasana>knees-to-chest",
@@ -345,6 +346,9 @@
     "273": "down-dog>handstand",
     "274": "forward-fold>handstand",
     "275": "handstand>forward-fold",
-    "276": "handstand>down-dog"
+    "276": "handstand>down-dog",
+    "277": "extended-side-angle>bird-of-paradise",
+    "278": "bird-of-paradise>extended-side-angle",
+    "279": "bird-of-paradise>mountain"
   }
 }

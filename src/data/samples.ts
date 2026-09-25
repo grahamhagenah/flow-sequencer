@@ -190,6 +190,21 @@ function middayReset() {
   return f.seq;
 }
 
+/** Standing balances on each side, from Tree to Half Moon, then Eagle and Dancer, core and rest. */
+function steadyBalance() {
+  const f = new FlowBuilder('mountain', 8);
+  sunA(f);
+  sunA(f);
+  f.bothSides((f) => f.path(['tree', 6], ['warrior-3', 5], ['half-moon', 5], ['warrior-3', 2], ['mountain', 3]));
+  f.path(['chair', 3]).lead('right').go('eagle', 6).go('eagle', 6).path(['chair', 2, 'Unwind'], ['mountain', 3]);
+  f.lead('right').go('dancer', 6).go('dancer', 6).go('mountain', 3);
+  f.path(['forward-fold', 3, 'Exhale'], ['garland', 3], ['easy-seat', 2], ['staff', 2], ['boat', 5], ['staff', 2], ['boat', 5]);
+  f.path(['knees-to-chest', 3, 'Roll down']);
+  f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
+  f.path(['knees-to-chest', 3, 'Bring'], ['savasana', 25]);
+  return f.seq;
+}
+
 /** Builds strength and the crow shape (core, twists, squats), then three tries at Crow. */
 function crowPeak() {
   const f = new FlowBuilder('easy-seat', 8);
@@ -227,6 +242,56 @@ function dancerPeak() {
   f.bothSides((f) => f.path(['tree', 5], ['dancer', 5]).go('mountain', 2, 'Release the foot down'));
   f.lead('right').go('dancer', 8).go('dancer', 8).go('mountain', 3);
   f.path(['forward-fold', 5, 'Exhale'], ['garland', 3], ['easy-seat', 2], ['staff', 2], ['seated-forward-fold', 10]);
+  f.path(['staff', 2], ['savasana', 2, 'Roll down'], ['knees-to-chest', 4]);
+  f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
+  f.path(['knees-to-chest', 3, 'Bring'], ['savasana', 25]);
+  return f.seq;
+}
+
+/** Opens the hip flexors, then the spine from belly backbends to Camel and Bridge, then three Wheels. */
+function wheelPeak() {
+  const f = new FlowBuilder('mountain', 5);
+  sunA(f);
+  sunA(f);
+  toDownDog(f, 3);
+  f.bothSides((f) => {
+    f.path(['three-leg-dog', 2], ['high-lunge', 4, 'rise up'], ['low-lunge', 6], ['high-lunge', 2, 'Tuck'])
+      .path(['forward-fold', 1, 'Step back foot forward'], ['down-dog', 1, 'Step back to down']);
+    vinyasa(f);
+  });
+  f.path(['plank', 2, 'Shift forward'], ['belly', 2, 'Lower all'], ['locust', 5], ['belly', 2], ['locust', 5]);
+  f.path(['bow', 5, 'Bend'], ['child', 5, 'Release, press back'], ['thunderbolt', 2], ['camel', 5], ['thunderbolt', 2]);
+  f.path(['camel', 5], ['child', 6], ['table', 2], ['easy-seat', 2, 'Swing'], ['savasana', 2, 'Lower down']);
+  f.path(['bridge', 5, 'Bend'], ['knees-to-chest', 2, 'hug'], ['bridge', 3], ['wheel', 3], ['knees-to-chest', 3, 'hug']);
+  f.path(['bridge', 2], ['wheel', 5], ['knees-to-chest', 3, 'hug'], ['bridge', 2], ['wheel', 5], ['knees-to-chest', 5, 'hug']);
+  f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
+  f.path(['knees-to-chest', 3, 'Bring'], ['happy-baby', 6], ['savasana', 25]);
+  return f.seq;
+}
+
+/** Warriors and side angle open the hips and shoulders, Tree steadies, then Bird of Paradise from a bound side angle. */
+function birdOfParadisePeak() {
+  const f = new FlowBuilder('mountain', 5);
+  sunA(f);
+  sunA(f);
+  sunB(f);
+  toDownDog(f, 3);
+  f.bothSides((f) => {
+    f.path(['three-leg-dog', 2], ['warrior-2', 5, 'open to Warrior II'], ['reverse-warrior', 3])
+      .path(['extended-side-angle', 5, 'Circle'], ['warrior-2', 2, 'Rise up'], ['triangle', 5], ['warrior-2', 1])
+      .path(['down-dog', 1, 'Cartwheel']);
+    vinyasa(f);
+  });
+  f.path(['forward-fold', 3, 'Walk'], ['garland', 5], ['mountain', 3, 'Rise up']);
+  f.bothSides((f) => f.path(['tree', 6], ['mountain', 2, 'Release foot down']));
+  toDownDog(f, 3);
+  f.bothSides((f) => {
+    f.path(['three-leg-dog', 2], ['warrior-2', 3, 'open to Warrior II'], ['extended-side-angle', 3])
+      .path(['bird-of-paradise', 5], ['extended-side-angle', 2], ['bird-of-paradise', 5], ['extended-side-angle', 2])
+      .path(['down-dog', 1, 'Frame']);
+    vinyasa(f);
+  });
+  f.path(['table', 2, 'Lower knees'], ['easy-seat', 2, 'Swing'], ['bound-angle', 8], ['staff', 2], ['seated-forward-fold', 10]);
   f.path(['staff', 2], ['savasana', 2, 'Roll down'], ['knees-to-chest', 4]);
   f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
   f.path(['knees-to-chest', 3, 'Bring'], ['savasana', 25]);
@@ -271,6 +336,12 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     seq: sunSalutations(),
   },
   {
+    id: 'steady-balance',
+    name: 'Steady Balance · focus',
+    description: 'Tree, Warrior III and Half Moon on each side, then Eagle and Dancer, boat and a long rest.',
+    seq: steadyBalance(),
+  },
+  {
     id: 'crow-peak',
     name: 'Crow Pose · arm balance',
     description: 'Core, twists and deep squats to find the shape, then three tries at Crow.',
@@ -282,6 +353,20 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     name: 'Dancer · balance',
     description: 'Lunges and backbends open the front body, then Tree builds to Dancer each side.',
     seq: dancerPeak(),
+    peak: true,
+  },
+  {
+    id: 'wheel-peak',
+    name: 'Wheel · backbend',
+    description: 'Lunges and belly backbends, Camel and Bridge warm the spine, then three tries at Wheel.',
+    seq: wheelPeak(),
+    peak: true,
+  },
+  {
+    id: 'bird-of-paradise-peak',
+    name: 'Bird of Paradise · bind',
+    description: 'Warriors and side angle open the hips, Tree steadies, then Bird of Paradise from a bind.',
+    seq: birdOfParadisePeak(),
     peak: true,
   },
 ];

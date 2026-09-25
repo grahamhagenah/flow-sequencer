@@ -299,6 +299,9 @@ const ROWS: Row[] = [
   [274, 'forward-fold', 'handstand', 'Hands down, kick up'],
   [275, 'handstand', 'forward-fold', 'Lower the feet, fold'],
   [276, 'handstand', 'down-dog', 'Step feet down to down dog'],
+  [277, 'extended-side-angle', 'bird-of-paradise', 'Bind under the {side} thigh, step back foot in, rise and lift the {side} leg'],
+  [278, 'bird-of-paradise', 'extended-side-angle', 'Bend the standing knee, step back to side angle, keep the bind'],
+  [279, 'bird-of-paradise', 'mountain', 'Release the bind, lower the foot'],
 ];
 
 export const TRANSITIONS: Transition[] = ROWS.map(([id, from, to, label, side = 'keep']) => ({
