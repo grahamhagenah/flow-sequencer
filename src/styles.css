@@ -22,7 +22,8 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 15px/1.45 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Figtree: friendly and warm but crisp, and easy to read small. System fonts stand in while it loads. */
+  font: 15px/1.45 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 button {
@@ -599,11 +600,10 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 }
 .play-status { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-variant-numeric: tabular-nums; }
 .play-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
-.play-status .meta { font-size: 13px; }
-.play-progress { height: 3px; margin: 8px 0 12px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+.play-progress { height: 4px; margin: 14px 0 6px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
 .play-progress div { height: 100%; background: var(--accent); transition: width 250ms linear; }
 
-.play-pose { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.play-pose { margin-top: 6px; }
 .play-pose-name { font-size: 17px; font-weight: 600; }
 .play-pose-step { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* Two lines kept for the cue whatever its length, so the dock never changes height. */
@@ -611,9 +611,19 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .play-next { margin: 8px 0 0; font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .play-next span { color: var(--text); }
 
-.play-controls { display: flex; gap: 8px; margin-top: 12px; }
-.play-controls button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 12px; }
-.play-controls .primary { flex: 1; }
+.play-times { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* A podcast player's row: skip buttons either side of a big round play button in the
+   middle, stop and settings smaller at the ends. Round, borderless, easy to hit. */
+.play-controls { display: grid; grid-template-columns: 1fr auto auto auto 1fr; align-items: center; gap: 12px; margin-top: 8px; }
+.play-controls > :first-child { justify-self: start; }
+.play-controls > :last-child { justify-self: end; }
+.play-controls button { display: inline-flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; }
+.play-controls .play-side { width: 40px; height: 40px; }
+.play-controls .play-skip { width: 48px; height: 48px; }
+.play-controls .play-skip svg { width: 22px; height: 22px; }
+.play-controls .play-main { width: 56px; height: 56px; }
+.play-controls .play-main svg { width: 24px; height: 24px; }
 /* Everything but Play/Pause is quiet: no box, grey until hovered. */
 .play-controls button:not(.primary) { color: var(--muted); background: none; border-color: transparent; }
 .play-controls button:not(.primary):hover:not(:disabled) { color: var(--text); background: var(--surface-2); border-color: transparent; }
@@ -657,13 +667,20 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   .layout { grid-template-columns: minmax(0, 1fr); }
   .builder { padding: 0 16px 16px; overflow: visible; }
   /* Five player buttons share a phone's width: slimmer side buttons, the main one on one line. */
-  .play-controls { gap: 6px; }
-  .play-controls button { padding: 10px; }
-  .play-controls .primary { white-space: nowrap; padding: 10px 12px; }
+  /* Bigger targets for thumbs. */
+  .play-controls .play-side { width: 48px; height: 48px; }
+  .play-controls .play-skip { width: 56px; height: 56px; }
+  .play-controls .play-skip svg { width: 26px; height: 26px; }
+  .play-controls .play-main { width: 64px; height: 64px; }
+  .play-controls .play-main svg { width: 28px; height: 28px; }
   .flows { padding: 16px; }
   .flow { flex-wrap: wrap; row-gap: 6px; }
   .flow-actions { width: 100%; }
   .tile { padding: 10px; }
+  /* No row numbers or play/pause badge on phones (the playing row keeps its green edge),
+     so the pose drawings can be bigger. */
+  .row .num, .row.playing .num { display: none; }
+  .row .pose-figure { width: 40px; height: 40px; margin-left: 0; }
   /* Phones stack the sequence first, then the tiles to add to it below. */
   .timeline { overflow: visible; border-right: none; border-bottom: 1px solid var(--border); padding: 0 16px 16px; }
 }
@@ -683,4 +700,37 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   .next-controls .stepper { margin-left: -6px; }
   .tile-label { font-size: 14px; }
   .tile .pose-figure { width: 32px; height: 32px; }
+}
+
+/* Phones: text a step larger throughout, where there's room for it. The tiles keep
+   their sizes (their fixed heights are set for them), and so does the header, where
+   the flow's name already competes with "Not saved yet" for the width. */
+@media (max-width: 760px) {
+  body { font-size: 16px; }
+  h2, .get-started h3 { font-size: 13px; }
+
+  .timeline-head .meta, .next-from { font-size: 14px; }
+  .pager, .pager button { font-size: 14px; }
+  .pager button { min-width: 28px; height: 28px; }
+  .via, .row-sanskrit { font-size: 13px; }
+  .row-breaths { font-size: 14px; }
+  .row-name .side { font-size: 12px; }
+  .row-menu button { font-size: 16px; padding: 10px 12px; }
+  .row-menu .why { font-size: 13px; }
+
+  .sample-title { font-size: 16px; }
+  .sample-meta { font-size: 13px; }
+  .sample-desc, .sample-actions button { font-size: 14px; }
+  .how-it-works li { font-size: 15px; }
+  .route select { font-size: 15px; }
+  .mirror .sub, .tiles-empty { font-size: 14px; }
+
+  .play-label { font-size: 12px; }
+  .play-pose-name { font-size: 19px; }
+  .play-pose-step, .play-times { font-size: 13px; }
+  .play-cue { font-size: 15px; }
+  .play-next { font-size: 14px; }
+  .play-settings, .play-settings select { font-size: 14px; }
+
+  .flows .hint, .flow-meta, .flow-desc, .flow-actions button { font-size: 14px; }
 }

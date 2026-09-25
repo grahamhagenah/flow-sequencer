@@ -55,23 +55,14 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
     <div className="play-dock">
       <div className="play-status">
         <span className="play-label">{label}</span>
-        <span className="meta">
-          {active
-            ? `${formatDuration(Math.round(Math.max(0, totalMs - elapsedMs) / 1000))} left`
-            : `About ${formatDuration(Math.round(totalMs / 1000))} · ${settings.secondsPerBreath}s breaths`}
+        <span className="play-pose-step">
+          {index + 1} of {seq.length}
         </span>
       </div>
-      <div className="play-progress" aria-hidden="true">
-        <div style={{ width: `${totalMs ? (elapsedMs / totalMs) * 100 : 0}%` }} />
-      </div>
-
       <div className="play-pose">
         <span className="play-pose-name">
           {pose.name}
           {pose.sided && <span className="side">{sideLabel(step.side)}</span>}
-        </span>
-        <span className="play-pose-step">
-          {index + 1} of {seq.length}
         </span>
       </div>
       <p className="play-cue">{pose.cue}</p>
@@ -86,14 +77,34 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
         )}
       </p>
 
+      {/* Like a podcast player: the bar, with time played under its left end and time left under its right. */}
+      <div className="play-progress" aria-hidden="true">
+        <div style={{ width: `${totalMs ? (elapsedMs / totalMs) * 100 : 0}%` }} />
+      </div>
+      <div className="play-times">
+        <span>{formatDuration(Math.round(elapsedMs / 1000))}</span>
+        <span>−{formatDuration(Math.round(Math.max(0, totalMs - elapsedMs) / 1000))}</span>
+      </div>
+
+      {/* Transport in the middle, the big round play button at its centre; stop and settings at the ends. */}
       <div className="play-controls">
-        <button onClick={player.prev} disabled={!active || index === 0} aria-label="Previous pose" title="Previous pose">
-          <BackIcon />
-        </button>
-        <button className="primary" onClick={player.toggle}>
-          {state.playing ? <PauseIcon /> : <PlayIcon />} {primaryLabel}
+        <button className="play-side" onClick={player.stop} disabled={!active} aria-label="Stop" title="Stop">
+          <StopIcon />
         </button>
         <button
+          className="play-skip"
+          onClick={player.prev}
+          disabled={!active || index === 0}
+          aria-label="Previous pose"
+          title="Previous pose"
+        >
+          <BackIcon />
+        </button>
+        <button className="primary play-main" onClick={player.toggle} aria-label={primaryLabel} title={primaryLabel}>
+          {state.playing ? <PauseIcon /> : <PlayIcon />}
+        </button>
+        <button
+          className="play-skip"
           onClick={player.next}
           disabled={!active || index >= seq.length - 1}
           aria-label="Next pose"
@@ -101,15 +112,12 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
         >
           <ForwardIcon />
         </button>
-        <button onClick={player.stop} disabled={!active} aria-label="Stop" title="Stop">
-          <StopIcon />
-        </button>
         <button
           onClick={() => setShowSettings(!showSettings)}
           aria-expanded={showSettings}
           aria-label="Voice settings"
           title="Voice settings"
-          className={showSettings ? 'toggled' : undefined}
+          className={showSettings ? 'play-side toggled' : 'play-side'}
         >
           <SettingsIcon />
         </button>
