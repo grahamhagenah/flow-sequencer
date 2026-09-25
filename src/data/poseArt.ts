@@ -15,7 +15,8 @@ export interface PoseArt {
 
 export const POSE_ART: Record<string, PoseArt> = {
   // Lying on the back
-  savasana: { head: [8, 39.5], d: 'M12 40.5h17M29 40.5l15-1.8M29 40.5l15 1.8M13.5 41l10 2.5' },
+  // Seen from above, on the mat: arms resting by the sides, legs a little apart.
+  savasana: { head: [8, 24], d: 'M12 24h16M28 24l14-3M28 24l14 3M14.5 24Q16 19 26 18.5M14.5 24Q16 29 26 29.5', topView: true },
   'knees-to-chest': { head: [8, 39.5], d: 'M12 40.5h12M24 40.5 17 30h10M14 40l4-9' },
   // Seen from above: arms wide in a T past the mat's edges, both knees dropped to one side.
   'supine-twist': { head: [8, 24], d: 'M12 24h17M15.5 11v26M29 24l3 11h9', topView: true },
@@ -35,8 +36,10 @@ export const POSE_ART: Record<string, PoseArt> = {
 
   // Kneeling and on hands and knees
   table: { head: [8, 25], d: 'M12 28h20M12 28v15M32 28v15h12' },
-  cat: { head: [9, 34], d: 'M12 30Q22 18 32 30M12 30v13M32 30v13h12' },
-  cow: { head: [8, 23], d: 'M12 28Q22 36 32 28M12 28v15M32 28v15h12' },
+  // Cat and Cow: the spine one curve from the hips on into the neck, rounded up with the
+  // head tucked under, or dipped with the head lifted; the arms meet it at the shoulders.
+  cat: { head: [7.8, 34.3], d: 'M32 29C31 17 13 16 10 30.5M13 24v19M32 29v14h12' },
+  cow: { head: [8.5, 19.5], d: 'M32 27.5C26 36 15 34 10.5 23M12.5 26.8 12 43M32 27.5v15.5h12' },
   // Hips back on the heels, the back rounded over the thighs, arms long on the floor, forehead down.
   child: { head: [11.5, 38.8], d: 'M24 43h16M24 43l14-6.5M38 36.5C37 28.5 26 25.5 18 35.5M18 35.5l-3 7.7H4' },
   thunderbolt: { head: [30, 15], d: 'M30 20v18M30 38l-16 4h18M30 23l-8 14' },
@@ -50,7 +53,8 @@ export const POSE_ART: Record<string, PoseArt> = {
   'three-leg-dog': { head: [17.5, 31.5], d: 'M7 43 27 12l15 31M27 12l15-8' },
   plank: { head: [8, 24], d: 'M12 26l32 16M13 27v16' },
   chaturanga: { head: [7, 34], d: 'M11 35l33 5M14 36l6 1v6' },
-  'up-dog': { head: [12, 21], d: 'M44 43l-18-2-11-15M15 27v16' },
+  // One line: feet, the thighs just off the floor, the back curving up to the shoulders, a straight arm down.
+  'up-dog': { head: [13.5, 22.5], d: 'M44 43 28 41Q20 39 16 27.5v15.5' },
   'side-plank': { head: [12, 22.5], d: 'M42 42 16 25M16 25v18M16 25V5' },
   crow: { head: [11.5, 33], d: 'M16 43V31M16 31l14-7M30 24l-10 7 9 3' },
 

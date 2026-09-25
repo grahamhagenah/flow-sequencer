@@ -79,7 +79,12 @@ export function PlaybackDock({
         : 0;
   // Keyed by the step, so a new pose starts its ring from empty rather than winding it back.
   const ring = <PoseRing key={index} fraction={holdFraction} />;
-  const timeLeft = `−${formatDuration(Math.round(Math.max(0, totalMs - elapsedMs) / 1000))}`;
+  // Whole seconds, with the time left taken from the time gone, so the two tick together
+  // (rounding each on its own made them change at different moments).
+  const totalSeconds = Math.round(totalMs / 1000);
+  const elapsedSeconds = Math.min(totalSeconds, Math.floor(elapsedMs / 1000));
+  const elapsed = formatDuration(elapsedSeconds);
+  const timeLeft = `−${formatDuration(totalSeconds - elapsedSeconds)}`;
   const playButton = (
     <button
       className="primary play-main"
@@ -202,7 +207,7 @@ export function PlaybackDock({
           </div>
           <div className="play-bar-side">
             <span className="play-bar-times">
-              {formatDuration(Math.round(elapsedMs / 1000))} <span className="play-bar-sep">/</span> {timeLeft}
+              {elapsed} <span className="play-bar-sep">/</span> {timeLeft}
             </span>
             <span className="play-next">{upNext}</span>
           </div>
@@ -237,7 +242,7 @@ export function PlaybackDock({
 
       {/* Time played on the left, time left on the right, like a podcast player's. */}
       <div className="play-times">
-        <span>{formatDuration(Math.round(elapsedMs / 1000))}</span>
+        <span>{elapsed}</span>
         <span>{timeLeft}</span>
       </div>
 

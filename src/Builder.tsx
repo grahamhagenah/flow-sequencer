@@ -325,9 +325,7 @@ export function Builder({
             seq={seq}
             index={singleIndex}
             onStep={stepSingle}
-            secondsPerBreath={player.settings.secondsPerBreath}
             live={liveBreath}
-            onBreaths={(n) => set((q) => setBreaths(q, singleIndex, n))}
           />
         ) : (
           <ol start={first + 1}>

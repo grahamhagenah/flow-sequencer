@@ -1,4 +1,4 @@
-import { MoveLabel, namesSide, Stepper } from './choices';
+import { MoveLabel, namesSide } from './choices';
 import { getPose, sideLabel, TRANSITION_BY_ID } from './data/graph';
 import { ChevronIcon } from './icons';
 import { PoseFigure } from './PoseFigure';
@@ -12,32 +12,25 @@ export interface LiveBreath {
 
 /**
  * One pose at a time, large: the pose shown (the playing one during a class), how you
- * got into it, its cue, breaths and how long they take, and the poses either side.
- * During a class it shows the breath being taken (the player keeps the breath ring).
- * Mostly for following along: its breaths can still be changed, and everything else
- * is edited in the list.
+ * got into it, its cue, its breaths, and the poses either side. During a class it shows
+ * the breath being taken (the player keeps the breath ring). For following along:
+ * everything is edited in the list.
  */
 export function SinglePoseView({
   seq,
   index,
-  secondsPerBreath,
   live,
   onStep,
-  onBreaths,
 }: {
   seq: Sequence;
   index: number;
-  secondsPerBreath: number;
   live: LiveBreath | null;
   /** Shows the pose before (-1) or after (+1). */
   onStep: (by: -1 | 1) => void;
-  onBreaths: (n: number) => void;
 }) {
   const step = seq[index];
   const pose = getPose(step.poseId);
   const via = moveInto(step);
-  const holdSeconds = step.breaths * secondsPerBreath;
-
 
   return (
     <section className="single" aria-label={`Pose ${index + 1} of ${seq.length}`}>
@@ -50,13 +43,14 @@ export function SinglePoseView({
           <span className="single-via">{via ? <MoveLabel label={via.label} side={step.side} /> : 'Begin here'}</span>
           <h2 className="single-name">
             {pose.name}
+            {/* Beside the name, quieter. Shown here even while SHOW_SANSKRIT keeps it out of the rows and the player. */}
+            {pose.sanskrit && <span className="single-sanskrit">{pose.sanskrit}</span>}
             {pose.sided && !(via && namesSide(via.label)) && <span className="side">{sideLabel(step.side)}</span>}
             {index === seq.length - 1 && <span className="last-tag">Last pose</span>}
           </h2>
-          {/* Shown here even while SHOW_SANSKRIT keeps it out of the rows and the player. */}
-          {pose.sanskrit && <span className="single-sanskrit">{pose.sanskrit}</span>}
-          {/* The breath being taken during a class; before it, how many (the − + stepper
-              below edits them, on wider screens). */}
+          <p className="single-cue">{pose.cue}</p>
+          {/* Under the cue: the breath being taken during a class; before it, how many. Always
+              shown, so nothing shifts when a class starts. */}
           {live?.breath ? (
             <span className="single-breath">
               Breath {live.breath} <span>of {step.breaths}</span>
@@ -66,12 +60,6 @@ export function SinglePoseView({
               {step.breaths} {step.breaths === 1 ? 'breath' : 'breaths'}
             </span>
           )}
-          <p className="single-cue">{pose.cue}</p>
-          <div className="single-edit">
-            <span>Hold for</span>
-            <Stepper value={step.breaths} onChange={onBreaths} />
-            <span className="single-time">· {aboutSeconds(holdSeconds)}</span>
-          </div>
         </div>
       </div>
 
@@ -120,12 +108,3 @@ function Neighbour({
 }
 
 const moveInto = (step: Step) => (step.via === undefined ? undefined : TRANSITION_BY_ID.get(step.via));
-
-/** "about 15 seconds", "about 1 minute", "about 1½ minutes". */
-function aboutSeconds(seconds: number) {
-  if (seconds < 60) return `about ${seconds} seconds`;
-  const halves = Math.round(seconds / 30) / 2;
-  const whole = Math.floor(halves);
-  const text = halves === whole ? `${whole}` : `${whole}½`;
-  return `about ${text} ${halves === 1 ? 'minute' : 'minutes'}`;
-}

@@ -512,10 +512,8 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .single-via { font-size: var(--text-md); color: var(--muted); }
 .timeline .single-name { margin: 0; font-size: var(--text-2xl); font-weight: 700; line-height: 1.2; letter-spacing: 0; text-transform: none; color: var(--text); }
 .single-name .side, .single-name .last-tag { font-size: var(--text-sm); }
-.single-sanskrit { margin-top: calc(-1 * var(--space-1)); font-size: var(--text-lg); font-style: italic; color: var(--muted); }
+.single-sanskrit { margin-left: var(--space-3); font-size: var(--text-lg); font-weight: 400; font-style: italic; color: var(--muted); }
 .single-cue { margin: var(--space-1) 0 0; font-size: var(--text-lg); line-height: 1.5; color: var(--soft); max-width: 44ch; }
-/* Its breaths, quietly under the words. */
-.single-edit { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-2); font-size: var(--text-sm); color: var(--muted); }
 /* The poses either side, under a rule: quiet, a little brighter on hover. */
 .single-around { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--rule); }
 .single-neighbour { min-width: 0; display: flex; align-items: center; gap: var(--space-3); padding: 0; text-align: left; background: none; border: none; border-radius: 0; opacity: 0.75; }
@@ -530,11 +528,10 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 /* The pose's drawing, large. */
 .single-figure { flex: none; display: grid; place-items: center; }
 /* The breath being taken, during a class. */
-.single-breath { font-size: var(--text-lg); font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+.single-breath { margin-top: var(--space-2); font-size: var(--text-lg); font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
 .single-breath span { font-weight: 400; color: var(--muted); }
-/* Before a class, the breath count is shown only on phones (wider screens have the stepper). */
-.single-breath.idle { display: none; font-weight: 400; color: var(--muted); }
-.single-time { color: var(--muted); }
+/* Before a class, how many: the line is always there, so nothing shifts when the class starts. */
+.single-breath.idle { font-weight: 400; color: var(--muted); }
 .timeline-head.empty-head + .get-started { padding-top: var(--space-5); }
 .pager { display: flex; align-items: center; gap: var(--space-1); margin-right: auto; margin-left: var(--space-3); font-size: var(--text-sm); color: var(--muted); font-variant-numeric: tabular-nums; }
 .pager span { min-width: 3.2em; text-align: center; }
@@ -929,9 +926,6 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .single-cue { max-width: 30ch; margin-top: 0; }
   /* Less to read on a phone: the Sanskrit name stays on wider screens. */
   .single-sanskrit { display: none; }
-  /* On phones the breaths are just read ("Breath 1 of 3", or "3 breaths" before a class); the − + stays on wider screens and in the list. */
-  .single-edit { display: none; }
-  .single-breath.idle { display: block; }
   /* No Before / Up next row on phones: the player under it steps through the poses. */
   .single-around { display: none; }
   .pager button { width: 32px; height: 36px; }
