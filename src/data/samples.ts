@@ -11,6 +11,8 @@ export interface SampleFlow {
   name: string;
   description: string;
   seq: Sequence;
+  /** A class that works up to one harder or fun pose, listed in its own section. */
+  peak?: boolean;
 }
 
 type Stop = string | [pose: string, breaths: number] | [pose: string, breaths: number, labelHint: string];
@@ -188,6 +190,49 @@ function middayReset() {
   return f.seq;
 }
 
+/** Builds strength and the crow shape (core, twists, squats), then three tries at Crow. */
+function crowPeak() {
+  const f = new FlowBuilder('easy-seat', 8);
+  catCow(f.path(['table', 2])).path(['table', 1, 'Return'], ['down-dog', 5]);
+  f.path(['plank', 5, 'Shift forward']).lead('right').path(['side-plank', 5], ['plank', 2]);
+  f.lead('left').path(['side-plank', 5], ['plank', 2], ['down-dog', 3, 'Lift hips']);
+  f.path(['forward-fold', 3, 'Walk'], ['mountain', 3, 'Roll up']);
+  sunA(f);
+  sunA(f);
+  f.lead('right').path(['chair', 4]).go('twisted-chair', 4).go('twisted-chair', 4).go('chair', 2, 'Unwind');
+  f.path(['forward-fold', 2], ['garland', 5, 'squat low'], ['crow', 3], ['garland', 2]);
+  f.path(['crow', 5], ['chaturanga', 1], 'up-dog', ['down-dog', 3], ['garland', 3, 'Walk feet']);
+  f.path(['crow', 5], ['chaturanga', 1], 'up-dog', ['down-dog', 5]);
+  f.path(['child', 8, 'Lower knees'], ['table', 2], ['easy-seat', 2, 'Swing'], ['savasana', 2, 'Lower down']);
+  f.path(['knees-to-chest', 4]);
+  f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
+  f.path(['knees-to-chest', 3, 'Bring'], ['savasana', 25]);
+  return f.seq;
+}
+
+/** Opens the front of the hips and the chest, then balances build from Tree to Dancer. */
+function dancerPeak() {
+  const f = new FlowBuilder('mountain', 5);
+  sunA(f);
+  sunA(f);
+  toDownDog(f, 3);
+  f.bothSides((f) => {
+    f.path(['high-lunge', 4, 'rise up'], ['low-lunge', 5], ['high-lunge', 2, 'Tuck'], ['warrior-3', 4])
+      .path(['high-lunge', 2, 'Step back leg'], ['down-dog', 1, 'Hands down']);
+    vinyasa(f);
+  });
+  f.path(['plank', 2, 'Shift forward'], ['belly', 2, 'Lower all'], ['locust', 5], ['belly', 2], ['locust', 5]);
+  f.path(['bow', 5, 'Bend'], ['child', 5, 'Release, press back'], ['thunderbolt', 2], ['camel', 5], ['child', 5]);
+  f.path(['down-dog', 3], ['forward-fold', 3, 'Walk'], ['mountain', 3, 'Roll up']);
+  f.bothSides((f) => f.path(['tree', 5], ['dancer', 5]).go('mountain', 2, 'Release the foot down'));
+  f.lead('right').go('dancer', 8).go('dancer', 8).go('mountain', 3);
+  f.path(['forward-fold', 5, 'Exhale'], ['garland', 3], ['easy-seat', 2], ['staff', 2], ['seated-forward-fold', 10]);
+  f.path(['staff', 2], ['savasana', 2, 'Roll down'], ['knees-to-chest', 4]);
+  f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
+  f.path(['knees-to-chest', 3, 'Bring'], ['savasana', 25]);
+  return f.seq;
+}
+
 export const SAMPLE_FLOWS: SampleFlow[] = [
   {
     id: 'morning-vinyasa',
@@ -224,5 +269,19 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     name: 'Sun Salutations · wake-up',
     description: 'Three rounds of Sun A and two of Sun B, one breath per movement.',
     seq: sunSalutations(),
+  },
+  {
+    id: 'crow-peak',
+    name: 'Crow Pose · arm balance',
+    description: 'Core, twists and deep squats to find the shape, then three tries at Crow.',
+    seq: crowPeak(),
+    peak: true,
+  },
+  {
+    id: 'dancer-peak',
+    name: 'Dancer · balance',
+    description: 'Lunges and backbends open the front body, then Tree builds to Dancer each side.',
+    seq: dancerPeak(),
+    peak: true,
   },
 ];

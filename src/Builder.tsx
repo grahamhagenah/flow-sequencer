@@ -26,8 +26,21 @@ import { aboutMinutes, classMs } from './player/conductor';
 
 type SetSeq = (next: Sequence | ((prev: Sequence) => Sequence)) => void;
 
-/** Poses per page of the sequence list; shorter flows show in full. */
-const PAGE_SIZE = 30;
+/**
+ * Poses per page of the sequence list; shorter flows show in full. Fewer on phones,
+ * where the tiles for adding the next pose sit below the list.
+ */
+const PHONE = '(max-width: 760px)';
+function usePageSize(): number {
+  const [phone, setPhone] = useState(() => window.matchMedia(PHONE).matches);
+  useEffect(() => {
+    const query = window.matchMedia(PHONE);
+    const onChange = () => setPhone(query.matches);
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
+  }, []);
+  return phone ? 10 : 30;
+}
 
 /**
  * The last flow-open (App's openCount) the list has started on page one. Kept
@@ -132,12 +145,15 @@ export function Builder({
   // its first page; after that the page follows what you're doing: the newest
   // pose while building, the playing one during a class. Turning pages by hand
   // holds until that moves on.
-  const pageCount = Math.ceil(seq.length / PAGE_SIZE);
+  const pageSize = usePageSize();
+  const pageCount = Math.ceil(seq.length / pageSize);
   const focus = player.active ? player.state.index : seq.length - 1;
-  const [page, setPage] = useState(() => (openCount !== handledOpen ? 0 : Math.max(0, Math.floor(focus / PAGE_SIZE))));
+  const [page, setPage] = useState(() => (openCount !== handledOpen ? 0 : Math.max(0, Math.floor(focus / pageSize))));
   // Only a real change of focus moves the page, not the effect running again
   // (React re-runs effects on mount in development).
   const lastFocus = useRef(focus);
+  // Turning a phone to landscape (or resizing a window) changes the page size; stay on the focus's page.
+  const lastPageSize = useRef(pageSize);
   // Read before the effects below mark the open as handled.
   const justOpened = handledOpen !== openCount;
   useEffect(() => {
@@ -148,10 +164,11 @@ export function Builder({
       if (timelineRef.current) timelineRef.current.scrollTop = 0;
       return;
     }
-    if (lastFocus.current === focus) return;
+    if (lastFocus.current === focus && lastPageSize.current === pageSize) return;
+    lastPageSize.current = pageSize;
     lastFocus.current = focus;
-    setPage(Math.max(0, Math.floor(focus / PAGE_SIZE)));
-  }, [focus, openCount, timelineRef]);
+    setPage(Math.max(0, Math.floor(focus / pageSize)));
+  }, [focus, openCount, pageSize, timelineRef]);
 
   // Breaths set in the Next heading carry on to each new pose, until reset to the
   // poses' own defaults. A newly opened or cleared flow starts on the defaults.
@@ -205,7 +222,7 @@ export function Builder({
     const target = revealAt.current ?? seq.length - 1;
     revealAt.current = null;
     if (!grew) return;
-    setPage(Math.floor(target / PAGE_SIZE));
+    setPage(Math.floor(target / pageSize));
     setJustAdded({ index: target });
   }, [seq.length, justOpened]);
   useEffect(() => {
@@ -222,14 +239,13 @@ export function Builder({
       else if (top < box.top) panel.scrollTop -= box.top - top + 12;
     }
   }, [justAdded, page, timelineRef]);
-  const first = Math.min(page, Math.max(0, pageCount - 1)) * PAGE_SIZE;
-  const shown = seq.slice(first, first + PAGE_SIZE);
+  const first = Math.min(page, Math.max(0, pageCount - 1)) * pageSize;
+  const shown = seq.slice(first, first + pageSize);
   const goToPage = (p: number) => {
     setPage(p);
     // Start the new page at its first pose. Only the desktop panel scrolls on its own.
     if (timelineRef.current) timelineRef.current.scrollTop = 0;
   };
-  const turnPage = (by: number) => goToPage(first / PAGE_SIZE + by);
 
   return (
     <main className={current ? 'layout' : 'layout empty'}>
@@ -250,16 +266,16 @@ export function Builder({
             </h2>
           ) : (
             <h2>
-              {current ? 'Next' : 'Start'}
+              {current ? 'Choose the next pose' : 'Choose a starting pose'}
               {current && (
                 <span className="next-from">
-                  · from{' '}
+                  · after{' '}
                   {/* Names the pose by its number, and shows it: a flow opens on its first
                       page, where the newest pose usually isn't. */}
                   <button
                     className="link-btn from-pose"
                     onClick={() => {
-                      setPage(Math.floor((seq.length - 1) / PAGE_SIZE));
+                      setPage(Math.floor((seq.length - 1) / pageSize));
                       setJustAdded({ index: seq.length - 1 });
                     }}
                     title="Show this pose in the sequence"
@@ -325,6 +341,7 @@ export function Builder({
                   <button
                     key={o.move.id}
                     className="tile"
+                    title={`${renderLabel(o.move.label, side)} → ${to.name}`}
                     onClick={() => {
                       revealAt.current = insertAt + 1;
                       set((q) => insertAfter(q, insertAt, o));
@@ -347,7 +364,12 @@ export function Builder({
                 const to = getPose(t.to);
                 const side = applySide(current.side, t.side);
                 return (
-                  <button key={t.id} className="tile" onClick={() => addPose(t)}>
+                  <button
+                    key={t.id}
+                    className="tile"
+                    title={`${renderLabel(t.label, side)} → ${to.name}`}
+                    onClick={() => addPose(t)}
+                  >
                     <PoseFigure poseId={t.to} side={side} />
                     <span className="tile-text">
                       <span className="tile-label">{renderLabel(t.label, side)}</span>
@@ -425,26 +447,25 @@ export function Builder({
       <aside className="timeline" ref={timelineRef}>
         <div className={seq.length ? 'timeline-head' : 'timeline-head empty-head'}>
           <h2>Sequence</h2>
-          {/* Quiet page controls beside the heading, for flows longer than a page. */}
+          {/* Quiet page numbers beside the heading, for flows longer than a page. */}
           {pageCount > 1 && (
             <nav className="pager" aria-label="Sequence pages">
-              <button onClick={() => goToPage(0)} disabled={first === 0} aria-label="First page" title="First page">
-                «
-              </button>
-              <button onClick={() => turnPage(-1)} disabled={first === 0} aria-label="Previous poses" title="Previous poses">
-                ‹
-              </button>
-              <span>
-                {first + 1}–{first + shown.length} of {seq.length}
-              </span>
-              <button
-                onClick={() => turnPage(1)}
-                disabled={first + PAGE_SIZE >= seq.length}
-                aria-label="Next poses"
-                title="Next poses"
-              >
-                ›
-              </button>
+              {pagesToShow(pageCount, first / pageSize).map((p, k) =>
+                p === null ? (
+                  <span key={`gap${k}`} className="pager-gap">
+                    …
+                  </span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => goToPage(p)}
+                    aria-current={first / pageSize === p ? 'page' : undefined}
+                    aria-label={`Page ${p + 1}`}
+                  >
+                    {p + 1}
+                  </button>
+                ),
+              )}
             </nav>
           )}
           {seq.length > 0 && (
@@ -644,6 +665,18 @@ const MoreIcon = () => (
     <circle cx="19" cy="12" r="1.6" />
   </svg>
 );
+
+/**
+ * The page numbers to list (0-based), with null for a gap: all of them when there
+ * are up to seven, otherwise the first, the last and the current one's neighbours,
+ * e.g. 1 … 7 8 9 … 15.
+ */
+export function pagesToShow(count: number, current: number): (number | null)[] {
+  if (count <= 7) return Array.from({ length: count }, (_, p) => p);
+  const middle = [current - 1, current, current + 1].map((p) => Math.min(count - 2, Math.max(1, p)));
+  const pages = [...new Set([0, ...middle, count - 1])];
+  return pages.flatMap((p, i) => (i > 0 && p - pages[i - 1] > 1 ? [null, p] : [p]));
+}
 
 /** An unsided pose whose next moves include a sided one, so the side is still open. */
 function choosesSide(poseId: string): boolean {

@@ -3,6 +3,8 @@
   --surface: #1b1e23;
   --surface-2: #23272e;
   --border: #2f343c;
+  /* Dividers between list items and under headings: softer than --border, which edges panels. */
+  --rule: color-mix(in srgb, var(--border) 55%, var(--bg));
   --text: #e6e8eb;
   --muted: #9aa1ab;
   --accent: #8fb8a8;
@@ -91,7 +93,7 @@ h2 {
 }
 
 /* No top padding: its first heading's own 24px margin lines it up with the Sequence heading opposite. */
-.builder { padding: 0 20px 20px; overflow-y: auto; }
+.builder { padding: 0 20px 20px; overflow-y: auto; container: builder / inline-size; }
 .hint { color: var(--muted); margin: 0; }
 
 input {
@@ -199,7 +201,7 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .flows .hint { font-size: 13px; margin-bottom: 16px; }
 .flows .empty { color: var(--muted); padding: 24px 0; }
 .flows ul { list-style: none; margin: 0; padding: 0; }
-.flow { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.flow { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
 .flow-main { flex: 1; min-width: 0; display: flex; flex-direction: column; text-align: left; background: none; border: none; padding: 4px 8px; margin-left: -8px; }
 .flow-main:hover:not(:disabled) { background: var(--surface-2); }
 .flow-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -215,13 +217,8 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .new-flow { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; font-size: 13px; background: none; color: var(--muted); }
 .new-flow:hover:not(:disabled) { color: var(--text); }
 
-.how-it-works-card {
-  margin-top: 24px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 16px;
-}
+/* No box: the heading's 24px top margin lines it up with Ready-made classes opposite. */
+.how-it-works-card { margin-top: 24px; }
 
 .side {
   display: inline-block;
@@ -243,6 +240,9 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .reset-breaths { font-size: 12px; color: var(--muted); }
 .reset-breaths:hover:not(:disabled) { color: var(--accent); }
 .next-head h2 { margin: 0; }
+/* An instruction, so brighter than the other headings; where it's building from stays grey. */
+.next-head h2 { color: var(--text); }
+.next-head .next-from { color: var(--muted); }
 .leading { display: flex; gap: 6px; }
 .leading button { padding: 3px 10px; font-size: 13px; }
 .leading button[aria-pressed='true'] { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
@@ -273,7 +273,8 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 
 .tiles {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  /* Wide enough for the drawing and a label side by side. */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 8px;
 }
 .tile {
@@ -283,10 +284,17 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   text-align: left;
   padding: 12px;
   background: var(--surface);
-  min-height: 92px;
+  /* One fixed height whatever the moves, so the tiles never change size as you
+     click through: room for three lines of move and the pose's name. */
+  height: 106px;
+  overflow: hidden;
 }
 .tile-label { font-weight: 500; }
-.tile-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+/* Never wider than the tile, so long text is cut off rather than running past the edge. */
+.tile-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; max-width: 100%; }
+/* Longer than that is cut with an ellipsis; the whole move is in the tooltip. */
+.tile-label { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.35; }
+.tile-to { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* The pose drawings sit in the quiet grey, a little brighter on hover. */
 .pose-figure { flex: none; color: var(--muted); }
 .tile:hover .pose-figure { color: var(--text); }
@@ -297,7 +305,14 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
    One spacing scale throughout: 22px between sections, 10px under each heading. */
 .get-started { display: flex; flex-direction: column; gap: 22px; padding: 2px 0 24px; container-type: inline-size; }
 /* How it works: in the pose card's place above the Start poses while the flow is empty. */
-.how-it-works-card h2 { margin: 0 0 10px; }
+/* The same grey and rule as the class headings opposite. */
+.how-it-works-card h2 {
+  display: block;
+  margin: 0 0 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--muted);
+}
 /* Sized to fit the pose card's 144px, so "Start" doesn't move when the first pose arrives. */
 .how-it-works { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .how-it-works li { display: flex; align-items: center; gap: 12px; font-size: 14px; line-height: 1.35; }
@@ -314,11 +329,11 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   border-radius: 50%;
 }
 .get-started h3 { margin: 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-.gs-head { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.gs-head { display: flex; align-items: baseline; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--rule); }
 .link-btn { padding: 0; background: none; border: none; font-size: 13px; color: var(--accent); }
 .link-btn:hover:not(:disabled) { text-decoration: underline; }
 .gs-list { list-style: none; margin: 0; padding: 0; }
-.gs-list > li { border-bottom: 1px solid var(--border); }
+.gs-list > li { border-bottom: 1px solid var(--rule); }
 .gs-item {
   display: flex;
   align-items: baseline;
@@ -342,43 +357,28 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .gs-play { color: var(--text); background: none; border-color: var(--border); font-weight: 500; }
 .gs-play .icon { color: var(--accent); }
 .gs-play:hover:not(:disabled), .gs-play:focus-visible { color: var(--accent); background: var(--accent-bg); border-color: var(--accent); }
-/* Sample classes as cards, two across (one on narrow panels). --tone (set per
-   card) colours only the small icon beside each title. */
+/* Sample classes: a plain two-column grid (one on narrow panels), no cards and no
+   rules between them, only under the section heading. --tone colours only the small
+   icon beside each title. */
 .sample-cards {
   list-style: none;
-  margin: 12px 0 0;
+  margin: 4px 0 0;
   padding: 0;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 8px 28px;
 }
 @container (min-width: 400px) {
   .sample-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* In two columns, short lines read better than ones stretched across a wide column.
+     A single column (phones) uses the full width. */
+  .sample-desc { max-width: 34ch; }
 }
-.sample-card {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
+.sample-card { display: flex; flex-direction: column; gap: 4px; padding: 14px 0 10px; }
 .sample-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; line-height: 1.3; }
 .sample-icon { flex: none; display: inline-flex; color: var(--tone); }
 .sample-icon svg { width: 17px; height: 17px; }
-.sample-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; font-size: 12px; color: var(--muted); white-space: nowrap; }
-.sample-style {
-  padding: 0 6px;
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 16px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-  background: var(--surface-2);
-  border-radius: 999px;
-}
+.sample-meta { font-size: 12px; color: var(--muted); white-space: nowrap; }
 /* Up to three lines; the full text is in the tooltip. */
 .sample-desc {
   flex: 1;
@@ -391,11 +391,17 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.sample-actions { display: flex; gap: 6px; margin-top: 8px; }
-.sample-actions button { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 13px; }
-.sample-actions .gs-play { flex: 1; justify-content: center; }
-.sample-actions button:not(.gs-play) { background: none; color: var(--muted); }
-.sample-actions button:not(.gs-play):hover:not(:disabled) { color: var(--text); }
+/* Play is a small, quiet button with no colour: grey ▶, and on hover just a brighter
+   border (not the green of .gs-play elsewhere). Open is plain grey text beside it. */
+.sample-actions { display: flex; align-items: center; gap: 14px; margin-top: 8px; }
+.sample-actions button { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; }
+.sample-actions .gs-play { padding: 4px 12px 4px 10px; }
+.sample-actions .gs-play .icon { width: 12px; height: 12px; }
+.sample-actions .gs-play .icon { color: var(--muted); }
+.sample-actions .gs-play:hover:not(:disabled), .sample-actions .gs-play:focus-visible { color: var(--text); background: var(--surface); border-color: var(--muted); }
+.sample-actions .gs-play:hover .icon, .sample-actions .gs-play:focus-visible .icon { color: var(--text); }
+.sample-actions button:not(.gs-play) { padding: 4px 0; color: var(--muted); background: none; border: none; }
+.sample-actions button:not(.gs-play):hover:not(:disabled) { color: var(--text); text-decoration: underline; }
 
 
 .timeline {
@@ -408,17 +414,28 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 }
 .timeline > * { flex-shrink: 0; }
 /* Same margin and height as .next-head, so the two panels' headings line up. */
-.timeline-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 12px; margin: 24px 0 10px; min-height: 28px; }
+/* A rule under the heading, spanning the rows' width (they reach 8px past the text). */
+.timeline-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin: 24px -8px 0;
+  padding: 0 8px 10px;
+  min-height: 28px;
+  border-bottom: 1px solid var(--rule);
+}
 .timeline-head > * { white-space: nowrap; }
 .timeline-head h2 { margin: 0; }
 .timeline-head .meta { font-size: 13px; }
 .timeline-head.empty-head { display: none; }
 .timeline-head.empty-head + .get-started { padding-top: 24px; }
 .pager { display: flex; align-items: center; gap: 2px; margin-right: auto; margin-left: 10px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.pager span { padding: 0 4px; }
-.pager button { width: 22px; height: 22px; padding: 0; font-size: 15px; line-height: 1; color: var(--muted); background: none; border-color: transparent; }
+.pager button { min-width: 22px; height: 22px; padding: 0 4px; font-size: 12px; line-height: 1; color: var(--muted); background: none; border-color: transparent; }
 .pager button:hover:not(:disabled) { color: var(--text); background: var(--surface-2); border-color: transparent; }
-.pager button:disabled { opacity: 0.3; }
+.pager button[aria-current='page'] { color: var(--text); background: var(--surface-2); }
+.pager-gap { padding: 0 2px; }
 
 /* Stays at the bottom of the panel: pushed down when the list is short, stuck when it scrolls. */
 .play-footer {
@@ -442,7 +459,7 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   /* Side padding gives the hover highlight some room; the margin keeps the text where it was. */
   padding: 6px 8px;
   margin: 0 -8px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--rule);
   /* Every row has the same three lines (move, pose, Sanskrit), so they're all this tall. */
   min-height: 72px;
   cursor: pointer;
@@ -538,7 +555,7 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
 .row-menu .why { padding: 0 10px 6px; font-size: 12px; color: var(--muted); }
 
 /* The same grid as the tiles, so the select is exactly two tiles wide. */
-.route { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; margin-top: 24px; }
+.route { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-top: 24px; }
 /* A roomier select with its own chevron, in the tiles' colours. */
 .route select {
   grid-column: span 2;
@@ -639,7 +656,6 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   .app { height: auto; min-height: 100vh; min-height: 100dvh; }
   .layout { grid-template-columns: minmax(0, 1fr); }
   .builder { padding: 0 16px 16px; overflow: visible; }
-  .tiles, .route { grid-template-columns: 1fr 1fr; }
   /* Five player buttons share a phone's width: slimmer side buttons, the main one on one line. */
   .play-controls { gap: 6px; }
   .play-controls button { padding: 10px; }
@@ -648,6 +664,23 @@ button.danger:hover:not(:disabled) { border-color: #e8a598; }
   .flow { flex-wrap: wrap; row-gap: 6px; }
   .flow-actions { width: 100%; }
   .tile { padding: 10px; }
-  /* Phones stack the builder first, since its tiles are how a flow gets made. */
-  .timeline { order: 0; overflow: visible; border-right: none; border-top: 1px solid var(--border); padding: 0 16px; }
+  /* Phones stack the sequence first, then the tiles to add to it below. */
+  .timeline { overflow: visible; border-right: none; border-bottom: 1px solid var(--border); padding: 0 16px 16px; }
+}
+
+/* A narrow builder panel (phones, and medium windows where it gets half the width):
+   two tiles across, too narrow for the drawing beside the text, so it sits above.
+   (Last in the file, so it beats the 760px rules.) */
+@container builder (max-width: 470px) {
+  .tiles, .route { grid-template-columns: 1fr 1fr; }
+  .tile { flex-direction: column; align-items: flex-start; gap: 6px; height: 148px; }
+  .tile-text { align-self: stretch; }
+  /* The breaths and side controls get their own line under the heading: breaths (and
+     Default) on the left, the − nudged so its glyph lines up with the heading; the side
+     toggle on the right. */
+  .next-controls { width: 100%; margin-left: 0; }
+  .next-controls .leading { margin-left: auto; }
+  .next-controls .stepper { margin-left: -6px; }
+  .tile-label { font-size: 14px; }
+  .tile .pose-figure { width: 32px; height: 32px; }
 }

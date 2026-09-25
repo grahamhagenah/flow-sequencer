@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 
 // Icons and colours for the sample classes. The icons are Phosphor Icons'
-// duotone "Sun Horizon", "Waves", "Moon Stars", "Fire", "Leaf" and "Sun"
-// (phosphoricons.com), MIT License, Copyright (c) 2023 Phosphor Icons.
+// duotone "Sun Horizon", "Waves", "Moon Stars", "Fire", "Leaf", "Sun", "Bird" and
+// "Person Simple Tai Chi" (phosphoricons.com), MIT License, Copyright (c) 2023
+// Phosphor Icons. The peak pose classes take an icon after their peak pose.
 
 const SunHorizon = () => (
   <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
@@ -46,6 +47,20 @@ const Leaf = () => (
   </svg>
 );
 
+const Bird = () => (
+  <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+    <path d="M232,80,208,96v24a96,96,0,0,1-96,96H24a8,8,0,0,1-6.25-13L104,99.52V76.89c0-28.77,23-52.75,51.74-52.89a52,52,0,0,1,50.59,38.89Z" opacity="0.2" />
+    <path d="M176,68a12,12,0,1,1-12-12A12,12,0,0,1,176,68Zm64,12a8,8,0,0,1-3.56,6.66L216,100.28V120A104.11,104.11,0,0,1,112,224H24a16,16,0,0,1-12.49-26l.1-.12L96,96.63V76.89C96,43.47,122.79,16.16,155.71,16H156a60,60,0,0,1,57.21,41.86l23.23,15.48A8,8,0,0,1,240,80Zm-22.42,0L201.9,69.54a8,8,0,0,1-3.31-4.64A44,44,0,0,0,156,32h-.22C131.64,32.12,112,52.25,112,76.89V99.52a8,8,0,0,1-1.85,5.13L24,208h26.9l70.94-85.12a8,8,0,1,1,12.29,10.24L71.75,208H112a88.1,88.1,0,0,0,88-88V96a8,8,0,0,1,3.56-6.66Z" />
+  </svg>
+);
+
+const PersonBalancing = () => (
+  <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+    <path d="M152,48a24,24,0,1,1-24-24A24,24,0,0,1,152,48Z" opacity="0.2" />
+    <path d="M128,80A32,32,0,1,0,96,48,32,32,0,0,0,128,80Zm0-48a16,16,0,1,1-16,16A16,16,0,0,1,128,32Zm96,72a8,8,0,0,1-8,8H136v26.72l51.15,21.93A8,8,0,0,1,192,168v48a8,8,0,0,1-16,0V173.28l-46.45-19.91L53.35,222a8,8,0,1,1-10.7-11.9L120,140.44V112H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,104Z" />
+  </svg>
+);
+
 export interface SampleLook {
   icon: ReactNode;
   /** The card's accent: the icon, its tinted square and the style pill. */
@@ -60,6 +75,8 @@ const LOOKS: Record<string, SampleLook> = {
   'power-flow': { icon: <Fire />, color: '#f5866a' },
   'midday-reset': { icon: <Leaf />, color: '#72d19a' },
   'sun-salutations': { icon: <Sun />, color: '#f4d25a' },
+  'crow-peak': { icon: <Bird />, color: '#7fb2f0' },
+  'dancer-peak': { icon: <PersonBalancing />, color: '#f08fc0' },
 };
 
 const FALLBACK: SampleLook = { icon: <Sun />, color: '#8fb8a8' };
