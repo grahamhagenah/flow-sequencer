@@ -1,4 +1,4 @@
-import { type CSSProperties, useState } from 'react';
+import { type CSSProperties, useLayoutEffect, useRef, useState } from 'react';
 import { sampleLook } from './data/sampleLooks';
 import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
 import { PlayIcon, PlusIcon } from './icons';
@@ -123,13 +123,35 @@ function ResumeFlow({ draft, onResume }: { draft: Draft; onResume: () => void })
   );
 }
 
-/** Up to `max` of a flow's poses in order, without repeats: a glimpse of what's in it. */
+/**
+ * Up to `max` of a flow's poses in order, without repeats: a glimpse of what's in it.
+ * A peak class's peak pose is left out here; it's shown on its own at the end.
+ */
 function posePreview(flow: SampleFlow, max: number) {
-  const seen = new Set<string>();
+  const seen = new Set<string>(flow.peakPose ? [flow.peakPose] : []);
   const steps = flow.seq.filter((s) => !seen.has(s.poseId) && seen.add(s.poseId));
   // Spread the picks across the whole class rather than taking only its opening.
   const every = Math.max(1, steps.length / max);
   return Array.from({ length: Math.min(max, steps.length) }, (_, k) => steps[Math.floor(k * every)]);
+}
+
+// The featured strip's drawings and the space between them (keep in step with .featured-poses).
+const STRIP_ITEM = 44;
+const STRIP_GAP = 16;
+
+/** How many items of `item` px, `gap` apart, fit across the element (up to `max`), kept up to date as it resizes. */
+function useFitCount(ref: React.RefObject<HTMLElement | null>, item: number, gap: number, max: number) {
+  const [count, setCount] = useState(max);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const measure = () => setCount(Math.max(1, Math.min(max, Math.floor((el.clientWidth + gap) / (item + gap)))));
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [ref, item, gap, max]);
+  return count;
 }
 
 /** One class given more room at the top: a larger title, the full description and a glimpse of its poses. */
@@ -144,6 +166,10 @@ function FeaturedClass({
 }) {
   const { icon, color } = sampleLook(flow.id);
   const [title, style] = flow.name.split(' · ');
+  const peak = flow.peakPose ? flow.seq.find((s) => s.poseId === flow.peakPose) : undefined;
+  // As many drawings as fit on one line (8 at most), the last of them the peak pose.
+  const strip = useRef<HTMLDivElement>(null);
+  const fit = useFitCount(strip, STRIP_ITEM, STRIP_GAP, 8);
   return (
     <section className="featured" style={{ '--tone': color } as CSSProperties}>
       <span className="featured-kicker">Featured class</span>
@@ -156,10 +182,12 @@ function FeaturedClass({
         {flow.seq.length} poses · {aboutMinutes(length(flow.seq))}
       </span>
       <p className="featured-desc">{flow.description}</p>
-      <div className="featured-poses" aria-hidden="true">
-        {posePreview(flow, 8).map((s) => (
-          <PoseFigure key={s.poseId} poseId={s.poseId} side={s.side} size={44} />
+      {/* The way there, then (for a peak class) the peak pose itself, in the class's colour. */}
+      <div className={peak ? 'featured-poses has-peak' : 'featured-poses'} ref={strip} aria-hidden="true">
+        {posePreview(flow, peak ? fit - 1 : fit).map((s) => (
+          <PoseFigure key={s.poseId} poseId={s.poseId} side={s.side} size={STRIP_ITEM} />
         ))}
+        {peak && <PoseFigure poseId={peak.poseId} side={peak.side} size={STRIP_ITEM} />}
       </div>
       <div className="sample-actions featured-actions">
         <button className="gs-play" onClick={() => onPlaySample(flow)} aria-label={`Play ${flow.name}`}>

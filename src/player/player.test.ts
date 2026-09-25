@@ -9,13 +9,19 @@ vi.mock('./chime', async (load) => ({
 import { outgoing } from '../data/graph';
 import { advance, type Sequence, setBreaths, start } from '../sequence';
 import { classMs, closingMs, Conductor, type PlayerState, speechMs } from './conductor';
-import { announcement, announcementParts } from './script';
+import { announcement, announcementParts, forVoice } from './script';
 
 function go(seq: Sequence, to: string): Sequence {
   return advance(seq, outgoing(seq[seq.length - 1].poseId).find((t) => t.to === to)!);
 }
 
 describe('script', () => {
+  it('reads Warrior numerals as numbers', () => {
+    expect(forVoice('Step right foot forward, rise to Warrior I.')).toBe('Step right foot forward, rise to Warrior one.');
+    expect(forVoice('Warrior II, left side. Warrior III.')).toBe('Warrior two, left side. Warrior three.');
+    expect(forVoice('Inhale, lift.')).toBe('Inhale, lift.');
+  });
+
   it('opens with the starting pose and says how to reach each one after', () => {
     const seq = go(go(start('down-dog'), 'three-leg-dog'), 'warrior-2');
     expect(announcement(seq, 0)).toBe(

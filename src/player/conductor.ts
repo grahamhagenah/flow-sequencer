@@ -1,6 +1,6 @@
 import type { Sequence } from '../sequence';
 import { breathCue, chime, CHIME_LEAD_MS, unlockAudio } from './chime';
-import { announcementParts, CLOSING, isFlowStep, PHRASE_GAP_MS } from './script';
+import { announcementParts, CLOSING, forVoice, isFlowStep, PHRASE_GAP_MS } from './script';
 
 // Walks a flow step by step: chime, speak the step's announcement, then hold the pose
 // for its breaths, then move on. Plain timers and the browser's built-in
@@ -320,7 +320,7 @@ export class Conductor {
     // for), so move on anyway once the text has surely been said.
     this.later(synth ? sayMs(text) * 1.5 + 3000 : sayMs(text), finish);
     if (!synth) return;
-    u = new SpeechSynthesisUtterance(text);
+    u = new SpeechSynthesisUtterance(forVoice(text));
     if (this.settings.voice) {
       u.voice = this.settings.voice;
       u.lang = this.settings.voice.lang;

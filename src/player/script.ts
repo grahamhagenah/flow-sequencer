@@ -4,6 +4,16 @@ import type { Sequence } from '../sequence';
 const NUMBERS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
 const spell = (n: number) => NUMBERS[n] ?? String(n);
 
+const NUMERALS: Record<string, string> = { I: 'one', II: 'two', III: 'three' };
+
+/**
+ * Text as the voice should read it: "Warrior II" is written with a Roman numeral,
+ * which voices say as a letter ("Warrior eye"), so numerals after Warrior become words.
+ */
+export function forVoice(text: string): string {
+  return text.replace(/\bWarrior (III|II|I)\b/g, (_, n: string) => `Warrior ${NUMERALS[n]}`);
+}
+
 /** The pose's name as spoken, with its side when it has one. */
 export function spokenPose(seq: Sequence, i: number): string {
   const step = seq[i];

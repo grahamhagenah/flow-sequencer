@@ -12,6 +12,13 @@ describe('sample flows', () => {
     expect(new Set(SAMPLE_FLOWS.map((f) => f.name)).size).toBe(SAMPLE_FLOWS.length);
   });
 
+  it('names a peak pose for each peak class, one the class reaches', () => {
+    for (const flow of SAMPLE_FLOWS.filter((f) => f.peak)) {
+      expect(flow.peakPose, flow.name).toBeDefined();
+      expect(flow.seq.some((s) => s.poseId === flow.peakPose), flow.name).toBe(true);
+    }
+  });
+
   it.each(SAMPLE_FLOWS.map((f) => [f.name, f] as const))('%s survives a share link', (_, flow) => {
     expect(decodeSteps(encodeSteps(flow.seq))).toEqual({ seq: flow.seq, dropped: 0 });
   });

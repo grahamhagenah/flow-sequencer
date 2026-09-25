@@ -13,6 +13,8 @@ export interface SampleFlow {
   seq: Sequence;
   /** A class that works up to one harder or fun pose, listed in its own section. */
   peak?: boolean;
+  /** That pose, for a peak class: shown at the end of its preview. */
+  peakPose?: string;
 }
 
 type Stop = string | [pose: string, breaths: number] | [pose: string, breaths: number, labelHint: string];
@@ -347,6 +349,7 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     description: 'Core, twists and deep squats to find the shape, then three tries at Crow.',
     seq: crowPeak(),
     peak: true,
+    peakPose: 'crow',
   },
   {
     id: 'dancer-peak',
@@ -354,6 +357,7 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     description: 'Lunges and backbends open the front body, then Tree builds to Dancer each side.',
     seq: dancerPeak(),
     peak: true,
+    peakPose: 'dancer',
   },
   {
     id: 'wheel-peak',
@@ -361,6 +365,7 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     description: 'Lunges and belly backbends, Camel and Bridge warm the spine, then three tries at Wheel.',
     seq: wheelPeak(),
     peak: true,
+    peakPose: 'wheel',
   },
   {
     id: 'bird-of-paradise-peak',
@@ -368,5 +373,6 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     description: 'Warriors and side angle open the hips, Tree steadies, then Bird of Paradise from a bind.',
     seq: birdOfParadisePeak(),
     peak: true,
+    peakPose: 'bird-of-paradise',
   },
 ];

@@ -54,9 +54,15 @@ export function SinglePoseView({
           </h2>
           {/* Shown here even while SHOW_SANSKRIT keeps it out of the rows and the player. */}
           {pose.sanskrit && <span className="single-sanskrit">{pose.sanskrit}</span>}
-          {live?.breath && (
+          {/* The breath being taken during a class; before it, how many (the − + stepper
+              below edits them, on wider screens). */}
+          {live?.breath ? (
             <span className="single-breath">
               Breath {live.breath} <span>of {step.breaths}</span>
+            </span>
+          ) : (
+            <span className="single-breath idle">
+              {step.breaths} {step.breaths === 1 ? 'breath' : 'breaths'}
             </span>
           )}
           <p className="single-cue">{pose.cue}</p>
