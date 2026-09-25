@@ -915,13 +915,13 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .pager { gap: 0; }
   /* Phones: the pose large and centred, its words centred under it. */
   .single { gap: var(--space-4); padding-top: var(--space-2); }
-  .single-pose { flex-direction: column; align-items: center; gap: var(--space-2); padding: 0 0 var(--space-4); text-align: center; }
-  .single-figure > .pose-figure { width: min(58vw, 240px); height: auto; aspect-ratio: 1; }
+  .single-pose { flex-direction: column; align-items: center; gap: var(--space-1); padding: 0 0 var(--space-3); text-align: center; }
+  .single-figure > .pose-figure { width: min(44vw, 180px); height: auto; aspect-ratio: 1; }
   /* The words join the pose's column, so the move into it can sit above the drawing and
      the rest (name, cue, breaths) below: less to read in one place. */
   .single-text { display: contents; }
-  /* Lower, away from the heading and close to the drawing it belongs to. */
-  .single-via { order: -1; margin: var(--space-6) 0 calc(-1 * var(--space-2)); font-size: var(--text-lg); color: var(--soft); max-width: 28ch; }
+  /* Just above the drawing it belongs to. */
+  .single-via { order: -1; margin: var(--space-3) 0 calc(-1 * var(--space-2)); font-size: var(--text-lg); color: var(--soft); max-width: 28ch; }
   .timeline .single-name { font-size: var(--text-2xl); }
   .single-cue { max-width: 30ch; margin-top: 0; }
   /* Less to read on a phone: the Sanskrit name stays on wider screens. */
