@@ -241,8 +241,6 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 /* The newest pose's breaths and the side for the next move, on the right of the Next heading. */
 .next-controls { display: flex; align-items: center; gap: 12px; margin-left: auto; }
 .next-controls .stepper .count { font-size: 14px; }
-.reset-breaths { font-size: 12px; color: var(--muted); }
-.reset-breaths:hover:not(:disabled) { color: var(--accent); }
 .next-head h2 { margin: 0; }
 /* An instruction, so brighter than the other headings; where it's building from stays grey. */
 .next-head h2 { color: var(--text); }
@@ -455,6 +453,18 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   padding-left: 8px;
   padding-right: 8px;
 }
+/* Rows fade out into the page just above the player instead of being cut through
+   mid-line, which left slivers of text peeking out. A static fade, nothing moves. */
+.play-footer::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -28px;
+  height: 28px;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+  pointer-events: none;
+}
 .timeline ol { list-style: none; margin: 0; padding: 0; }
 .row {
   display: flex;
@@ -586,7 +596,6 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .stepper .count { min-width: 22px; white-space: nowrap; text-align: center; font-variant-numeric: tabular-nums; color: var(--text); font-size: 15px; }
 .stepper .unit { color: var(--muted); font-size: 13px; }
 .row-breaths { flex: none; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.row-breaths.phone-only { display: none; }
 
 .play-dock {
   padding: 14px;
@@ -594,7 +603,30 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   border: 1px solid var(--border);
   border-radius: 10px;
 }
-.play-status { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-variant-numeric: tabular-nums; }
+.play-status { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-variant-numeric: tabular-nums; }
+.play-status .play-pose-step { margin-left: auto; }
+/* Shrinks the phone player back to its bar. */
+.play-close { display: inline-grid; place-items: center; width: 40px; height: 40px; margin: -10px -10px -10px 0; padding: 0; color: var(--muted); background: none; border: none; border-radius: 50%; }
+.play-close:hover:not(:disabled) { color: var(--text); background: var(--surface-2); }
+
+/* The phone mini player: a progress line along its top edge, what's playing, and play/pause. */
+.play-mini { padding: 0 12px 10px; overflow: hidden; }
+.play-mini .play-progress { height: 3px; margin: 0 -12px 8px; border-radius: 0; }
+.play-mini-row { display: flex; align-items: center; gap: 12px; }
+/* What's playing on the left, the time left beside it, centred against both lines. */
+.play-mini-open { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 4px 0; text-align: left; background: none; border: none; }
+.play-mini-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.play-mini-time { flex: none; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.play-mini .play-pose-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Back, play/pause and forward on the right, like a podcast app's mini player. */
+.play-mini-controls { flex: none; display: flex; align-items: center; gap: 2px; }
+.play-mini-controls button { display: inline-flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; }
+.play-mini .play-main { width: 52px; height: 52px; }
+.play-mini .play-main svg { width: 24px; height: 24px; }
+.play-mini .play-skip { width: 44px; height: 44px; color: var(--muted); background: none; border-color: transparent; }
+.play-mini .play-skip:hover:not(:disabled) { color: var(--text); background: var(--surface-2); border-color: transparent; }
+.play-mini .play-skip svg { width: 24px; height: 24px; }
+.play-mini .play-skip:disabled { opacity: 0.3; }
 .play-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
 .play-progress { height: 4px; margin: 14px 0 6px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
 .play-progress div { height: 100%; background: var(--accent); transition: width 250ms linear; }
@@ -664,12 +696,15 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .layout { grid-template-columns: minmax(0, 1fr); }
   .builder { padding: 0 16px 16px; overflow: visible; }
   /* Five player buttons share a phone's width: slimmer side buttons, the main one on one line. */
-  /* Bigger targets for thumbs. */
+  .play-footer { padding-top: 10px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+  /* Bigger targets and icons for thumbs, with the gaps tightened so the row fits. */
+  .play-controls { gap: 6px; }
   .play-controls .play-side { width: 48px; height: 48px; }
+  .play-controls .play-side svg { width: 22px; height: 22px; }
   .play-controls .play-skip { width: 56px; height: 56px; }
-  .play-controls .play-skip svg { width: 26px; height: 26px; }
-  .play-controls .play-main { width: 64px; height: 64px; }
-  .play-controls .play-main svg { width: 28px; height: 28px; }
+  .play-controls .play-skip svg { width: 30px; height: 30px; }
+  .play-controls .play-main { width: 68px; height: 68px; }
+  .play-controls .play-main svg { width: 32px; height: 32px; }
   .flows { padding: 16px; }
   .flow { flex-wrap: wrap; row-gap: 6px; }
   .flow-actions { width: 100%; }
@@ -677,9 +712,10 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   /* No row numbers on phones (the playing row keeps its green edge), so the pose
      drawings can be bigger. */
   .row .num { display: none; }
-  /* The playing row shows its breaths, not the − + stepper. */
-  .row .stepper { display: none; }
-  .row-breaths.phone-only { display: inline; }
+  /* No breaths or − + stepper on the rows (the player shows the breath count); a bigger ⋯ instead. */
+  .row .stepper, .row .row-breaths { display: none; }
+  .row-more { width: 44px; height: 44px; margin-right: -10px; }
+  .row-more svg { width: 22px; height: 22px; }
   .row .pose-figure { width: 40px; height: 40px; margin-left: 0; }
   /* Phones stack the sequence first, then the tiles to add to it below. */
   .timeline { overflow: visible; border-right: none; border-bottom: 1px solid var(--border); padding: 0 16px 16px; }
@@ -692,9 +728,8 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .tiles, .route { grid-template-columns: 1fr 1fr; }
   .tile { flex-direction: column; align-items: flex-start; gap: 6px; height: 172px; }
   .tile-text { align-self: stretch; }
-  /* The breaths and side controls get their own line under the heading: breaths (and
-     Default) on the left, the − nudged so its glyph lines up with the heading; the side
-     toggle on the right. */
+  /* The breaths and side controls get their own line under the heading: breaths on the
+     left, the − nudged so its glyph lines up with the heading; the side toggle on the right. */
   .next-controls { width: 100%; margin-left: 0; }
   .next-controls .leading { margin-left: auto; }
   .next-controls .stepper { margin-left: -6px; }
@@ -709,7 +744,9 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   body { font-size: 16px; }
   h2, .get-started h3 { font-size: 13px; }
 
-  .timeline-head .meta, .next-from { font-size: 14px; }
+  .next-from { font-size: 14px; }
+  /* The player already shows the pose count and the time. */
+  .timeline-head .meta { display: none; }
   .pager, .pager button { font-size: 14px; }
   .pager button { min-width: 28px; height: 28px; }
   .via { font-size: 13px; }
@@ -717,7 +754,6 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .row-sanskrit { display: none; }
   .row { min-height: 60px; }
   .play-sanskrit { font-size: 14px; }
-  .row-breaths { font-size: 14px; }
   .row-name .side { font-size: 12px; }
   .row-menu button { font-size: 16px; padding: 10px 12px; }
   .row-menu .why { font-size: 13px; }
@@ -738,6 +774,14 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 
   .flows .hint, .flow-meta, .flow-desc, .flow-actions button { font-size: 14px; }
 
+  /* Header: taller targets for the icon buttons and Flows, as wide as fits beside the
+     name (a 44px square each would push the icons onto a line of their own). */
+  .bar h1 { font-size: 16px; }
+  .flow-buttons { gap: 0; }
+  .icon-btn { width: 36px; height: 44px; }
+  .icon-btn svg { width: 20px; height: 20px; }
+  .bar .nav { height: 40px; }
+
   /* Under "Choose the next pose": thumb-sized − + and Right/Left. */
   .next-head { margin-bottom: 14px; }
   .next-controls { gap: 16px; }
@@ -747,4 +791,15 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .next-controls .stepper .unit { font-size: 15px; }
   .leading { gap: 8px; }
   .leading button { min-height: 44px; padding: 0 18px; font-size: 15px; }
+}
+
+/* The smallest phones: the player's row a little smaller so it still fits, and the
+   mini player leaves out the time (the full player has it) to keep room for the pose. */
+@media (max-width: 360px) {
+  .play-mini-time { display: none; }
+  .play-mini .play-skip { width: 40px; height: 40px; }
+  .play-controls { gap: 2px; }
+  .play-controls .play-side { width: 40px; height: 44px; }
+  .play-controls .play-skip { width: 48px; height: 52px; }
+  .play-controls .play-main { width: 60px; height: 60px; }
 }

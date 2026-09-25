@@ -5,6 +5,7 @@ import type { Base, Side, Transition } from './data/types';
 import type { SampleFlow } from './data/samples';
 import { GetStarted, HowItWorks } from './GetStarted';
 import { PoseFigure } from './PoseFigure';
+import { useIsPhone } from './useIsPhone';
 import type { SavedFlow } from './library';
 import { PlaybackDock } from './player/PlaybackDock';
 import { usePlayer } from './player/usePlayer';
@@ -29,17 +30,7 @@ type SetSeq = (next: Sequence | ((prev: Sequence) => Sequence)) => void;
  * Poses per page of the sequence list; shorter flows show in full. Fewer on phones,
  * where the tiles for adding the next pose sit below the list.
  */
-const PHONE = '(max-width: 760px)';
-function usePageSize(): number {
-  const [phone, setPhone] = useState(() => window.matchMedia(PHONE).matches);
-  useEffect(() => {
-    const query = window.matchMedia(PHONE);
-    const onChange = () => setPhone(query.matches);
-    query.addEventListener('change', onChange);
-    return () => query.removeEventListener('change', onChange);
-  }, []);
-  return phone ? 10 : 30;
-}
+const usePageSize = () => (useIsPhone() ? 10 : 30);
 
 /**
  * The last flow-open (App's openCount) the list has started on page one. Kept
@@ -118,8 +109,9 @@ export function Builder({
     const move = via ? renderLabel(via.label, s.side) : '';
     return (
       <>
+        {/* The first pose has no move into it; the voice says "Begin in …" there. */}
         <span className="via" title={move || undefined}>
-          {via ? <MoveLabel label={via.label} side={s.side} /> : '\u00a0'}
+          {via ? <MoveLabel label={via.label} side={s.side} /> : i === 0 ? 'Begin here' : '\u00a0'}
         </span>
         <span className="row-name">
           {p.name}
@@ -169,8 +161,8 @@ export function Builder({
     setPage(Math.max(0, Math.floor(focus / pageSize)));
   }, [focus, openCount, pageSize, timelineRef]);
 
-  // Breaths set in the Next heading carry on to each new pose, until reset to the
-  // poses' own defaults. A newly opened or cleared flow starts on the defaults.
+  // Breaths set in the Next heading carry on to each new pose. A newly opened or
+  // cleared flow starts on each pose's own suggested breaths.
   const [carryBreaths, setCarryBreaths] = useState<number | null>(null);
   useEffect(() => {
     if (justOpened || seq.length === 0) setCarryBreaths(null);
@@ -303,18 +295,6 @@ export function Builder({
                   set((q) => setBreaths(q, q.length - 1, n));
                 }}
               />
-              {carryBreaths !== null && (
-                <button
-                  className="link-btn reset-breaths"
-                  onClick={() => {
-                    setCarryBreaths(null);
-                    set((q) => setBreaths(q, q.length - 1, getPose(current.poseId).breaths));
-                  }}
-                  title="Go back to each pose's suggested breaths"
-                >
-                  Default
-                </button>
-              )}
               {choosesSide(current.poseId) && (
                 <div className="leading" role="group" aria-label="Side for the next move">
                   {(['right', 'left'] as const).map((side) => (
@@ -492,7 +472,7 @@ export function Builder({
               const i = first + j;
               const isLast = i === seq.length - 1;
               const playing = i === playingIndex;
-              const { holdElapsed, holdTotal } = player.state;
+              const { holdElapsed, holdTotal, speechElapsed, speechTotal } = player.state;
               const className = [
                 'row',
                 isLast && !playing && 'current',
@@ -503,7 +483,11 @@ export function Builder({
               ]
                 .filter(Boolean)
                 .join(' ');
-              const progress = playing && holdTotal ? (holdElapsed / holdTotal) * 100 : 0;
+              // The whole step, the voice's announcement as well as the hold, so the bar moves from
+              // the moment the step starts (as the player's clock does) rather than waiting for
+              // the voice to finish. (A one-breath step speaks during its breath: speechTotal is 0.)
+              const stepTotal = speechTotal + holdTotal;
+              const progress = playing && stepTotal ? ((speechElapsed + holdElapsed) / stepTotal) * 100 : 0;
               return (
                 <li
                   key={i}
@@ -526,12 +510,12 @@ export function Builder({
                   </button>
                   {/* The newest pose's breaths are edited in the Next heading; during a class, the
                       pose it's on can be changed here. */}
-                  {/* On phones the playing row shows its breaths as plain text too (the stepper is
-                      hidden there in the CSS). */}
-                  {playing && <Stepper value={s.breaths} onChange={(n) => set((q) => setBreaths(q, i, n))} />}
-                  <span className={playing ? 'row-breaths phone-only' : 'row-breaths'}>
-                    {s.breaths === 1 ? '1 breath' : `${s.breaths} breaths`}
-                  </span>
+                  {/* The breaths (or, on the playing row, a stepper for them) are hidden on phones. */}
+                  {playing ? (
+                    <Stepper value={s.breaths} onChange={(n) => set((q) => setBreaths(q, i, n))} />
+                  ) : (
+                    <span className="row-breaths">{s.breaths === 1 ? '1 breath' : `${s.breaths} breaths`}</span>
+                  )}
                   <button
                     className="row-more"
                     aria-label={`Edit pose ${i + 1}`}

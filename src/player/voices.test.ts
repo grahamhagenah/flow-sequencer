@@ -3,7 +3,7 @@ import { outgoing } from '../data/graph';
 import { advance, start } from '../sequence';
 import { speechMs } from './conductor';
 import { announcementParts, PHRASE_GAP_MS } from './script';
-import { betterVoiceTip, rankVoices } from './voices';
+import { rankVoices } from './voices';
 
 const voice = (name: string, lang = 'en-US') => ({ name, lang, voiceURI: name }) as SpeechSynthesisVoice;
 
@@ -31,13 +31,6 @@ describe('voice ranking', () => {
     const pair = [voice('Daniel', 'en-GB'), voice('Samantha', 'en-US')];
     expect(rankVoices(pair, 'en-US')[0].name).toBe('Samantha');
     expect(rankVoices(pair, 'en-GB')[0].name).toBe('Daniel');
-  });
-
-  it('gives device-specific advice on getting a better voice', () => {
-    expect(betterVoiceTip('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)')).toMatch(/System Settings/);
-    expect(betterVoiceTip('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)')).toMatch(/Settings → Accessibility/);
-    expect(betterVoiceTip('Mozilla/5.0 (Windows NT 10.0) Chrome/120 Safari/537.36')).toMatch(/Edge/);
-    expect(betterVoiceTip('Mozilla/5.0 (Windows NT 10.0) Chrome/120 Safari/537.36 Edg/120')).toBeNull();
   });
 });
 

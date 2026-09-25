@@ -45,16 +45,3 @@ export function rankVoices(all: SpeechSynthesisVoice[], preferredLang = ''): Spe
     .filter((v) => v.lang.toLowerCase().startsWith('en') && !isNovelty(v))
     .sort((a, b) => voiceScore(b, preferredLang) - voiceScore(a, preferredLang) || a.name.localeCompare(b.name));
 }
-
-/** Where to get a better voice on this device, or null when there's nothing specific to say. */
-export function betterVoiceTip(userAgent: string): string | null {
-  if (/iPhone|iPad|iPod/.test(userAgent)) {
-    return 'For a more natural voice, download one in Settings → Accessibility → Spoken Content → Voices → English (the Enhanced and Premium ones sound best).';
-  }
-  if (/Macintosh/.test(userAgent)) {
-    return 'For a more natural voice, download one in System Settings → Accessibility → Spoken Content → System voice → Manage Voices (the Enhanced and Premium ones sound best), then reload this page.';
-  }
-  if (/Edg\//.test(userAgent)) return null; // Edge already offers its Natural voices
-  if (/Windows/.test(userAgent)) return 'Microsoft Edge offers very natural voices (look for “Natural” in the list).';
-  return null;
-}
