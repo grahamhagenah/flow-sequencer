@@ -4,12 +4,13 @@ import type { SampleFlow } from './data/samples';
 import { Dialog, type DialogSpec } from './Dialog';
 import { unlockPlayback } from './player/conductor';
 import { FlowList } from './FlowList';
-import { ArrowLeftIcon, CheckIcon, FlowsIcon, LinkIcon, PencilIcon, PlusIcon, SaveIcon, UndoIcon } from './icons';
+import { ArrowLeftIcon, CheckIcon, FlowsIcon, LinkIcon, NewFlowIcon, PencilIcon, SaveIcon, UndoIcon } from './icons';
 import { Logo } from './Logo';
 import { deleteFlow, listFlows, loadDraft, loadResume, newId, putFlow, type SavedFlow, saveDraft, saveResume } from './library';
 import { decodeSteps, encodeSteps, fromHash, shareUrl, toHash } from './link';
 import type { Sequence } from './sequence';
 import { useHistory } from './useHistory';
+import { useLongPressTips } from './useLongPressTips';
 
 interface Opened {
   /** The saved flow being edited, or null for one not in My flows. */
@@ -18,6 +19,8 @@ interface Opened {
   seq: Sequence;
   notice: string | null;
 }
+
+const EMPTY: Opened = { id: null, name: '', seq: [], notice: null };
 
 const droppedNotice = (dropped: number) =>
   dropped > 0
@@ -37,7 +40,7 @@ function initial(): Opened {
     return { id: isDraft ? draft.id : null, name: linked.name, seq: linked.seq, notice: droppedNotice(linked.dropped) };
   }
   if (draft?.steps) saveResume(draft);
-  return { id: null, name: '', seq: [], notice: null };
+  return EMPTY;
 }
 
 async function copyText(text: string): Promise<boolean> {
@@ -66,13 +69,22 @@ export function App() {
   const [resume, setResume] = useState(loadResume);
   // An empty flow shows the start page until "Start a new sequence" opens the empty sequencer.
   const [choosing, setChoosing] = useState(false);
-  useEffect(() => setChoosing(false), [openCount]);
   const forgetResume = () => {
     saveResume(null);
     setResume(null);
   };
   const lastOpen = useRef(0);
   const timelineRef = useRef<HTMLElement>(null);
+  // The header's icon buttons show their names on a long press on touch screens.
+  const buttonsRef = useRef<HTMLDivElement>(null);
+  useLongPressTips(buttonsRef, view);
+  // A moment's check on the save button after saving from it.
+  const [justSaved, setJustSaved] = useState(false);
+  useEffect(() => {
+    if (!justSaved) return;
+    const t = setTimeout(() => setJustSaved(false), 1600);
+    return () => clearTimeout(t);
+  }, [justSaved]);
 
   const steps = encodeSteps(seq);
   const saved = id ? flows.find((f) => f.id === id) : undefined;
@@ -87,12 +99,12 @@ export function App() {
   }, [id, name, steps, seq.length]);
 
   useEffect(() => {
-    // Keep the newest step in view. Only the desktop timeline scrolls on its own;
-    // on phones it sits below the builder and this does nothing. A flow that was
-    // just opened is left at its top (the list starts it on page one).
+    // Keep the newest step in view. Only the desktop panel scrolls on its own (on
+    // phones the page does, and this does nothing). A flow that was just opened is
+    // left at its top (the list starts it on page one), and so is the start page.
     const el = timelineRef.current;
     if (lastOpen.current !== openCount) lastOpen.current = openCount;
-    else if (el && seq.length > 0) el.scrollTop = el.scrollHeight; // not the start page
+    else if (el && seq.length > 0) el.scrollTop = el.scrollHeight;
   }, [seq.length, view, openCount]);
 
   useEffect(() => {
@@ -101,11 +113,11 @@ export function App() {
     return () => clearTimeout(t);
   }, [copied]);
 
-
   const open = useCallback(
     (next: Opened) => {
       reset(next.seq);
       setOpenCount((n) => n + 1);
+      setChoosing(false);
       setId(next.id);
       setName(next.name);
       setNotice(next.notice);
@@ -113,7 +125,6 @@ export function App() {
     },
     [reset],
   );
-
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -138,23 +149,22 @@ export function App() {
 
   /**
    * Runs `proceed` straight away, or first asks what to do with unsaved
-   * changes: save them, discard them, or stay put.
+   * changes: save them, discard them, or stay put. `proceed` hears which, and
+   * the saved flow's id when they were saved (or there were none to save).
    */
-  const guardUnsaved = (title: string, saveLabel: string, proceed: () => void, onCancel?: () => void) => {
-    if (!dirty) return proceed();
+  const guardUnsaved = (
+    title: string,
+    saveLabel: string,
+    proceed: (outcome: { discarded: boolean; savedId: string | null }) => void,
+    onCancel?: () => void,
+  ) => {
+    if (!dirty) return proceed({ discarded: false, savedId: id });
     setDialog({
       title,
       body: `“${name.trim() || 'Untitled flow'}” has changes that aren’t saved.`,
       actions: [
-        {
-          label: saveLabel,
-          kind: 'primary',
-          run: () => {
-            save();
-            proceed();
-          },
-        },
-        { label: 'Discard changes', kind: 'danger', run: proceed },
+        { label: saveLabel, kind: 'primary', run: () => proceed({ discarded: false, savedId: save().id }) },
+        { label: 'Discard changes', kind: 'danger', run: () => proceed({ discarded: true, savedId: id }) },
       ],
       onCancel,
     });
@@ -183,7 +193,7 @@ export function App() {
   const newFlow = () =>
     guardUnsaved('Start a new flow?', 'Save and start new', () => {
       forgetResume();
-      open({ id: null, name: '', seq: [], notice: null });
+      open(EMPTY);
     });
 
   // The logo: from the Flows page, back to the sequencer; from a flow, the start page,
@@ -192,28 +202,14 @@ export function App() {
   const goHome = () => {
     if (view === 'flows') return setView('builder');
     if (seq.length === 0) return setChoosing(false);
-    const leave = (keep: boolean, flowId = id) => {
-      if (keep) {
-        const d = { id: flowId, name: name.trim(), steps };
+    guardUnsaved('Go to the start page?', 'Save and leave', ({ discarded, savedId }) => {
+      if (discarded) forgetResume();
+      else {
+        const d = { id: savedId, name: name.trim(), steps };
         saveResume(d);
         setResume(d);
-      } else forgetResume();
-      open({ id: null, name: '', seq: [], notice: null });
-    };
-    if (!dirty) return leave(true);
-    setDialog({
-      title: 'Go to the start page?',
-      body: `“${name.trim() || 'Untitled flow'}” has changes that aren’t saved.`,
-      actions: [
-        {
-          label: 'Save and leave',
-          kind: 'primary',
-          run: () => {
-            leave(true, save().id);
-          },
-        },
-        { label: 'Discard changes', kind: 'danger', run: () => leave(false) },
-      ],
+      }
+      open(EMPTY);
     });
   };
 
@@ -292,36 +288,41 @@ export function App() {
           <>
             {/* The start page has no flow yet, so no name for it. */}
             {(seq.length > 0 || choosing) && (
-            <div className="bar-title">
-              {/* The name is editable in place; the pencil says so, and clicking it (it's inside the label) edits it. */}
-              <label className="name-field" title="Rename this flow">
-                <input
-                  className="flow-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Untitled flow"
-                  aria-label="Flow name"
-                  maxLength={80}
-                />
-                <PencilIcon />
-              </label>
-              <span className="status">{status}</span>
-            </div>
+              <div className="bar-title">
+                {/* The name is editable in place; the pencil says so, and clicking it (it's inside the label) edits it. */}
+                <label className="name-field" title="Rename this flow">
+                  <input
+                    className="flow-name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Untitled flow"
+                    aria-label="Flow name"
+                    maxLength={80}
+                  />
+                  <PencilIcon />
+                </label>
+                <span className="status">{status}</span>
+              </div>
             )}
-            <div className="bar-actions">
             {/* Icon-only; data-tip is the hover/focus tooltip and aria-label the spoken name. */}
-            <div className="flow-buttons">
+            <div className="flow-buttons" ref={buttonsRef}>
               <button className="icon-btn" onClick={undo} disabled={!canUndo} aria-label="Undo" data-tip="Undo (⌘Z)">
                 <UndoIcon />
               </button>
+              {/* A dot while there are changes to save (the status text is hidden on phones),
+                  and a check for a moment once saved. */}
               <button
-                className="icon-btn"
-                onClick={save}
+                className={justSaved ? 'icon-btn tip-shown' : 'icon-btn'}
+                onClick={() => {
+                  save();
+                  setJustSaved(true);
+                }}
                 disabled={seq.length === 0 || !dirty}
-                aria-label="Save"
-                data-tip="Save to My flows"
+                aria-label={justSaved ? 'Saved' : dirty && seq.length > 0 ? 'Save, unsaved changes' : 'Save'}
+                data-tip={justSaved ? 'Saved' : 'Save to My flows'}
               >
-                <SaveIcon />
+                {justSaved ? <CheckIcon /> : <SaveIcon />}
+                {dirty && seq.length > 0 && !justSaved && <span className="icon-dot" aria-hidden="true" />}
               </button>
               <button
                 className={copied === 'current' ? 'icon-btn tip-shown' : 'icon-btn'}
@@ -339,7 +340,7 @@ export function App() {
                 aria-label="New flow"
                 data-tip="New flow"
               >
-                <PlusIcon />
+                <NewFlowIcon />
               </button>
               {/* The Flows page, with a badge for how many are saved. */}
               <button
@@ -351,7 +352,6 @@ export function App() {
                 <FlowsIcon />
                 {flows.length > 0 && <span className="icon-count">{flows.length}</span>}
               </button>
-            </div>
             </div>
           </>
         ) : (

@@ -1,11 +1,11 @@
 // Small line icons, drawn in the button's text colour.
 
-function Icon({ children }: { children: React.ReactNode }) {
+function Icon({ children, size = 16 }: { children: React.ReactNode; size?: number }) {
   return (
     <svg
       className="icon"
-      width="16"
-      height="16"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -26,11 +26,19 @@ export const UndoIcon = () => (
   </Icon>
 );
 
+/** Save to My flows: a bookmark, "keep this in my list". */
 export const SaveIcon = () => (
   <Icon>
-    <path d="M5 3h11l3 3v13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z" />
-    <path d="M8 3v5h7V3" />
-    <path d="M8 21v-7h8v7" />
+    <path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+  </Icon>
+);
+
+/** A new flow: a blank page with a plus, so it isn't mistaken for adding a pose. */
+export const NewFlowIcon = () => (
+  <Icon>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+    <path d="M14 3v5h5" />
+    <path d="M12 11v6M9 14h6" />
   </Icon>
 );
 
@@ -47,15 +55,12 @@ export const PencilIcon = () => (
   </Icon>
 );
 
-/** A stack of flows: the Flows page, as an icon on phones. */
+/** My flows: a shelf of books, your library of flows. */
 export const FlowsIcon = () => (
   <Icon>
-    <path d="M8 6h12" />
-    <path d="M8 12h12" />
-    <path d="M8 18h12" />
-    <path d="M4 6h.01" />
-    <path d="M4 12h.01" />
-    <path d="M4 18h.01" />
+    <path d="M5 4v16M9 4v16" />
+    <path d="M13 5.5l4.5 14" />
+    <path d="M3 20h18" />
   </Icon>
 );
 
@@ -70,6 +75,12 @@ export const InfoIcon = () => (
 export const PlusIcon = () => (
   <Icon>
     <path d="M12 5v14" />
+    <path d="M5 12h14" />
+  </Icon>
+);
+
+export const MinusIcon = () => (
+  <Icon>
     <path d="M5 12h14" />
   </Icon>
 );
@@ -100,17 +111,19 @@ export const ForwardIcon = () => (
   </Icon>
 );
 
+/** Outlined and a little smaller than the skip buttons, so it reads as the quieter action. */
 export const StopIcon = () => (
   <Icon>
-    <rect x="6" y="6" width="12" height="12" rx="1.5" fill="currentColor" />
+    <rect x="7" y="7" width="10" height="10" rx="1.5" />
   </Icon>
 );
 
+/** The player's settings: voice, pace and sounds, so a speaker. */
 export const SettingsIcon = () => (
   <Icon>
-    <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />
-    <circle cx="16" cy="7" r="2" />
-    <circle cx="10" cy="17" r="2" />
+    <path d="M11 5 6 9H3v6h3l5 4z" />
+    <path d="M15.5 9.5a3.5 3.5 0 0 1 0 5" />
+    <path d="M18.5 6.5a8 8 0 0 1 0 11" />
   </Icon>
 );
 
@@ -124,4 +137,19 @@ export const ArrowLeftIcon = () => (
   <Icon>
     <path d="M19 12H5M11 6l-6 6 6 6" />
   </Icon>
+);
+
+export const ChevronIcon = ({ dir, size = 18 }: { dir: 'left' | 'right' | 'down'; size?: number }) => (
+  <Icon size={size}>
+    <path d={{ left: 'm15 6-6 6 6 6', right: 'm9 6 6 6-6 6', down: 'm6 9 6 6 6-6' }[dir]} />
+  </Icon>
+);
+
+/** The ⋯ on each row: three filled dots rather than strokes. */
+export const MoreIcon = () => (
+  <svg className="icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+    <circle cx="5" cy="12" r="1.6" />
+    <circle cx="12" cy="12" r="1.6" />
+    <circle cx="19" cy="12" r="1.6" />
+  </svg>
 );

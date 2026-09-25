@@ -12,6 +12,9 @@ export interface Step {
 
 export type Sequence = Step[];
 
+/** Sets the flow, as React's state setters do: a new sequence or a change to the last one. */
+export type SetSeq = (next: Sequence | ((prev: Sequence) => Sequence)) => void;
+
 export function start(poseId: string, side: Side = 'right'): Sequence {
   return [{ poseId, side, breaths: getPose(poseId).breaths }];
 }

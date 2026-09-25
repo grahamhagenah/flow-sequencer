@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { getPose, sideLabel } from '../data/graph';
-import { BackIcon, ForwardIcon, PauseIcon, PlayIcon, SettingsIcon, StopIcon } from '../icons';
+import { SHOW_SANSKRIT } from '../data/poses';
+import { BackIcon, ChevronIcon, ForwardIcon, PauseIcon, PlayIcon, SettingsIcon, StopIcon } from '../icons';
 import { formatDuration, type Sequence } from '../sequence';
 import { canSpeak, classMs, closingMs, speakSample, stepMs } from './conductor';
 import { useIsPhone } from '../useIsPhone';
@@ -190,7 +191,7 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
         </span>
         {phone && (
           <button className="play-close" onClick={() => setOpen(false)} aria-label="Shrink the player" aria-expanded>
-            <ChevronDown />
+            <ChevronIcon dir="down" size={22} />
           </button>
         )}
       </div>
@@ -199,8 +200,7 @@ export function PlaybackDock({ seq, player }: { seq: Sequence; player: Playback 
           {pose.name}
           {pose.sided && <span className="side">{sideLabel(step.side)}</span>}
         </span>
-        {/* Shown here even on phones, where the sequence rows leave it out. */}
-        {pose.sanskrit && <span className="play-sanskrit">{pose.sanskrit}</span>}
+        {SHOW_SANSKRIT && pose.sanskrit && <span className="play-sanskrit">{pose.sanskrit}</span>}
       </div>
       <p className="play-cue">{pose.cue}</p>
       <p className="play-next">{upNext}</p>
@@ -291,9 +291,3 @@ function VoiceSettings({ player }: { player: Playback }) {
     </div>
   );
 }
-
-const ChevronDown = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="m6 9 6 6 6-6" />
-  </svg>
-);

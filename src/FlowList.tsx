@@ -1,6 +1,6 @@
 import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
 import { SampleList } from './GetStarted';
-import { InfoIcon, PlusIcon } from './icons';
+import { InfoIcon, NewFlowIcon } from './icons';
 import type { SavedFlow } from './library';
 import { decodeSteps } from './link';
 import { aboutMinutes, classMs } from './player/conductor';
@@ -46,7 +46,7 @@ export function FlowList({
       <div className="flows-head">
         <h2>Saved flows</h2>
         <button className="new-flow" onClick={onNew}>
-          <PlusIcon /> New flow
+          <NewFlowIcon /> New flow
         </button>
       </div>
       <p className="storage-note">

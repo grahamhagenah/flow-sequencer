@@ -1,18 +1,53 @@
 :root {
-  /* Near-black page; tiles, the player and controls a step or two lighter. */
+  /* Near-black page; cards, the player and controls a step or two lighter. */
   --bg: #08090b;
   --surface: #131519;
   --surface-2: #1c1f24;
   --border: #2a2e35;
   /* Dividers between list items and under headings: softer than --border, which edges panels. */
   --rule: color-mix(in srgb, var(--border) 55%, var(--bg));
+  --card: color-mix(in srgb, var(--surface) 70%, var(--bg));
   --text: #e6e8eb;
   --muted: #9aa1ab;
+  /* Between the two: icons that can be pressed, and the pose drawings at rest. Brighter
+     than plain grey, so an enabled icon stands clear of a disabled (faded) one. */
+  --soft: color-mix(in srgb, var(--muted) 55%, var(--text));
   /* Warm apricot, like early sun. */
   --accent: #f2b27a;
   --accent-bg: #261b12;
   --danger: #f08a8a;
   color-scheme: dark;
+
+  /* Type: six sizes. Phones move each up a step where there's room (see the 760px rules),
+     so nothing below needs its own phone size. */
+  --text-xs: 12px; /* labels in caps, badges, small meta */
+  --text-sm: 13px; /* secondary lines: moves, meta, hints */
+  --text-md: 15px; /* body, row names, buttons */
+  --text-lg: 17px; /* card titles, the player's pose, dialog titles */
+  --text-xl: 20px; /* section titles */
+  --text-2xl: 28px; /* the featured class */
+
+  /* Spacing on a 4px grid. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Two corners: controls, and cards (choices, the player, dialogs). */
+  --radius-sm: 8px;
+  --radius-lg: 12px;
+
+  /* Icons: inline, in the header and toolbars, and in the player. */
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+
+  /* The one content column, on every page. */
+  --column: 860px;
+  --gutter: 20px;
 }
 
 * { box-sizing: border-box; }
@@ -26,7 +61,7 @@ body {
   background: var(--bg);
   color: var(--text);
   /* Figtree: friendly and warm but crisp, and easy to read small. System fonts stand in while it loads. */
-  font: 15px/1.45 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font: var(--text-md) / 1.45 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 button {
@@ -34,8 +69,8 @@ button {
   color: inherit;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  padding: 6px var(--space-3);
   cursor: pointer;
 }
 button:hover:not(:disabled) { border-color: var(--muted); }
@@ -49,18 +84,31 @@ select {
   color: inherit;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
 }
 
-h1 { font-size: 17px; margin: 0; font-weight: 600; }
+h1 { font-size: var(--text-lg); margin: 0; font-weight: 600; }
+/* The small grey label in caps ("Sequence"). */
 h2 {
-  font-size: 12px;
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted);
-  margin: 24px 0 10px;
+  margin: var(--space-5) 0 var(--space-2);
+}
+/* A section title: the start page's and Flows page's headings ("Ready-made classes"). */
+.section-title,
+.get-started .gs-head h3,
+.flows-head h2 {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text);
 }
 
 .app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
@@ -69,35 +117,26 @@ h2 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 16px;
-  padding: 8px 20px;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-2) var(--gutter);
   /* Same colour as the page with a hairline under it, so the bar doesn't read as a heavy band. */
   border-bottom: 1px solid var(--border);
   background: var(--bg);
 }
-.bar h1 { flex: none; display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 600; letter-spacing: 0; line-height: 28px; }
-.bar .home { display: flex; align-items: center; gap: 8px; color: inherit; text-decoration: none; border-radius: 6px; }
+.bar h1 { flex: none; display: flex; align-items: center; gap: var(--space-2); letter-spacing: 0; line-height: 28px; }
+.bar .home { display: flex; align-items: center; gap: var(--space-2); color: inherit; text-decoration: none; border-radius: var(--radius-sm); }
 .bar .home:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.bar h1::after { content: '/'; margin-left: 8px; font-weight: 400; color: var(--border); }
+/* The slash only when a flow name or page name follows (not on the start page). */
+.bar h1:has(+ .bar-title, + .bar-page)::after { content: '/'; margin-left: var(--space-2); font-weight: 400; color: var(--border); }
 /* Title and status keep at least 320px; when the buttons don't fit beside them they wrap to a second line. */
-.bar-title { flex: 1 1 320px; min-width: 0; display: flex; align-items: center; gap: 12px; }
-.bar .nav { flex: none; }
+.bar-title { flex: 1 1 320px; min-width: 0; display: flex; align-items: center; gap: var(--space-3); }
 /* Where you are, in the spot the flow title takes in the builder. */
-.bar-page { font-size: 15px; font-weight: 500; }
+.bar-page { font-weight: 500; }
 .bar > .nav { margin-left: auto; }
-.bar-actions { display: flex; align-items: center; gap: 16px; margin-left: auto; }
 .meta { color: var(--muted); font-variant-numeric: tabular-nums; }
 
-.layout {
-  flex: 1;
-  min-height: 0;
-  display: grid;
-  /* Sequence and builder share the width; the sequence comes first, on the left. */
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-}
-
-/* No top padding: its first heading's own 24px margin lines it up with the Sequence heading opposite. */
-.builder { padding: 0 20px 20px; overflow-y: auto; container: builder / inline-size; }
+/* One column: the sequence (or the start page) and, under it, the player. */
+.layout { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); }
 .hint { color: var(--muted); margin: 0; }
 
 input {
@@ -105,31 +144,31 @@ input {
   color: inherit;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 input:hover { border-color: var(--border); }
 input:focus { outline: none; border-color: var(--accent); background: var(--surface); }
 
 /* The name with a pencil right after it, so it's plain it can be edited. The input is
    as wide as its text (field-sizing), so the pencil sits beside the words. */
-.name-field { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 4px; cursor: text; }
-.flow-name { flex: 0 1 auto; min-width: 6ch; max-width: 100%; field-sizing: content; font-size: 15px; font-weight: 500; padding: 4px 8px; margin-left: -8px; }
+.name-field { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: var(--space-1); cursor: text; }
+.flow-name { flex: 0 1 auto; min-width: 6ch; max-width: 100%; field-sizing: content; font-weight: 500; padding: var(--space-1) var(--space-2); margin-left: calc(-1 * var(--space-2)); }
 .name-field .icon { flex: none; color: var(--muted); }
 .name-field:hover .flow-name { border-color: var(--border); }
 .name-field:hover .icon { color: var(--text); }
 .name-field:focus-within .icon { color: var(--accent); }
 .flow-name::placeholder { color: var(--muted); font-weight: 500; }
 /* Fixed width for the longest status, so the title and buttons don't shift as it changes. */
-.status { font-size: 13px; color: var(--muted); white-space: nowrap; min-width: 7.5em; text-align: right; }
-.flow-buttons { display: flex; gap: 4px; }
-/* A quiet link back, no box: just the arrow and its words (only the arrow on phones). */
-.bar .nav { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 8px; font-size: 14px; background: none; border: none; color: var(--muted); }
+.status { font-size: var(--text-sm); color: var(--muted); white-space: nowrap; min-width: 7.5em; text-align: right; }
+.flow-buttons { display: flex; gap: var(--space-1); margin-left: auto; }
+/* A quiet link back, no box: just the arrow and its words (hidden on phones). */
+.bar .nav { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 var(--space-2); font-size: var(--text-sm); background: none; border: none; color: var(--muted); }
 .bar .nav:hover { color: var(--text); }
 
-/* Its saved-flows count, as a small badge on the icon's corner. */
+/* Its saved-flows count, as a small badge on the icon's corner (smaller than the type scale, on purpose). */
 .icon-count {
   position: absolute;
-  top: 4px;
+  top: var(--space-1);
   right: 0;
   min-width: 15px;
   padding: 0 3px;
@@ -143,11 +182,11 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 }
 
 /* Square icon buttons with a tooltip from data-tip, shown on hover or keyboard focus. */
-.icon-btn { position: relative; width: 32px; height: 32px; padding: 0; justify-content: center; }
+.icon-btn { position: relative; width: 36px; height: 36px; padding: 0; justify-content: center; }
+.icon-btn svg { width: var(--icon-md); height: var(--icon-md); }
 /* In the bar the action icons are borderless and only show a background on hover. */
-.bar .icon-btn { background: none; border-color: transparent; color: var(--muted); }
+.bar .icon-btn { background: none; border-color: transparent; color: var(--soft); }
 .bar .icon-btn:hover:not(:disabled) { background: var(--surface-2); border-color: transparent; color: var(--text); }
-.bar .icon-btn.tip-shown { color: var(--accent); }
 .icon-btn[data-tip]::after {
   content: attr(data-tip);
   position: absolute;
@@ -155,13 +194,13 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
-  padding: 4px 8px;
-  font-size: 12px;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
   white-space: nowrap;
   color: var(--text);
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: 6px;
   pointer-events: none;
   visibility: hidden;
 }
@@ -171,23 +210,32 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 .icon-btn.tip-shown { color: var(--accent); }
 /* Fade just the icon when disabled, so its tooltip stays readable. */
 .icon-btn:disabled { opacity: 1; }
-.icon-btn:disabled svg { opacity: 0.35; }
+.icon-btn:disabled svg { opacity: 0.3; }
+.icon-btn:disabled { color: var(--muted); }
+/* The check shown just after saving stays bright, though the button is now disabled. */
+.icon-btn.tip-shown:disabled svg { opacity: 1; }
+/* A tooltip shown by a long press on touch screens (useLongPressTips). */
+.icon-btn.tip-pressed::after { visibility: visible; }
+/* No text selection or iOS callout on a long press. */
+.icon-btn { -webkit-touch-callout: none; user-select: none; }
+/* Unsaved changes: a small apricot dot on the save icon's corner. */
+.icon-dot { position: absolute; top: 7px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 2px var(--bg); }
 .flow-buttons button { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
 .icon { flex: none; }
 
 .dialog {
-  width: min(460px, calc(100vw - 32px));
-  padding: 24px;
+  width: min(460px, calc(100vw - var(--space-6)));
+  padding: var(--space-5);
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
 }
 .dialog::backdrop { background: rgba(0, 0, 0, 0.55); }
-.dialog h2 { margin: 0 0 8px; font-size: 18px; font-weight: 600; color: var(--text); letter-spacing: 0; text-transform: none; }
-.dialog p { margin: 0 0 24px; color: var(--muted); }
-.dialog-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
-.dialog-actions button { padding: 8px 14px; white-space: nowrap; }
+.dialog h2 { margin: 0 0 var(--space-2); font-size: var(--text-lg); font-weight: 600; color: var(--text); letter-spacing: 0; text-transform: none; }
+.dialog p { margin: 0 0 var(--space-5); color: var(--muted); }
+.dialog-actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-2); }
+.dialog-actions button { padding: var(--space-2) var(--space-4); white-space: nowrap; }
 /* One even row on the right: the set-apart action, Cancel, then the main action.
    The set-apart one (Discard) stands out by being a quiet red text button, not by spacing. */
 .dialog-actions .aside { background: none; border-color: transparent; }
@@ -197,73 +245,76 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 button.danger { color: var(--danger); }
 button.danger:hover:not(:disabled) { border-color: var(--danger); }
 
+/* Shown in place of the app if it fails to render (ErrorBoundary). */
+.crashed { max-width: 460px; margin: 15vh auto 0; padding: 0 var(--gutter); }
+.crashed h1 { font-size: var(--text-xl); }
+.crashed p { margin: var(--space-2) 0 var(--space-5); color: var(--muted); }
+.crashed-actions { display: flex; gap: var(--space-2); }
+.crashed-actions button { padding: var(--space-2) var(--space-4); }
+
 .notice {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  margin: 24px 0 -8px;
-  padding: 10px 12px;
-  font-size: 14px;
+  gap: var(--space-3);
+  margin: var(--space-5) 0 calc(-1 * var(--space-2));
+  padding: var(--space-3);
+  font-size: var(--text-sm);
   background: var(--surface);
   border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 .notice span { flex: 1; }
-.notice button { padding: 0 8px; background: none; border: none; color: var(--muted); font-size: 18px; line-height: 1.2; }
+.notice button { padding: 0 var(--space-2); background: none; border: none; color: var(--muted); font-size: var(--text-lg); line-height: 1.2; }
 
 /* Scrolls across the full width, so its scrollbar sits at the window's edge rather than
-   beside the content; the side padding keeps the content in a centred 760px column. */
-.flows { flex: 1; overflow-y: auto; padding: 20px max(20px, calc((100% - 760px) / 2)); width: 100%; }
-/* A rule under each heading, as on the start panel. */
-.flows-head { display: flex; align-items: center; justify-content: space-between; margin: 4px 0 12px; padding-bottom: 10px; border-bottom: 1px solid var(--rule); }
-.flows-head h2 { margin: 0; }
-.flows .hint { font-size: 13px; margin-bottom: 16px; }
+   beside the content; the side padding keeps the content in the centred column. */
+.flows { flex: 1; overflow-y: auto; padding: var(--space-5) max(var(--gutter), calc((100% - var(--column)) / 2)) var(--space-7); width: 100%; }
+.flows-head { display: flex; align-items: center; justify-content: space-between; margin: 0 0 var(--space-3); }
+.flows .hint { font-size: var(--text-sm); margin-bottom: var(--space-4); }
 /* Where flows are kept: a small notice set apart from the list, with an info mark. */
-.storage-note { display: flex; align-items: flex-start; gap: 10px; margin: 0 0 16px; padding: 10px 14px; font-size: 13px; line-height: 1.45; color: var(--muted); background: color-mix(in srgb, var(--surface) 70%, var(--bg)); border: 1px solid var(--rule); border-radius: 10px; }
-.storage-note .icon { flex: none; width: 16px; height: 16px; margin-top: 1px; color: var(--accent); }
-.flows .empty { color: var(--muted); padding: 24px 0; }
+.storage-note { display: flex; align-items: flex-start; gap: var(--space-3); margin: 0 0 var(--space-4); padding: var(--space-3) var(--space-4); font-size: var(--text-sm); line-height: 1.45; color: var(--muted); background: var(--card); border: 1px solid var(--rule); border-radius: var(--radius-lg); }
+.storage-note .icon { flex: none; width: var(--icon-sm); height: var(--icon-sm); margin-top: 1px; color: var(--accent); }
+.flows .empty { color: var(--muted); padding: var(--space-5) 0; }
 .flows ul { list-style: none; margin: 0; padding: 0; }
-.flow { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
-.flow-main { flex: 1; min-width: 0; display: flex; flex-direction: column; text-align: left; background: none; border: none; padding: 4px 8px; margin-left: -8px; }
+.flow { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--rule); }
+.flow-main { flex: 1; min-width: 0; display: flex; flex-direction: column; text-align: left; background: none; border: none; padding: var(--space-1) var(--space-2); margin-left: calc(-1 * var(--space-2)); }
 .flow-main:hover:not(:disabled) { background: var(--surface-2); }
 .flow-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .flow.current .flow-title { color: var(--accent); }
-.flow-meta { font-size: 13px; color: var(--muted); }
-.flow-desc { font-size: 13px; color: var(--text); margin: 2px 0; }
-.samples-head { margin-top: 32px; }
+.flow-meta { font-size: var(--text-sm); color: var(--muted); }
+.samples-head { margin-top: var(--space-7); }
 .flow-actions { display: flex; gap: 2px; flex: none; }
 /* Quiet text buttons: no border until hovered, Delete only turns red on hover. */
-.flow-actions button { font-size: 13px; padding: 4px 8px; background: none; border-color: transparent; color: var(--muted); }
+.flow-actions button { font-size: var(--text-sm); padding: var(--space-1) var(--space-2); background: none; border-color: transparent; color: var(--muted); }
 .flow-actions button:hover:not(:disabled) { background: var(--surface-2); border-color: transparent; color: var(--text); }
 .flow-actions .delete:hover:not(:disabled) { color: var(--danger); }
-.new-flow { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; font-size: 13px; background: none; color: var(--muted); }
+.new-flow { display: inline-flex; align-items: center; gap: 6px; padding: 6px var(--space-3); font-size: var(--text-sm); background: none; color: var(--muted); }
 .new-flow:hover:not(:disabled) { color: var(--text); }
 
-
+/* A Right/Left tag beside a pose's name. */
 .side {
   display: inline-block;
-  margin-left: 8px;
+  margin-left: var(--space-2);
   padding: 1px 7px;
-  font-size: 12px;
+  font-size: var(--text-xs);
   font-weight: 500;
   vertical-align: middle;
   color: var(--accent);
   background: var(--accent-bg);
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 /* Tall enough for the Right/Left toggle, so the row doesn't grow when it appears. */
-.next-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin: 24px 0 14px; min-height: 28px; }
-/* The newest pose's breaths and the side for the next move, on the right of the Next heading. */
-.next-controls { display: flex; align-items: center; gap: 12px; margin-left: auto; }
-.next-controls .stepper .count { font-size: 14px; }
-.next-head h2 { margin: 0; }
-/* An instruction, so brighter than the other headings; where it's building from stays grey. */
-.next-head h2 { color: var(--text); }
-.next-head .next-from { color: var(--muted); }
+.next-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-3); margin: var(--space-5) 0 var(--space-4); min-height: 32px; }
+/* The newest pose's breaths and the side for the next move, on the right of the heading. */
+.next-controls { display: flex; align-items: center; gap: var(--space-3); margin-left: auto; }
+/* An instruction ("Choose the next pose"), so bright and in plain case, a step up from the
+   caps labels; where it's building from stays small and grey. */
+.next-head h2 { margin: 0; font-size: var(--text-md); letter-spacing: 0; text-transform: none; color: var(--text); }
+.next-from { margin-left: 6px; font-size: var(--text-sm); font-weight: 400; color: var(--muted); }
 .leading { display: flex; gap: 6px; }
-.leading button { padding: 3px 10px; font-size: 13px; }
+.leading button { padding: var(--space-1) var(--space-3); font-size: var(--text-sm); }
 .leading button[aria-pressed='true'] { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
 
 .mirror {
@@ -271,83 +322,58 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  margin-top: 16px;
-  padding: 10px 14px;
+  margin-top: var(--space-3);
+  padding: var(--space-3) var(--space-4);
   text-align: left;
   gap: 2px;
   background: transparent;
   border: 1px dashed var(--muted);
+  border-radius: var(--radius-lg);
   color: var(--text);
   font-weight: 500;
 }
 .mirror:hover:not(:disabled) { border-color: var(--accent); }
 .mirror .kicker {
-  font-size: 11px;
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--accent);
 }
-.mirror .sub { font-size: 13px; font-weight: 400; color: var(--muted); }
+.mirror .sub { font-size: var(--text-sm); font-weight: 400; color: var(--muted); }
 
-.tiles {
-  display: grid;
-  /* Wide enough for the drawing and a label side by side. */
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 8px;
-}
-.tile {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-align: left;
-  padding: 12px;
-  background: var(--surface);
-  /* One fixed height whatever the moves, so the tiles never change size as you
-     click through: room for three lines of move and the pose's name. */
-  height: 106px;
-  overflow: hidden;
-}
-.tile-label { font-weight: 500; }
-/* Never wider than the tile, so long text is cut off rather than running past the edge. */
-.tile-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; max-width: 100%; }
-/* Longer than that is cut with an ellipsis; the whole move is in the tooltip. */
-.tile-label { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.35; }
-.tile-to { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* The pose drawings sit in the quiet grey, a little brighter on hover. */
-.pose-figure { flex: none; color: var(--muted); }
-.tile:hover .pose-figure { color: var(--text); }
-.row .pose-figure { margin: 0 2px 0 4px; }
+/* The pose drawings sit in the quiet grey; the newest and playing rows' in apricot. */
+.pose-figure { flex: none; color: var(--soft); }
+.row .pose-figure { width: 36px; height: 36px; margin: 0 2px 0 var(--space-1); }
 .row.current .pose-figure, .row.playing .pose-figure { color: var(--accent); }
-.tile-to { font-size: 13px; color: var(--muted); }
+
 /* The start page: the featured class, then quiet cards for everything else.
-   One spacing scale throughout: 36px between sections, 12px under each heading. */
-.get-started { display: flex; flex-direction: column; gap: 36px; padding: 8px 0 40px; container-type: inline-size; }
+   One spacing scale throughout: 32px between sections, 12px under each heading. */
+.get-started { display: flex; flex-direction: column; gap: var(--space-6); padding: var(--space-2) 0 var(--space-7); container-type: inline-size; }
 /* Cards: a step lighter than the page with a soft edge, brighter on hover. */
 .build-own, .gs-list, .sample-card {
-  background: color-mix(in srgb, var(--surface) 70%, var(--bg));
+  background: var(--card);
   border: 1px solid var(--rule);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
 }
 /* Build your own: dashed, like the choices of what to add, as it isn't a flow yet. */
-.build-own { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 20px; padding: 20px 22px; border: 1px dashed var(--border); }
-.build-own-text { display: flex; flex-direction: column; gap: 4px; flex: 1 1 280px; }
-.get-started .build-own h3 { font-size: 16px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--text); }
-.build-own p { margin: 0; font-size: 14px; line-height: 1.45; color: var(--muted); }
-.build-own-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 20px 0 16px; font-size: 15px; }
+.build-own { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4) var(--space-5); padding: var(--space-5); border: 1px dashed var(--border); }
+.build-own-text { display: flex; flex-direction: column; gap: var(--space-1); flex: 1 1 280px; }
+.get-started .build-own h3 { margin: 0; font-size: var(--text-lg); font-weight: 600; color: var(--text); }
+.build-own p { margin: 0; font-size: var(--text-sm); line-height: 1.45; color: var(--muted); }
+.build-own-btn { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; padding: 0 var(--space-5) 0 var(--space-4); }
 .build-own-btn .icon, .build-own-btn svg { color: var(--accent); }
-.get-started h3 { margin: 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-.gs-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
-.link-btn { padding: 0; background: none; border: none; font-size: 13px; color: var(--accent); }
+.gs-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: var(--space-3); }
+.link-btn { position: relative; padding: 0; background: none; border: none; border-radius: 0; font-size: var(--text-sm); color: var(--accent); }
 .link-btn:hover:not(:disabled) { text-decoration: underline; }
 .gs-list { list-style: none; margin: 0; padding: 0; overflow: hidden; }
 .gs-list > li + li { border-top: 1px solid var(--rule); }
 .gs-item {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: var(--space-3);
   width: 100%;
-  padding: 14px 18px;
+  padding: var(--space-4);
   text-align: left;
   background: none;
   border: none;
@@ -355,12 +381,11 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 }
 .gs-item:hover:not(:disabled) { background: var(--surface-2); }
 .gs-item .gs-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.gs-open { font-size: 13px; color: var(--muted); }
+.gs-open { font-size: var(--text-sm); color: var(--muted); }
 .gs-item:hover .gs-open { color: var(--accent); }
 .gs-title { font-weight: 600; }
-.gs-meta { margin-top: 3px; font-size: 12px; color: var(--muted); opacity: 0.8; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.gs-item .gs-meta { margin-top: 0; }
-/* Quiet until hovered: only the ▶ is green at rest; the whole button turns green on hover or focus. */
+.gs-meta { font-size: var(--text-xs); color: var(--muted); opacity: 0.8; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* Quiet until hovered: only the ▶ is apricot at rest; the whole button turns apricot on hover or focus. */
 .gs-play { color: var(--text); background: none; border-color: var(--border); font-weight: 500; }
 .gs-play .icon { color: var(--accent); }
 .gs-play:hover:not(:disabled), .gs-play:focus-visible { color: var(--accent); background: var(--accent-bg); border-color: var(--accent); }
@@ -372,7 +397,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   padding: 0;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: var(--space-3);
 }
 .sample-grid { container-type: inline-size; }
 
@@ -381,38 +406,38 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .featured {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 28px 0 4px;
+  gap: var(--space-2);
+  padding: var(--space-6) 0 var(--space-1);
 }
-.featured-kicker { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tone); }
-.get-started h3.featured-title { display: flex; align-items: center; gap: 12px; margin: 4px 0 0; font-size: 30px; line-height: 1.2; font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--text); }
-.featured-title .sample-icon svg { width: 30px; height: 30px; }
-.featured .sample-meta { font-size: 13px; }
-.featured-desc { margin: 6px 0 0; font-size: 16px; line-height: 1.55; color: var(--muted); max-width: 48ch; }
+.featured-kicker { font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tone); }
+.get-started h3.featured-title { display: flex; align-items: center; gap: var(--space-3); margin: 0; font-size: var(--text-2xl); line-height: 1.2; font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--text); }
+/* The icon grows with the title. */
+.featured-title .sample-icon svg { width: 1em; height: 1em; }
+.featured .sample-meta { font-size: var(--text-sm); }
+.featured-desc { margin: 0; font-size: var(--text-md); line-height: 1.55; color: var(--muted); max-width: 48ch; }
 /* One line of whole drawings, as many as fit (all eight on wider screens): any that
    would wrap to a second line are cut off with it. */
-.featured-poses { display: flex; flex-wrap: wrap; gap: 0 14px; height: 44px; margin-top: 14px; overflow: hidden; color: var(--muted); }
-.featured-poses .pose-figure { color: var(--muted); }
-.featured-actions { margin-top: 16px; }
-.featured-actions .gs-play { min-height: 46px; padding: 0 22px 0 18px; font-size: 15px; }
-.featured-actions button:not(.gs-play) { min-height: 46px; font-size: 15px; }
+.featured-poses { display: flex; flex-wrap: wrap; gap: 0 var(--space-4); height: 44px; margin-top: var(--space-2); overflow: hidden; }
+.featured-actions { margin-top: var(--space-3); }
+.featured-actions button { min-height: 44px; font-size: var(--text-md); }
+.featured-actions .gs-play { padding: 0 var(--space-5) 0 var(--space-4); }
 @container (min-width: 400px) {
   .sample-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   /* In two columns, short lines read better than ones stretched across a wide column.
      A single column (phones) uses the full width. */
   .sample-desc { max-width: 40ch; }
 }
-.sample-card { display: flex; flex-direction: column; gap: 4px; padding: 16px 18px 14px; transition: border-color 0.15s; }
+.sample-card { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-4) var(--space-4) var(--space-3); transition: border-color 0.15s; }
 .sample-card:hover { border-color: var(--border); }
-.sample-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; line-height: 1.3; }
+.sample-title { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-md); font-weight: 600; line-height: 1.3; }
 .sample-icon { flex: none; display: inline-flex; color: var(--tone); }
-.sample-icon svg { width: 17px; height: 17px; }
-.sample-meta { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.sample-icon svg { width: var(--icon-md); height: var(--icon-md); }
+.sample-meta { font-size: var(--text-xs); color: var(--muted); white-space: nowrap; }
 /* Up to three lines; the full text is in the tooltip. */
 .sample-desc {
   flex: 1;
   margin-top: 2px;
-  font-size: 13px;
+  font-size: var(--text-sm);
   line-height: 1.45;
   color: var(--muted);
   display: -webkit-box;
@@ -420,50 +445,48 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-/* Play is a small, quiet button with no colour: grey ▶, and on hover just a brighter
-   border (not the green of .gs-play elsewhere). Open is plain grey text beside it. */
-/* Big enough to press easily; Open's padding widens its target without a visible box. */
-.sample-actions { display: flex; align-items: center; gap: 4px; margin-top: 12px; }
-.sample-actions button { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; font-size: 14px; font-weight: 500; }
-.sample-actions .gs-play { padding: 0 18px 0 14px; }
-.sample-actions .gs-play .icon { width: 14px; height: 14px; }
+/* Play is a quiet button with no colour: grey ▶, and on hover just a brighter border
+   (not the apricot of .gs-play elsewhere). Open is plain grey text beside it, its
+   padding widening the target without a visible box. */
+.sample-actions { display: flex; align-items: center; gap: var(--space-1); margin-top: var(--space-3); }
+.sample-actions button { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 40px; font-size: var(--text-md); font-weight: 500; }
+.sample-actions .gs-play { padding: 0 var(--space-4) 0 var(--space-3); }
 .sample-actions .gs-play .icon { color: var(--muted); }
 .sample-actions .gs-play:hover:not(:disabled), .sample-actions .gs-play:focus-visible { color: var(--text); background: var(--surface); border-color: var(--muted); }
 .sample-actions .gs-play:hover .icon, .sample-actions .gs-play:focus-visible .icon { color: var(--text); }
-.sample-actions button:not(.gs-play) { padding: 0 14px; color: var(--muted); background: none; border: none; }
+.sample-actions button:not(.gs-play) { padding: 0 var(--space-3); color: var(--muted); background: none; border: none; }
 .sample-actions button:not(.gs-play):hover:not(:disabled) { color: var(--text); text-decoration: underline; }
 
-
+/* The panel scrolls at full width (its scrollbar at the window's edge); the padding
+   keeps the content in the centred column. */
 .timeline {
-  order: -1;
-  border-right: 1px solid var(--border);
-  padding: 0 20px;
+  padding: 0 max(var(--gutter), calc((100% - var(--column)) / 2));
   overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 .timeline > * { flex-shrink: 0; }
-/* Same margin and height as .next-head, so the two panels' headings line up. */
 /* A rule under the heading, spanning the rows' width (they reach 8px past the text). */
 .timeline-head {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 4px 12px;
-  margin: 24px -8px 0;
-  padding: 0 8px 10px;
-  min-height: 28px;
+  gap: var(--space-1) var(--space-3);
+  margin: var(--space-5) calc(-1 * var(--space-2)) 0;
+  padding: 0 var(--space-2) var(--space-2);
+  min-height: 32px;
   border-bottom: 1px solid var(--rule);
 }
 .timeline-head > * { white-space: nowrap; }
 .timeline-head h2 { margin: 0; }
-.timeline-head .meta { font-size: 13px; }
+.timeline-head .meta { font-size: var(--text-sm); }
 .timeline-head.empty-head { display: none; }
-.timeline-head.empty-head + .get-started { padding-top: 24px; }
-.pager { display: flex; align-items: center; gap: 4px; margin-right: auto; margin-left: 12px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.timeline-head.empty-head + .get-started { padding-top: var(--space-5); }
+.pager { display: flex; align-items: center; gap: var(--space-1); margin-right: auto; margin-left: var(--space-3); font-size: var(--text-sm); color: var(--muted); font-variant-numeric: tabular-nums; }
 .pager span { min-width: 3.2em; text-align: center; }
-.pager button { display: inline-grid; place-items: center; width: 28px; height: 28px; padding: 0; color: var(--muted); background: none; border-color: transparent; border-radius: 50%; }
+.pager button { display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; color: var(--muted); background: none; border-color: transparent; border-radius: 50%; }
+.pager button svg { width: var(--icon-md); height: var(--icon-md); }
 .pager button:hover:not(:disabled) { color: var(--text); background: var(--surface-2); border-color: transparent; }
 .pager button:disabled { opacity: 0.3; }
 
@@ -472,14 +495,14 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   position: sticky;
   bottom: 0;
   margin-top: auto;
-  padding: 16px 0 calc(20px + env(safe-area-inset-bottom));
+  padding: var(--space-4) 0 calc(var(--space-5) + env(safe-area-inset-bottom));
   background: var(--bg);
   /* As wide as the rows (which reach 8px past the panel's padding for their hover
      highlight), so rows scrolling underneath don't show at the sides. */
-  margin-left: -8px;
-  margin-right: -8px;
-  padding-left: 8px;
-  padding-right: 8px;
+  margin-left: calc(-1 * var(--space-2));
+  margin-right: calc(-1 * var(--space-2));
+  padding-left: var(--space-2);
+  padding-right: var(--space-2);
 }
 /* Rows fade out into the page just above the player instead of being cut through
    mid-line, which left slivers of text peeking out. A static fade, nothing moves. */
@@ -497,26 +520,25 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  /* Side padding gives the hover highlight some room; the margin keeps the text where it was. */
-  padding: 6px 8px;
-  margin: 0 -8px;
+  gap: var(--space-3);
+  /* Side padding gives the hover highlight some room; the margin keeps the text where it was.
+     Roomy on desktop, so the lines breathe; phones tighten it (see the 760px rules). */
+  padding: var(--space-3) var(--space-2);
+  margin: 0 calc(-1 * var(--space-2));
   border-bottom: 1px solid var(--rule);
-  /* Every row has the same three lines (move, pose, Sanskrit), so they're all this tall. */
+  /* Every row has the same lines (move, pose, and Sanskrit when shown), so they're all this tall. */
   min-height: 72px;
   cursor: pointer;
+  /* Room for the pinned player when the playing row scrolls into view. */
+  scroll-margin-bottom: 220px;
 }
+.row-name { font-weight: 500; }
 .row.current .row-name { color: var(--accent); }
 /* The newest pose: a faint steady tint, like a cursor. It moves down as poses are
    added; no animation, and no edge (that marks the playing pose). */
 .row.current { background: color-mix(in srgb, var(--accent) 4%, transparent); }
 .row.current:hover:not(.playing) { background: color-mix(in srgb, var(--accent) 6%, transparent); }
-.row-sanskrit { font-size: 12px; font-style: italic; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.next-from .from-pose { font-size: inherit; color: var(--muted); }
-.next-from .from-pose:hover:not(:disabled) { color: var(--accent); }
-.next-from { margin-left: 6px; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 13px; }
-/* Room for the pinned play button or dock when the playing row scrolls into view. */
-.row { scroll-margin-bottom: 220px; }
+.row-sanskrit { font-size: var(--text-xs); font-style: italic; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .row.played .row-main { opacity: 0.45; }
 /* Registered so it can be animated: progress arrives in 250ms ticks (see
    conductor.ts), and gliding between them over the same 250ms reads as one
@@ -537,22 +559,23 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   transition: --progress 250ms linear;
 }
 .row.playing .row-name { color: var(--accent); }
-.num { width: 22px; flex: none; color: var(--muted); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+.num { width: 22px; flex: none; color: var(--muted); font-size: var(--text-xs); text-align: right; font-variant-numeric: tabular-nums; }
 .row-main {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
+  gap: 2px;
   text-align: left;
   background: none;
   border: none;
-  padding: 2px 4px;
+  padding: 2px var(--space-1);
 }
 /* Just a hint of a lift on hover. */
 .row:hover:not(.playing) { background: color-mix(in srgb, var(--surface) 55%, transparent); }
-.via { font-size: 12px; color: var(--muted); }
+.via { font-size: var(--text-xs); color: var(--muted); }
 .row .via { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.row-name .side { font-size: 11px; }
+.row-name .side { font-size: var(--text-xs); }
 /* The side named in a move's words, in place of a Right/Left tag. */
 .side-word { color: var(--accent); font-weight: 600; }
 
@@ -562,15 +585,16 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   flex: none;
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   padding: 0;
-  margin-right: -4px;
+  margin-right: calc(-1 * var(--space-1));
   color: var(--muted);
   background: none;
   border: none;
   border-radius: 50%;
-  opacity: 0;
+  /* Faint at rest, so rows show they can be edited; clear on hover. */
+  opacity: 0.35;
 }
 .row:hover .row-more, .row-more:focus-visible, .row.menu-open .row-more { opacity: 1; }
 .row-more:hover:not(:disabled), .row.menu-open .row-more { color: var(--text); background: var(--surface-2); }
@@ -584,186 +608,180 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   display: flex;
   flex-direction: column;
   min-width: 240px;
-  padding: 4px;
+  padding: var(--space-1);
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
 }
-.row-menu button { padding: 7px 10px; font-size: 14px; text-align: left; background: none; border: none; border-radius: 5px; }
+.row-menu button { padding: var(--space-2) var(--space-3); font-size: var(--text-md); text-align: left; background: none; border: none; border-radius: 6px; }
 .row-menu button:hover:not(:disabled) { background: var(--surface); }
-.row-menu .why { padding: 0 10px 6px; font-size: 12px; color: var(--muted); }
+.row-menu .why { padding: 0 var(--space-3) var(--space-2); font-size: var(--text-xs); color: var(--muted); }
 
-/* The same grid as the tiles, so the select is exactly two tiles wide. */
-.route { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-top: 24px; }
-/* A roomier select with its own chevron, in the tiles' colours. */
+/* "Get to": a roomier select with its own chevron, in the choices' colours. */
+.route { margin-top: var(--space-3); }
 .route select {
-  grid-column: span 2;
-  min-width: 0;
-  padding: 10px 38px 10px 14px;
-  font-size: 14px;
+  width: 100%;
+  max-width: 420px;
+  padding: var(--space-3) 40px var(--space-3) var(--space-4);
+  font-size: var(--text-md);
   color: var(--text);
   background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239aa1ab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center / 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   appearance: none;
   cursor: pointer;
 }
 .route select:hover { border-color: var(--muted); }
 .route select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-.tiles-empty { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
-
-/* Building: one column, the sequence with its choices under the newest pose. The panel
-   still scrolls at full width (its scrollbar at the window's edge); the padding keeps
-   the content in a centred column. */
-.layout.building { grid-template-columns: minmax(0, 1fr); }
-.layout.building .timeline { border-right: none; padding-left: max(20px, calc((100% - 860px) / 2)); padding-right: max(20px, calc((100% - 860px) / 2)); }
+.next-empty { margin: var(--space-1) 0 0; font-size: var(--text-sm); color: var(--muted); }
 
 /* The choices under the newest pose: what can come next, as compact lines. */
-.composer { margin-top: 24px; padding-bottom: 24px; }
+.composer { margin-top: var(--space-5); padding-bottom: var(--space-5); }
 .composer .next-head { margin-top: 0; }
-.next-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.next-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-3); }
 /* Dashed, so they read as "not in the flow yet", unlike the rows above. */
 .next-option {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   /* One height for every choice, with room above and below two lines of move. */
   height: 88px;
-  padding: 12px 12px 12px 14px;
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
   text-align: left;
   background: none;
   border: 1px dashed var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
 }
 .next-option:hover:not(:disabled) { background: var(--surface); border-style: solid; border-color: var(--muted); }
-.next-option .pose-figure { color: var(--muted); }
+.next-option .pose-figure { width: 40px; height: 40px; }
 .next-option:hover .pose-figure { color: var(--text); }
-.next-option-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.next-option-move { font-size: 14px; font-weight: 500; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.next-option-pose { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.next-option-add { flex: none; width: 24px; text-align: center; font-size: 20px; line-height: 1; color: var(--muted); }
+.next-option-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.next-option-move { font-size: var(--text-md); font-weight: 500; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.next-option-pose { font-size: var(--text-sm); line-height: 1.3; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.next-option-add { flex: none; display: grid; place-items: center; width: var(--icon-lg); color: var(--muted); }
+.next-option-add svg { width: var(--icon-md); height: var(--icon-md); }
 .next-option:hover .next-option-add { color: var(--accent); }
-.composer .route { display: block; margin-top: 14px; }
-.composer .route select { width: 100%; max-width: 420px; }
-.composer .mirror { margin-top: 12px; }
 /* Inserting: the same choices, right under the row they'd follow. */
-.composer-insert { margin: 0; padding: 14px 0 16px; border-bottom: 1px solid var(--rule); list-style: none; }
-.composer-jump { display: block; margin: 16px 0 20px; font-size: 14px; }
+.composer-insert { margin: 0; padding: var(--space-4) 0; border-bottom: 1px solid var(--rule); list-style: none; }
+.composer-jump { display: block; margin: var(--space-4) 0 var(--space-5); }
 
-.stepper { display: inline-flex; align-items: center; gap: 4px; flex: none; }
+.stepper { display: inline-flex; align-items: center; gap: var(--space-1); flex: none; }
 /* Quiet − and +: no box, grey until hovered, then a soft round background. */
 .stepper button {
   width: 24px;
   height: 24px;
   padding: 0;
-  font-size: 15px;
-  line-height: 1;
+  display: inline-grid;
+  place-items: center;
   color: var(--muted);
   background: none;
   border-color: transparent;
   border-radius: 50%;
 }
+.stepper button svg { width: var(--icon-sm); height: var(--icon-sm); }
 .stepper button:hover:not(:disabled) { color: var(--text); background: var(--surface-2); border-color: transparent; }
 .stepper button:disabled { opacity: 0.3; }
-.stepper .count { min-width: 22px; white-space: nowrap; text-align: center; font-variant-numeric: tabular-nums; color: var(--text); font-size: 15px; }
-.stepper .unit { color: var(--muted); font-size: 13px; }
-.row-breaths { flex: none; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.stepper .count { min-width: 22px; white-space: nowrap; text-align: center; font-variant-numeric: tabular-nums; color: var(--text); }
+.stepper .unit { color: var(--muted); font-size: var(--text-sm); }
+.row-breaths { flex: none; font-size: var(--text-sm); color: var(--muted); font-variant-numeric: tabular-nums; }
 
 .play-dock {
-  padding: 14px;
+  padding: var(--space-4);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
 }
-.play-status { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-variant-numeric: tabular-nums; }
+.play-status { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); font-variant-numeric: tabular-nums; }
 .play-status .play-pose-step { margin-left: auto; }
 /* Shrinks the phone player back to its bar. */
 .play-close { display: inline-grid; place-items: center; width: 40px; height: 40px; margin: -10px -10px -10px 0; padding: 0; color: var(--muted); background: none; border: none; border-radius: 50%; }
+.play-close svg { width: var(--icon-lg); height: var(--icon-lg); }
 .play-close:hover:not(:disabled) { color: var(--text); background: var(--surface-2); }
 
 /* The wider-screen player bar: what's playing, the controls, and the time, on one line
    under a progress line along its top edge. */
-.play-bar { padding: 0 16px 12px; overflow: hidden; }
-.play-bar .play-progress { height: 3px; margin: 0 -16px 12px; border-radius: 0; }
-.play-bar-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 20px; }
+.play-bar { padding: 0 var(--space-4) var(--space-3); overflow: hidden; }
+.play-bar .play-progress { height: 3px; margin: 0 calc(-1 * var(--space-4)) var(--space-3); border-radius: 0; }
+.play-bar-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: var(--space-5); }
 .play-bar-now { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.play-bar-top { display: flex; align-items: baseline; gap: 10px; }
-.play-bar .play-pose-name { font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.play-bar-cue { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.play-bar .play-controls { display: flex; gap: 6px; margin-top: 0; }
+.play-bar-top { display: flex; align-items: baseline; gap: var(--space-2); }
+.play-bar .play-pose-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.play-bar-cue { font-size: var(--text-sm); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.play-bar .play-controls { display: flex; gap: var(--space-2); margin-top: 0; }
 .play-bar .play-controls .play-side { width: 36px; height: 36px; }
 .play-bar .play-controls .play-skip { width: 40px; height: 40px; }
-.play-bar .play-controls .play-skip svg { width: 20px; height: 20px; }
 .play-bar .play-controls .play-main { width: 48px; height: 48px; }
-.play-bar .play-controls .play-main svg { width: 22px; height: 22px; }
-.play-bar-side { min-width: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; font-size: 13px; color: var(--muted); }
+.play-bar .play-controls .play-skip svg { width: var(--icon-md); height: var(--icon-md); }
+.play-bar .play-controls .play-main svg { width: var(--icon-lg); height: var(--icon-lg); }
+.play-bar-side { min-width: 0; display: flex; flex-direction: column; align-items: flex-end; gap: var(--space-1); font-size: var(--text-sm); color: var(--muted); }
 .play-bar-times { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .play-bar-sep { opacity: 0.5; }
 .play-bar .play-next { margin: 0; max-width: 100%; }
 /* Voice settings open above the bar's row. */
-.play-bar .play-settings { margin: 0 0 12px; padding: 0 0 12px; border-top: none; border-bottom: 1px solid var(--border); }
+.play-bar .play-settings { margin: 0 0 var(--space-3); padding: 0 0 var(--space-3); border-top: none; border-bottom: 1px solid var(--border); }
 
 /* The phone mini player: a progress line along its top edge, what's playing, and play/pause. */
-.play-mini { padding: 0 12px 10px; overflow: hidden; }
-.play-mini .play-progress { height: 3px; margin: 0 -12px 8px; border-radius: 0; }
-.play-mini-row { display: flex; align-items: center; gap: 12px; }
+.play-mini { padding: 0 var(--space-3) var(--space-2); overflow: hidden; }
+.play-mini .play-progress { height: 3px; margin: 0 calc(-1 * var(--space-3)) var(--space-2); border-radius: 0; }
+.play-mini-row { display: flex; align-items: center; gap: var(--space-3); }
 /* What's playing on the left, the time left beside it, centred against both lines. */
-.play-mini-open { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 4px 0; text-align: left; background: none; border: none; }
+.play-mini-open { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--space-3); padding: var(--space-1) 0; text-align: left; background: none; border: none; }
 .play-mini-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.play-mini-time { flex: none; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.play-mini-time { flex: none; font-size: var(--text-sm); color: var(--muted); font-variant-numeric: tabular-nums; }
 .play-mini .play-pose-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Back, play/pause and forward on the right, like a podcast app's mini player. */
 .play-mini-controls { flex: none; display: flex; align-items: center; gap: 2px; }
 .play-mini-controls button { display: inline-flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; }
 .play-mini .play-main { width: 52px; height: 52px; }
-.play-mini .play-main svg { width: 24px; height: 24px; }
+.play-mini .play-main svg { width: var(--icon-lg); height: var(--icon-lg); }
 .play-mini .play-skip { width: 44px; height: 44px; color: var(--muted); background: none; border-color: transparent; }
 .play-mini .play-skip:hover:not(:disabled) { color: var(--text); background: var(--surface-2); border-color: transparent; }
-.play-mini .play-skip svg { width: 24px; height: 24px; }
+.play-mini .play-skip svg { width: var(--icon-lg); height: var(--icon-lg); }
 .play-mini .play-skip:disabled { opacity: 0.3; }
-.play-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
-.play-progress { height: 4px; margin: 14px 0 6px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+.play-label { font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
+.play-progress { height: 4px; margin: var(--space-3) 0 6px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
 .play-progress div { height: 100%; background: var(--accent); transition: width 250ms linear; }
 
 .play-pose { margin-top: 6px; }
-.play-sanskrit { display: block; margin-top: 1px; font-size: 13px; font-style: italic; color: var(--muted); }
-.play-pose-name { font-size: 17px; font-weight: 600; }
-.play-pose-step { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.play-sanskrit { display: block; margin-top: 1px; font-size: var(--text-sm); font-style: italic; color: var(--muted); }
+.play-pose-name { font-size: var(--text-lg); font-weight: 600; }
+.play-pose-step { font-size: var(--text-xs); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* Two lines kept for the cue whatever its length, so the dock never changes height. */
-.play-cue { margin: 4px 0 0; font-size: 14px; color: var(--muted); min-height: 2.9em; }
-.play-next { margin: 8px 0 0; font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.play-cue { margin: var(--space-1) 0 0; color: var(--muted); min-height: 2.9em; }
+.play-next { margin: var(--space-2) 0 0; font-size: var(--text-sm); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .play-next span { color: var(--text); }
 
-.play-times { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.play-times { display: flex; justify-content: space-between; font-size: var(--text-xs); color: var(--muted); font-variant-numeric: tabular-nums; }
 
 /* A podcast player's row: skip buttons either side of a big round play button in the
    middle, stop and settings smaller at the ends. Round, borderless, easy to hit. */
-.play-controls { display: grid; grid-template-columns: 1fr auto auto auto 1fr; align-items: center; gap: 12px; margin-top: 8px; }
+.play-controls { display: grid; grid-template-columns: 1fr auto auto auto 1fr; align-items: center; gap: var(--space-3); margin-top: var(--space-2); }
 .play-controls > :first-child { justify-self: start; }
 .play-controls > :last-child { justify-self: end; }
 .play-controls button { display: inline-flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; }
 .play-controls .play-side { width: 40px; height: 40px; }
+.play-controls .play-side svg { width: var(--icon-md); height: var(--icon-md); }
 .play-controls .play-skip { width: 48px; height: 48px; }
-.play-controls .play-skip svg { width: 22px; height: 22px; }
+.play-controls .play-skip svg { width: var(--icon-lg); height: var(--icon-lg); }
 .play-controls .play-main { width: 56px; height: 56px; }
-.play-controls .play-main svg { width: 24px; height: 24px; }
+.play-controls .play-main svg { width: var(--icon-lg); height: var(--icon-lg); }
 /* Everything but Play/Pause is quiet: no box, grey until hovered. */
 .play-controls button:not(.primary) { color: var(--muted); background: none; border-color: transparent; }
 .play-controls button:not(.primary):hover:not(:disabled) { color: var(--text); background: var(--surface-2); border-color: transparent; }
 .play-controls button:not(.primary):disabled { opacity: 0.3; }
 .play-controls button.toggled { color: var(--accent); background: var(--accent-bg); }
 
-.play-settings { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); }
-.play-settings label { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.play-settings { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border); font-size: var(--text-sm); color: var(--muted); }
+.play-settings label { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin-top: var(--space-2); }
 .play-settings label:first-child { margin-top: 0; }
 .play-settings label.check { justify-content: flex-start; }
-.play-settings select { max-width: 180px; font-size: 13px; }
+.play-settings select { max-width: 180px; font-size: var(--text-sm); }
 .play-settings input[type='checkbox'] { accent-color: var(--accent); margin: 0; }
-.play-settings .hint { margin-top: 8px; }
-.voice-row { display: flex; align-items: flex-end; gap: 8px; margin-top: 8px; }
+.play-settings .hint { margin-top: var(--space-2); }
+.voice-row { display: flex; align-items: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
 .voice-row label { flex: 1; min-width: 0; margin-top: 0; }
 .voice-row select { flex: 1; min-width: 0; max-width: none; }
-.test-voice { flex: none; padding: 5px 10px; font-size: 13px; background: none; color: var(--muted); }
+.test-voice { flex: none; padding: var(--space-1) var(--space-3); font-size: var(--text-sm); background: none; color: var(--muted); }
 .test-voice:hover:not(:disabled) { color: var(--text); }
 
 @media (max-width: 480px) {
@@ -775,129 +793,95 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 }
 
 @media (max-width: 760px) {
-  /* Phones: the name and icon buttons on one line; the title, its status and Flows below.
-     The title's 200px basis can't fit beside the name, so it starts the second line. */
-  .bar { padding: 10px 16px; gap: 10px; }
-  .bar h1::after { content: none; }
-  /* On the Flows page "My flows" shares the name's line, so keep the slash between them. */
-  .bar h1:has(+ .bar-page)::after { content: '/'; }
-  .bar-actions { display: contents; }
-  .flow-buttons { order: 1; margin-left: auto; }
-  .bar-title { order: 2; flex: 1 1 200px; gap: 8px; }
-  .status { min-width: 0; }
-  .bar .nav { order: 3; margin-left: auto; }
+  /* Text a step larger, where there's room for it: every size above follows. */
+  :root {
+    --text-xs: 13px;
+    --text-sm: 14px;
+    --text-md: 16px;
+    --text-lg: 18px;
+    --text-xl: 20px;
+    --text-2xl: 26px;
+  }
+
+  /* Header: the logo and icon buttons on one line, the flow's name under them. The save
+     icon already says whether there's anything to save, so the status text is left out. */
+  .bar { padding: var(--space-2) var(--space-4); gap: var(--space-1) var(--space-2); }
+  .bar h1 { font-size: var(--text-md); }
+  /* The flow name wraps to its own line, so no slash before it; "My flows" on the Flows
+     page shares the logo's line and keeps it. */
+  .bar h1:has(+ .bar-title)::after { content: none; }
+  .flow-buttons { order: 1; gap: 0; }
+  .bar-title { order: 2; flex: 1 1 200px; }
+  .status { display: none; }
+  /* Taller targets for the icon buttons, as wide as fits beside the name (a 44px square
+     each would push them onto a line of their own). */
+  .icon-btn { width: 34px; height: 44px; }
+  /* No back button on phones (the logo goes back); it keeps its room, invisible, so the
+     bar stays as tall as the start page's, with its 44px icons. */
+  .bar .nav { order: 3; visibility: hidden; width: 0; height: 44px; padding: 0; }
   .app { height: auto; min-height: 100vh; min-height: 100dvh; }
-  .layout { grid-template-columns: minmax(0, 1fr); }
-  .builder { padding: 0 16px 16px; overflow: visible; }
-  /* Five player buttons share a phone's width: slimmer side buttons, the main one on one line. */
-  .play-footer { padding-top: 10px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
-  /* Bigger targets and icons for thumbs, with the gaps tightened so the row fits. */
-  .play-controls { gap: 6px; }
-  .play-controls .play-side { width: 48px; height: 48px; }
-  .play-controls .play-side svg { width: 22px; height: 22px; }
-  .play-controls .play-skip { width: 56px; height: 56px; }
-  .play-controls .play-skip svg { width: 30px; height: 30px; }
-  .play-controls .play-main { width: 68px; height: 68px; }
-  .play-controls .play-main svg { width: 32px; height: 32px; }
-  .flows { padding: 16px; }
+
+  /* The page scrolls on phones, not the panel. */
+  .timeline { overflow: visible; padding-bottom: var(--space-4); }
+  .flows { padding: var(--space-4) var(--gutter) var(--space-7); }
   .flow { flex-wrap: wrap; row-gap: 6px; }
   .flow-actions { width: 100%; }
-  .tile { padding: 10px; }
-  /* No row numbers on phones (the playing row keeps its green edge), so the pose
-     drawings can be bigger. */
-  .row .num { display: none; }
-  /* No breaths or − + stepper on the rows (the player shows the breath count); a bigger ⋯ instead. */
-  .row .stepper, .row .row-breaths { display: none; }
-  .row-more { width: 44px; height: 44px; margin-right: -10px; }
-  .row-more svg { width: 22px; height: 22px; }
-  .row .pose-figure { width: 40px; height: 40px; margin-left: 0; }
-  /* Phones stack the sequence first, then the tiles to add to it below. */
-  .timeline { overflow: visible; border-right: none; border-bottom: 1px solid var(--border); padding: 0 16px 16px; }
-}
 
-/* A narrow builder panel (phones, and medium windows where it gets half the width):
-   two tiles across, too narrow for the drawing beside the text, so it sits above.
-   (Last in the file, so it beats the 760px rules.) */
-@container builder (max-width: 470px) {
-  .tiles, .route { grid-template-columns: 1fr 1fr; }
-  .tile { flex-direction: column; align-items: flex-start; gap: 6px; height: 172px; }
-  .tile-text { align-self: stretch; }
-  /* The breaths and side controls get their own line under the heading: breaths on the
-     left, the − nudged so its glyph lines up with the heading; the side toggle on the right. */
-  .next-controls { width: 100%; margin-left: 0; }
-  .next-controls .leading { margin-left: auto; }
-  .next-controls .stepper { margin-left: -6px; }
-  .tile-label { font-size: 14px; }
-  .tile .pose-figure { width: 60px; height: 60px; margin: -4px 0 -2px -6px; }
-}
-
-/* Phones: text a step larger throughout, where there's room for it. The tiles keep
-   their sizes (their fixed heights are set for them), and so does the header, where
-   the flow's name already competes with "Not saved yet" for the width. */
-@media (max-width: 760px) {
-  body { font-size: 16px; }
-  h2, .get-started h3 { font-size: 13px; }
-
-  .next-from { font-size: 14px; }
   /* The player already shows the pose count and the time. */
   .timeline-head .meta { display: none; }
   /* The pager sits in the middle of the heading's line, whatever the heading beside it. */
   .timeline-head { display: grid; grid-template-columns: 1fr auto 1fr; }
-  .pager { grid-column: 2; margin: 0; font-size: 14px; }
+  .pager { grid-column: 2; margin: 0; }
   .pager button { width: 40px; height: 40px; }
-  .via { font-size: 13px; }
-  /* Rows leave out the Sanskrit name on phones; the player shows it for the current pose. */
-  .row-sanskrit { display: none; }
-  .row { min-height: 60px; }
-  .play-sanskrit { font-size: 14px; }
-  .row-name .side { font-size: 12px; }
-  .row-menu button { font-size: 16px; padding: 10px 12px; }
-  .row-menu .why { font-size: 13px; }
 
-  .sample-title { font-size: 16px; }
-  .sample-meta { font-size: 13px; }
-  .sample-desc, .sample-actions button { font-size: 15px; }
-  .sample-actions button { min-height: 44px; }
-  .featured-actions button:not(.gs-play), .featured-actions .gs-play, .build-own-btn { min-height: 48px; }
-  .route select { font-size: 15px; }
-  .mirror .sub, .tiles-empty { font-size: 14px; }
+  /* No row numbers on phones (the playing row keeps its apricot edge), so the pose
+     drawings can be bigger. */
+  .row .num { display: none; }
+  .row { gap: var(--space-2); padding: 6px var(--space-2); min-height: 60px; }
+  .row-main { gap: 0; }
+  /* No breaths or − + stepper on the rows (the player shows the breath count); a bigger ⋯ instead. */
+  .row .stepper, .row .row-breaths { display: none; }
+  .row-more { width: 44px; height: 44px; margin-right: -10px; }
+  .row-more svg { width: var(--icon-md); height: var(--icon-md); }
+  .row .pose-figure { width: 40px; height: 40px; margin-left: 0; }
+  .row-menu button { padding: 10px var(--space-3); }
 
-  .play-label { font-size: 12px; }
-  .play-pose-name { font-size: 19px; }
-  .play-pose-step, .play-times { font-size: 13px; }
-  .play-cue { font-size: 15px; }
-  .play-next { font-size: 14px; }
-  .play-settings, .play-settings select { font-size: 14px; }
+  /* Text links get a thumb-sized target, invisibly, so nothing around them moves. */
+  .link-btn::after { content: ''; position: absolute; inset: -12px -8px; }
 
-  .storage-note, .flows .hint, .flow-meta, .flow-desc, .flow-actions button { font-size: 14px; }
-
-  /* Header: taller targets for the icon buttons and Flows, as wide as fits beside the
-     name (a 44px square each would push the icons onto a line of their own). */
-  .bar h1 { font-size: 16px; }
-  .flow-buttons { gap: 0; }
-  .icon-btn { width: 34px; height: 44px; }
-  .icon-btn svg { width: 20px; height: 20px; }
-  /* No back button on phones (the logo goes back); it keeps its room, invisible, so the
-     bar stays as tall as the start page's, with its 44px icons. */
-  .bar .nav { visibility: hidden; width: 0; height: 44px; padding: 0; }
-
-  /* Under "Choose the next pose": thumb-sized − + and Right/Left. */
-  /* The choices' controls on a line of their own under the heading: breaths left, side right. */
+  /* Under "Choose the next pose": the breaths and side on a line of their own, breaths
+     left, side right; − + and Right/Left big enough for a thumb but not bulky. */
   .composer .next-controls { width: 100%; margin-left: 0; }
   .composer .next-controls .leading { margin-left: auto; }
-  .next-options { grid-template-columns: minmax(0, 1fr); }
-  .next-option { height: 90px; }
-  .next-option-move { font-size: 15px; }
-  .next-option .pose-figure { width: 40px; height: 40px; }
-  /* Room between the heading and the controls on the line below it. */
-  .next-head { margin-bottom: 14px; row-gap: 16px; }
-  .next-controls { gap: 16px; }
-  .next-controls .stepper { gap: 6px; margin-left: 0; }
-  .next-controls .stepper button { width: 44px; height: 44px; font-size: 22px; background: var(--surface); }
-  .next-controls .stepper .count { font-size: 17px; }
-  .next-controls .stepper .unit { font-size: 15px; }
-  .leading { gap: 8px; }
-  .leading button { min-height: 44px; padding: 0 18px; font-size: 15px; }
+  .next-head { row-gap: var(--space-4); }
+  .next-controls { gap: var(--space-4); }
+  .next-controls .stepper { gap: 6px; }
+  .next-controls .stepper button { width: 38px; height: 38px; background: var(--surface); }
+  .next-controls .stepper button svg { width: var(--icon-md); height: var(--icon-md); }
+  .leading button { min-height: 38px; padding: 0 var(--space-4); }
+  /* One column of choices, compact enough that five or six fit on screen. */
+  .next-options { grid-template-columns: minmax(0, 1fr); gap: var(--space-2); }
+  .next-option { height: 76px; padding: var(--space-2) var(--space-3); }
+  .next-option-move { line-height: 1.2; }
+
+  .sample-actions button { min-height: 44px; }
+  .featured-actions button, .build-own-btn { min-height: 48px; }
+
+  /* Five player buttons share a phone's width: bigger targets and icons for thumbs,
+     with the gaps tightened so the row fits. The main ones are a step past the icon
+     scale, on purpose. */
+  .play-footer { padding-top: 10px; padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom)); }
+  .play-controls { gap: 6px; }
+  .play-controls .play-side { width: 48px; height: 48px; }
+  .play-controls .play-side svg { width: var(--icon-lg); height: var(--icon-lg); }
+  .play-controls .play-skip { width: 56px; height: 56px; }
+  .play-controls .play-skip svg, .play-controls .play-main svg { width: 32px; height: 32px; }
+  .play-controls .play-main { width: 68px; height: 68px; }
+}
+
+/* Room for a little space between the header's icons from the common 375px phones up. */
+@media (min-width: 375px) and (max-width: 760px) {
+  .flow-buttons { gap: 2px; }
 }
 
 /* The smallest phones: the player's row a little smaller so it still fits, and the

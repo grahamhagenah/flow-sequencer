@@ -34,6 +34,8 @@ function read<T>(key: string): T | null {
   }
 }
 
+// Every storage call is guarded: private windows and blocked site data make
+// localStorage throw, and the app should still work (it just won't remember).
 function write(key: string, value: unknown) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
@@ -42,11 +44,27 @@ function write(key: string, value: unknown) {
   }
 }
 
+function remove(key: string) {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // As above.
+  }
+}
+
 export function listFlows(): SavedFlow[] {
   const flows = read<SavedFlow[]>(FLOWS_KEY);
   if (!Array.isArray(flows)) return [];
   return flows
-    .filter((f) => f && typeof f.id === 'string' && typeof f.steps === 'string' && decodeSteps(f.steps).seq.length > 0)
+    .filter(
+      (f) =>
+        f &&
+        typeof f.id === 'string' &&
+        typeof f.name === 'string' &&
+        typeof f.steps === 'string' &&
+        decodeSteps(f.steps).seq.length > 0,
+    )
+    .map((f) => (typeof f.updatedAt === 'number' ? f : { ...f, updatedAt: 0 }))
     .sort((a, b) => b.updatedAt - a.updatedAt);
 }
 
@@ -79,5 +97,11 @@ export function loadResume(): Draft | null {
 
 export function saveResume(draft: Draft | null) {
   if (draft) write(RESUME_KEY, draft);
-  else localStorage.removeItem(RESUME_KEY);
+  else remove(RESUME_KEY);
+}
+
+/** Forgets the open flow and the one offered to continue (not saved flows), after a crash. */
+export function clearWorkingFlow() {
+  remove(DRAFT_KEY);
+  remove(RESUME_KEY);
 }
