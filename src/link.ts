@@ -1,3 +1,4 @@
+import { colorId } from './colors';
 import { applySide, getPose, POSE_BY_ID, TRANSITION_BY_ID } from './data/graph';
 import type { Side } from './data/types';
 import type { Sequence, Step } from './sequence';
@@ -66,23 +67,26 @@ function readStep([, head, breaths, flip]: RegExpExecArray, prev: Step | undefin
   return via === undefined ? { poseId, side, breaths: n } : { poseId, side, breaths: n, via };
 }
 
-/** The part of a share link after "#". `steps` is encodeSteps text. */
-export function toHash(name: string, steps: string): string {
+/** The part of a share link after "#". `steps` is encodeSteps text; `color` a FLOW_COLORS id. */
+export function toHash(name: string, steps: string, color: string | null = null): string {
   const params = new URLSearchParams();
   if (name) params.set('n', name);
+  if (color) params.set('c', color);
   params.set('f', steps);
   return params.toString();
 }
 
-export function shareUrl(name: string, steps: string): string {
-  return `${location.origin}${location.pathname}#${toHash(name, steps)}`;
+export function shareUrl(name: string, steps: string, color: string | null = null): string {
+  return `${location.origin}${location.pathname}#${toHash(name, steps, color)}`;
 }
 
-export function fromHash(hash: string): { name: string; seq: Sequence; dropped: number } | null {
+export function fromHash(
+  hash: string,
+): { name: string; color: string | null; seq: Sequence; dropped: number } | null {
   const params = new URLSearchParams(hash.replace(/^#/, ''));
   const f = params.get('f');
   if (f === null) return null;
   const { seq, dropped } = decodeSteps(f);
   if (seq.length === 0) return null;
-  return { name: params.get('n') ?? '', seq, dropped };
+  return { name: params.get('n') ?? '', color: colorId(params.get('c')), seq, dropped };
 }

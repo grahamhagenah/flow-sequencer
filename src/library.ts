@@ -9,6 +9,8 @@ export interface SavedFlow {
   name: string;
   /** Steps as encodeSteps text. */
   steps: string;
+  /** A FLOW_COLORS id; missing (flows saved before colours, or never picked) is the default. */
+  color?: string | null;
   updatedAt: number;
 }
 
@@ -17,6 +19,7 @@ export interface Draft {
   id: string | null;
   name: string;
   steps: string;
+  color?: string | null;
 }
 
 // Keys keep the app's first name so flows saved before the rename still load.

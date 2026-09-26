@@ -1,7 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { type CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import { Builder, type Layout, type OpenLayout } from './Builder';
 import { FIRST_POSE } from './data/poses';
 import type { SampleFlow } from './data/samples';
+import { sampleLook } from './data/sampleLooks';
+import { colorId, flowColor, randomColor } from './colors';
+import { ColorPicker } from './ColorPicker';
 import { Dialog, type DialogSpec } from './Dialog';
 import { unlockPlayback } from './player/conductor';
 import { FlowList } from './FlowList';
@@ -17,13 +20,15 @@ interface Opened {
   /** The saved flow being edited, or null for one not in My flows. */
   id: string | null;
   name: string;
+  /** A FLOW_COLORS id, or null for the default. */
+  color: string | null;
   seq: Sequence;
   notice: string | null;
   /** Which view it opens in: the list from Open, one pose at a time from Play. Otherwise the last one used. */
   layout?: Layout;
 }
 
-const EMPTY: Opened = { id: null, name: '', seq: [], notice: null };
+const EMPTY: Opened = { id: null, name: '', color: null, seq: [], notice: null };
 const FRESH_STEPS = encodeSteps(start(FIRST_POSE));
 
 const droppedNotice = (dropped: number) =>
@@ -41,7 +46,13 @@ function initial(): Opened {
   const linked = fromHash(location.hash);
   if (linked) {
     const isDraft = draft && linked.dropped === 0 && draft.steps === encodeSteps(linked.seq) && draft.name === linked.name;
-    return { id: isDraft ? draft.id : null, name: linked.name, seq: linked.seq, notice: droppedNotice(linked.dropped) };
+    return {
+      id: isDraft ? draft.id : null,
+      name: linked.name,
+      color: linked.color,
+      seq: linked.seq,
+      notice: droppedNotice(linked.dropped),
+    };
   }
   if (draft?.steps) saveResume(draft);
   return EMPTY;
@@ -62,6 +73,7 @@ export function App() {
   const { value: seq, set, reset, undo, redo, canUndo } = useHistory<Sequence>(() => init.seq);
   const [id, setId] = useState(init.id);
   const [name, setName] = useState(init.name);
+  const [color, setColor] = useState(init.color);
   const [notice, setNotice] = useState(init.notice);
   const [flows, setFlows] = useState(listFlows);
   const [view, setView] = useState<'builder' | 'flows'>('builder');
@@ -94,15 +106,17 @@ export function App() {
   const saved = id ? flows.find((f) => f.id === id) : undefined;
   // A flow started from scratch and not yet touched: just its pre-chosen first pose.
   const untouched = !id && !name.trim() && steps === FRESH_STEPS;
-  const dirty = saved ? saved.steps !== steps || saved.name !== name.trim() : seq.length > 0 && !untouched;
+  const dirty = saved
+    ? saved.steps !== steps || saved.name !== name.trim() || colorId(saved.color) !== color
+    : seq.length > 0 && !untouched;
 
   // Keep the draft and the address bar in step with the flow, so a reload or a
   // bookmark always lands back here.
   useEffect(() => {
-    saveDraft({ id, name, steps });
-    const url = seq.length ? `#${toHash(name.trim(), steps)}` : location.pathname + location.search;
+    saveDraft({ id, name, steps, color });
+    const url = seq.length ? `#${toHash(name.trim(), steps, color)}` : location.pathname + location.search;
     history.replaceState(null, '', url);
-  }, [id, name, steps, seq.length]);
+  }, [id, name, steps, color, seq.length]);
 
   // Coming back from the Flows page, show the newest pose and its choices. Only the
   // desktop panel scrolls on its own (on phones the page does, and this does nothing).
@@ -136,6 +150,7 @@ export function App() {
       setChoosing(false);
       setId(next.id);
       setName(next.name);
+      setColor(next.color);
       setNotice(next.notice);
       setView('builder');
     },
@@ -155,7 +170,7 @@ export function App() {
   }, [undo, redo, view]);
 
   const save = () => {
-    const flow: SavedFlow = { id: id ?? newId(), name: name.trim() || 'Untitled flow', steps, updatedAt: Date.now() };
+    const flow: SavedFlow = { id: id ?? newId(), name: name.trim() || 'Untitled flow', steps, color, updatedAt: Date.now() };
     putFlow(flow);
     setFlows(listFlows());
     setId(flow.id);
@@ -190,20 +205,21 @@ export function App() {
   useEffect(() => {
     const onHash = () => {
       const linked = fromHash(location.hash);
-      if (!linked || (encodeSteps(linked.seq) === steps && linked.name === name.trim())) return;
+      if (!linked || (encodeSteps(linked.seq) === steps && linked.name === name.trim() && linked.color === color)) return;
       guardUnsaved(
         'Open the linked flow?',
         'Save and open',
-        () => open({ id: null, name: linked.name, seq: linked.seq, notice: droppedNotice(linked.dropped) }),
-        () => history.replaceState(null, '', `#${toHash(name.trim(), steps)}`),
+        () =>
+          open({ id: null, name: linked.name, color: linked.color, seq: linked.seq, notice: droppedNotice(linked.dropped) }),
+        () => history.replaceState(null, '', `#${toHash(name.trim(), steps, color)}`),
       );
     };
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   });
 
-  const copyLink = async (key: string, flowName: string, flowSteps: string) => {
-    if (await copyText(shareUrl(flowName, flowSteps))) setCopied(key);
+  const copyLink = async (key: string, flowName: string, flowSteps: string, flowColor: string | null) => {
+    if (await copyText(shareUrl(flowName, flowSteps, flowColor))) setCopied(key);
   };
 
   const newFlow = () =>
@@ -225,7 +241,7 @@ export function App() {
     guardUnsaved('Go to the start page?', 'Save and leave', ({ discarded, savedId }) => {
       if (discarded) forgetResume();
       else {
-        const d = { id: savedId, name: name.trim(), steps };
+        const d = { id: savedId, name: name.trim(), steps, color };
         saveResume(d);
         setResume(d);
       }
@@ -238,21 +254,29 @@ export function App() {
     if (!resume) return;
     guardUnsaved('Open the earlier flow?', 'Save and open', () => {
       forgetResume();
-      open({ id: resume.id, name: resume.name, seq: decodeSteps(resume.steps).seq, notice: null, layout: 'list' });
+      open({
+        id: resume.id,
+        name: resume.name,
+        color: colorId(resume.color),
+        seq: decodeSteps(resume.steps).seq,
+        notice: null,
+        layout: 'list',
+      });
     });
   };
 
   const openSaved = (f: SavedFlow) => {
     if (f.id === id) return setView('builder');
     guardUnsaved(`Open “${f.name}”?`, 'Save and open', () =>
-      open({ id: f.id, name: f.name, seq: decodeSteps(f.steps).seq, notice: null, layout: 'list' }),
+      open({ id: f.id, name: f.name, color: colorId(f.color), seq: decodeSteps(f.steps).seq, notice: null, layout: 'list' }),
     );
   };
 
   // A sample opens as an unsaved copy, so the sample itself never changes.
   const openSample = (f: SampleFlow, play = false) =>
     guardUnsaved(`Open “${f.name}”?`, 'Save and open', () => {
-      open({ id: null, name: f.name, seq: f.seq, notice: null, layout: play ? 'single' : 'list' });
+      // In the colour of its card.
+      open({ id: null, name: f.name, color: sampleLook(f.id).colorId, seq: f.seq, notice: null, layout: play ? 'single' : 'list' });
       if (play) setAutoplay(true);
     });
 
@@ -262,7 +286,7 @@ export function App() {
   };
 
   const duplicate = (f: SavedFlow) => {
-    putFlow({ id: newId(), name: `${f.name} (copy)`, steps: f.steps, updatedAt: Date.now() });
+    putFlow({ id: newId(), name: `${f.name} (copy)`, steps: f.steps, color: f.color, updatedAt: Date.now() });
     setFlows(listFlows());
   };
 
@@ -286,7 +310,8 @@ export function App() {
   const status = saved ? (dirty ? 'Unsaved changes' : 'Saved') : seq.length ? 'Not saved yet' : '';
 
   return (
-    <div className="app">
+    // The open flow's colour is the accent everywhere: its poses, the play button, highlights.
+    <div className="app" style={{ '--accent': flowColor(color).hex } as CSSProperties}>
       <Dialog spec={dialog} onClose={() => setDialog(null)} />
       {/* One bar: the app name, the open flow's title and status, and everything you do with it. */}
       <header className="bar">
@@ -301,7 +326,8 @@ export function App() {
               goHome();
             }}
           >
-            <Logo size={22} /> Flow Sequencer
+            {/* White until a flow is open, then in its colour. */}
+            <Logo size={22} color={seq.length > 0 || choosing ? 'var(--accent)' : undefined} /> Flow Sequencer
           </a>
         </h1>
         {view === 'builder' ? (
@@ -311,6 +337,8 @@ export function App() {
             {seq.length === 0 && !choosing && <span className="bar-tagline">Build a yoga flow, one pose at a time</span>}
             {(seq.length > 0 || choosing) && (
               <div className="bar-title">
+                {/* The flow's colour, as a dot before its name. */}
+                <ColorPicker value={color} onChange={setColor} />
                 {/* The name is editable in place; the pencil says so, and clicking it (it's inside the label) edits it. */}
                 <label className="name-field" title="Rename this flow">
                   <input
@@ -348,7 +376,7 @@ export function App() {
               </button>
               <button
                 className={copied === 'current' ? 'icon-btn tip-shown' : 'icon-btn'}
-                onClick={() => copyLink('current', name.trim(), steps)}
+                onClick={() => copyLink('current', name.trim(), steps, color)}
                 disabled={seq.length === 0}
                 aria-label={copied === 'current' ? 'Link copied' : 'Copy link'}
                 data-tip={copied === 'current' ? 'Link copied' : 'Copy share link'}
@@ -393,7 +421,7 @@ export function App() {
           copiedKey={copied}
           onOpen={openSaved}
           onNew={newFlow}
-          onCopyLink={(f) => copyLink(f.id, f.name, f.steps)}
+          onCopyLink={(f) => copyLink(f.id, f.name, f.steps, colorId(f.color))}
           onDuplicate={duplicate}
           onDelete={remove}
           onOpenSample={(f) => openSample(f)}
@@ -415,7 +443,11 @@ export function App() {
           openCount={openCount}
           openLayout={openLayout}
           choosing={choosing}
-          setChoosing={setChoosing}
+          setChoosing={(on) => {
+            // A flow started from scratch gets a colour of its own, picked at random.
+            if (on) setColor(randomColor());
+            setChoosing(on);
+          }}
           onAutoplayStarted={() => setAutoplay(false)}
           banner={
             notice && (

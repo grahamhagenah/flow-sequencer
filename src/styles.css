@@ -14,7 +14,6 @@
   --soft: color-mix(in srgb, var(--muted) 55%, var(--text));
   /* Warm apricot, like early sun. */
   --accent: #f2b27a;
-  --accent-bg: #261b12;
   --danger: #f08a8a;
   color-scheme: dark;
 
@@ -76,8 +75,10 @@ button {
 button:hover:not(:disabled) { border-color: var(--muted); }
 button:disabled { opacity: 0.4; cursor: default; }
 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-button.primary { background: var(--accent); border-color: var(--accent); color: #1f1409; font-weight: 600; }
-button.primary:hover:not(:disabled) { background: #f6c597; border-color: #f6c597; }
+/* Dark text in a shade of the accent, so it suits every flow colour. */
+button.primary { background: var(--accent); border-color: var(--accent); color: color-mix(in srgb, var(--accent) 18%, #050505); font-weight: 600; }
+/* A step lighter on hover, in the same colour. */
+button.primary:hover:not(:disabled) { background: color-mix(in srgb, var(--accent) 78%, #fff); border-color: color-mix(in srgb, var(--accent) 78%, #fff); }
 
 select {
   font: inherit;
@@ -161,6 +162,42 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 .name-field:focus-within .icon { color: var(--accent); }
 .flow-name::placeholder { color: var(--muted); font-weight: 500; }
 /* Fixed width for the longest status, so the title and buttons don't shift as it changes. */
+/* The accent's tint, worked out where the flow's colour is set (on .app) so it follows it. */
+:root, .app { --accent-bg: color-mix(in srgb, var(--accent) 13%, var(--bg)); }
+
+/* The flow's colour: a dot before its name, opening the swatches under it. On hover each
+   one gains a ring in its own colour, a gap of the background between. */
+.color-picker { position: relative; flex: none; display: flex; }
+.color-dot, .color-swatches button {
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  transition: box-shadow 120ms ease, transform 120ms ease;
+}
+.color-dot { width: 16px; height: 16px; background: var(--accent); box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px transparent; }
+.color-dot:hover:not(:disabled), .color-dot[aria-expanded='true'] {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.color-swatches {
+  position: absolute;
+  top: calc(100% + var(--space-3));
+  left: calc(-1 * var(--space-2));
+  z-index: 30;
+  display: grid;
+  grid-template-columns: repeat(6, 22px);
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.45);
+}
+.color-swatches button { --swatch: currentColor; width: 22px; height: 22px; background: var(--swatch); }
+.color-swatches button:hover:not(:disabled) {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px color-mix(in srgb, var(--swatch) 60%, transparent);
+}
+.color-swatches button[aria-checked='true'] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--text); }
 .status { font-size: var(--text-sm); color: var(--muted); white-space: nowrap; min-width: 7.5em; text-align: right; }
 .flow-buttons { display: flex; gap: var(--space-1); margin-left: auto; }
 /* A quiet link back, no box: just the arrow and its words (hidden on phones). */
@@ -641,6 +678,32 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 }
 .row:hover .row-more, .row-more:focus-visible, .row.menu-open .row-more { opacity: 1; }
 .row-more:hover:not(:disabled), .row.menu-open .row-more { color: var(--text); background: var(--surface-2); }
+/* The poses page (/poses/): every drawing in a grid, each to download. --ink is the line
+   colour chosen for the downloads, and the drawings are shown in it. */
+.poses-page { max-width: 1100px; margin: 0 auto; padding: var(--space-6) var(--gutter) var(--space-7); }
+.poses-head { margin-bottom: var(--space-6); }
+.poses-back { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--muted); text-decoration: none; }
+.poses-back:hover { color: var(--text); }
+.poses-head h1 { margin: var(--space-4) 0 var(--space-2); font-size: var(--text-2xl); }
+.poses-head p { margin: 0 0 var(--space-5); max-width: 60ch; color: var(--soft); }
+.poses-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); }
+.poses-inks { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.poses-inks button { width: 24px; height: 24px; padding: 0; border: none; border-radius: 50%; background: var(--swatch); box-shadow: 0 0 0 1px var(--border); transition: box-shadow 120ms ease; }
+.poses-inks button:hover:not(:disabled) { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--muted); }
+.poses-inks button[aria-checked='true'] { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--text); }
+.poses-all { display: inline-flex; align-items: center; gap: var(--space-2); margin-left: auto; padding: var(--space-2) var(--space-4); }
+.poses-group { margin-top: var(--space-6); }
+.poses-group h2 { margin: 0 0 var(--space-3); font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.poses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.poses-item { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: var(--space-3) var(--space-2); text-align: center; color: var(--text); background: none; border: none; border-radius: var(--radius-lg); }
+.poses-item:hover:not(:disabled) { background: var(--card); }
+.poses-item .pose-figure { margin-bottom: var(--space-2); color: var(--ink); }
+.poses-name { font-weight: 600; }
+.poses-sanskrit { font-size: var(--text-sm); font-style: italic; color: var(--muted); }
+/* Shown on hover and focus: what a click does. */
+.poses-hint { display: inline-flex; align-items: center; gap: 6px; margin-top: var(--space-2); font-size: var(--text-sm); color: var(--muted); opacity: 0; transition: opacity 120ms ease; }
+.poses-item:hover .poses-hint, .poses-item:focus-visible .poses-hint { opacity: 1; }
+
 @media (hover: none) { .row-more { opacity: 0.6; } }
 /* Where an insert will go: a quiet dashed line under the row. */
 .row.insert-after { border-bottom: 1px dashed var(--accent); }

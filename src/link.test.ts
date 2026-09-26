@@ -42,4 +42,11 @@ describe('share links', () => {
     expect(back?.seq).toEqual(decodeSteps(steps).seq);
     expect(fromHash('#nothing=here')).toBeNull();
   });
+
+  it('carries the colour, and ignores one it does not know', () => {
+    const steps = encodeSteps(start('savasana'));
+    expect(fromHash(`#${toHash('', steps, 'teal')}`)?.color).toBe('teal');
+    expect(fromHash(`#${toHash('', steps)}`)?.color).toBeNull();
+    expect(fromHash(`#c=chartreuse&f=${steps}`)?.color).toBeNull();
+  });
 });

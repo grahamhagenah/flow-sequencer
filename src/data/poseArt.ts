@@ -15,8 +15,8 @@ export interface PoseArt {
 
 export const POSE_ART: Record<string, PoseArt> = {
   // Lying on the back
-  // Seen from above, on the mat: arms resting by the sides, legs a little apart.
-  savasana: { head: [8, 24], d: 'M12 24h16M28 24l14-3M28 24l14 3M14.5 24Q16 19 26 18.5M14.5 24Q16 29 26 29.5', topView: true },
+  // Seen from above, on the mat: straight arms resting a little out from the sides, legs a little apart.
+  savasana: { head: [8, 24], d: 'M12 24h16M28 24l14-3M28 24l14 3M14.5 24 26 19M14.5 24 26 29', topView: true },
   'knees-to-chest': { head: [8, 39.5], d: 'M12 40.5h12M24 40.5 17 30h10M14 40l4-9' },
   // Seen from above: arms wide in a T past the mat's edges, both knees dropped to one side.
   'supine-twist': { head: [8, 24], d: 'M12 24h17M15.5 11v26M29 24l3 11h9', topView: true },
@@ -52,14 +52,17 @@ export const POSE_ART: Record<string, PoseArt> = {
   'down-dog': { head: [17.5, 31.5], d: 'M7 43 27 12l15 31' },
   'three-leg-dog': { head: [17.5, 31.5], d: 'M7 43 27 12l15 31M27 12l15-8' },
   plank: { head: [8, 24], d: 'M12 26l32 16M13 27v16' },
-  chaturanga: { head: [7, 34], d: 'M11 35l33 5M14 36l6 1v6' },
+  // Hovering low and straight, the upper arm back along the ribs and the elbow over the wrist.
+  chaturanga: { head: [7, 32.5], d: 'M11 33.2 44 40M13.5 33.6 20 37.5 19.5 43' },
   // One line: feet, the thighs just off the floor, the back curving up to the shoulders, a straight arm down.
   'up-dog': { head: [13.5, 22.5], d: 'M44 43 28 41Q20 39 16 27.5v15.5' },
   'side-plank': { head: [12, 22.5], d: 'M42 42 16 25M16 25v18M16 25V5' },
   crow: { head: [11.5, 33], d: 'M16 43V31M16 31l14-7M30 24l-10 7 9 3' },
 
   // Lying face down
-  belly: { head: [9, 39.5], d: 'M13 41h31M4 43.5h10' },
+  // Seen from above, on the mat like Corpse Pose: the elbows out wide, the hands stacked
+  // under the forehead, so the arms frame the head.
+  belly: { head: [11, 24], d: 'M15 24h14M29 24l13-2.5M29 24l13 2.5M16.5 24 12 16.5 5 24M16.5 24 12 31.5 5 24', topView: true },
   cobra: { head: [15, 25.5], d: 'M44 43l-15-.5Q22 42 17 31M18 33l2 9.5' },
   sphinx: { head: [16, 28], d: 'M44 43l-16-.5Q22 42 18 33M19 35v8H9' },
   locust: { head: [8, 33.5], d: 'M26 42l18-6M26 42 12 36M14 37h16' },
@@ -84,7 +87,8 @@ export const POSE_ART: Record<string, PoseArt> = {
   'half-moon': { head: [4.5, 25], d: 'M20 43V28M20 28l22-1M20 28 8 26M10 13v27' },
   'warrior-3': { head: [6, 28], d: 'M26 43V28M26 28H10M26 28h17M12 28.5l6 5' },
   pyramid: { head: [12, 37.5], d: 'M24 28 12 43M24 28l14 15M24 28q-8 1-11 6M20 29l8-3' },
-  tree: { head: [24, 9.5], d: 'M24 15.5 15.5 11l7-8.5M24 15.5l8.5-4.5-7-8.5M24 14v14M24 28v15M24 28l9 3-8 4' },
+  // The body starts at the shoulders, where the raised arms meet it (no neck above them).
+  tree: { head: [24, 10], d: 'M24 16 16 11.5l7-9M24 16l8-4.5-7-9M24 16v12M24 28v15M24 28l9 3-8 4' },
 
   // Added later
   fish: { head: [10, 40.5], d: 'M44 43H28q-7-14-15-6M20 34l2 9' },
@@ -92,7 +96,9 @@ export const POSE_ART: Record<string, PoseArt> = {
   plow: { head: [34, 40.5], d: 'M29 41l-2-19 17 20M28 42.5H14' },
   lotus: { head: [24, 12], d: 'M24 17v19M24 36l-14 6 16-4M24 36l14 6-16-4M24 20l-11 18M24 20l11 18' },
   'half-lord-fishes': { head: [26.5, 12], d: 'M24 17v19M24 38l-12 4h18M24 38l8-10-2 15M24 22l7 8M24 22l-9 14 1 7' },
-  'cow-face': { head: [24, 12], d: 'M24 17v19M12 43l24-5M12 38l24 5M24 20l6-6-3 8M24 20l-6 6 7-2' },
+  // From the front: one elbow up by the head and one down by the waist, the forearms bending
+  // back to meet at the spine; the knees stacked, the shins folded in a Z.
+  'cow-face': { head: [24, 11.5], d: 'M24 17v19M20.5 19.5h7M27.5 19.5 29.5 6 25 19.5M20.5 19.5 18 31l5.5-9M24 36H13l22 4.5H14' },
   hero: { head: [24, 13], d: 'M24 18v18M24 38l-9 5H8M24 38l9 5h7M24 22l-5 14M24 22l5 14' },
   lizard: { head: [8, 36.5], d: 'M27 34l-11-1-3 10M27 34l7 9h10M27 34l-15 2M14 37v5H5' },
   'runners-lunge': { head: [10, 25], d: 'M28 30H17l-3 13M28 30l16 12M28 30l-14-3M14 28l-2 15' },
@@ -100,7 +106,9 @@ export const POSE_ART: Record<string, PoseArt> = {
   headstand: { head: [24, 39.5], d: 'M14 43l10-8 10 8M24 35V4' },
   handstand: { head: [24, 33], d: 'M19 43l5-15 5 15M24 28V4' },
   dancer: { head: [11.5, 13], d: 'M22 43V28M22 28l-8-11M15 18 5 10M22 28l10 3 5-14M16 19l20-2' },
-  eagle: { head: [24, 8], d: 'M24 13v15M24 28l-4 8 4 7M24 28l5 6-8 4M24 16l5 3-4-8' },
+  // Sitting low as in Chair: the elbow lifted to shoulder height, forearm up in front of the
+  // face; the top leg wraps over the thigh, its foot hooked behind the standing calf.
+  eagle: { head: [22, 10.8], d: 'M21 43l-6.5-11 12.5-1M27 31l-12.5-2.5 7 9.5M27 31l-4-15M23 16.5H14l.5-9' },
   'bird-of-paradise': { head: [22, 8], d: 'M22 13v15M22 28l1 15M22 28 6 10M22 17l-7 3' },
   'revolved-triangle': { head: [8, 30.5], d: 'M24 29 10 43M24 29l14 14M24 29l-12 1M13 13v29' },
 };

@@ -1,9 +1,11 @@
 import type { ReactNode } from 'react';
+import { DEFAULT_COLOR, flowColor } from '../colors';
 
 // Icons and colours for the sample classes. The icons are Phosphor Icons'
 // duotone "Sun Horizon", "Waves", "Moon Stars", "Fire", "Leaf", "Sun", "Bird",
 // "Person Simple Tai Chi", "Rainbow" and "Flower Tulip" (phosphoricons.com), MIT License, Copyright (c) 2023
-// Phosphor Icons. The peak pose classes take an icon after their peak pose.
+// Phosphor Icons. The peak pose classes take an icon after their peak pose (Eagle's
+// feather, like the stones, is drawn for this app).
 
 const SunHorizon = () => (
   <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
@@ -91,27 +93,43 @@ const FlowerTulip = () => (
   </svg>
 );
 
+// A feather, for Eagle, drawn for this app in the same duotone style.
+const Feather = () => (
+  <svg width="22" height="22" viewBox="0 0 256 256" aria-hidden="true">
+    <path d="M216,40C140,40,72,92,72,168v16H88C164,184,216,116,216,40Z" fill="currentColor" opacity="0.2" />
+    <g fill="none" stroke="currentColor" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M216,40C140,40,72,92,72,168v16H88C164,184,216,116,216,40Z" />
+      <path d="M40,216,168,88M112,144h56" />
+    </g>
+  </svg>
+);
+
 export interface SampleLook {
   icon: ReactNode;
   /** The card's accent: the icon, its tinted square and the style pill. */
   color: string;
+  /** That colour's id in FLOW_COLORS, which the flow opens in. */
+  colorId: string;
 }
 
-// Bright, clear tones: the icons are small and the tags grey, so a little colour goes a long way.
-const LOOKS: Record<string, SampleLook> = {
-  'morning-vinyasa': { icon: <SunHorizon />, color: '#f2b06a' },
-  'slow-hips': { icon: <Waves />, color: '#62c4e0' },
-  'evening-wind-down': { icon: <MoonStars />, color: '#b4a4f5' },
-  'power-flow': { icon: <Fire />, color: '#f5866a' },
-  'midday-reset': { icon: <Leaf />, color: '#72d19a' },
-  'sun-salutations': { icon: <Sun />, color: '#f4d25a' },
-  'steady-balance': { icon: <Stones />, color: '#b8d86a' },
-  'crow-peak': { icon: <Bird />, color: '#7fb2f0' },
-  'dancer-peak': { icon: <PersonBalancing />, color: '#f08fc0' },
-  'wheel-peak': { icon: <Rainbow />, color: '#5cc8b0' },
-  'bird-of-paradise-peak': { icon: <FlowerTulip />, color: '#fb9a4b' },
+// One of the flow colours each, so a class opens in the colour of its card.
+const LOOKS: Record<string, { icon: ReactNode; color: string }> = {
+  'morning-vinyasa': { icon: <SunHorizon />, color: 'apricot' },
+  'slow-hips': { icon: <Waves />, color: 'aqua' },
+  'evening-wind-down': { icon: <MoonStars />, color: 'lilac' },
+  'power-flow': { icon: <Fire />, color: 'coral' },
+  'midday-reset': { icon: <Leaf />, color: 'sage' },
+  'sun-salutations': { icon: <Sun />, color: 'sun' },
+  'steady-balance': { icon: <Stones />, color: 'lime' },
+  'crow-peak': { icon: <Bird />, color: 'sky' },
+  'dancer-peak': { icon: <PersonBalancing />, color: 'rose' },
+  'wheel-peak': { icon: <Rainbow />, color: 'teal' },
+  'bird-of-paradise-peak': { icon: <FlowerTulip />, color: 'tangerine' },
+  'eagle-peak': { icon: <Feather />, color: 'sand' },
 };
 
-const FALLBACK: SampleLook = { icon: <Sun />, color: '#f2b27a' };
-
-export const sampleLook = (id: string): SampleLook => LOOKS[id] ?? FALLBACK;
+export const sampleLook = (id: string): SampleLook => {
+  const look = LOOKS[id] ?? { icon: <Sun />, color: DEFAULT_COLOR };
+  const c = flowColor(look.color);
+  return { icon: look.icon, color: c.hex, colorId: c.id };
+};

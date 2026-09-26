@@ -8,8 +8,8 @@ import { type Insertion, insertOptions, mirror, mirrorRange, type Sequence, type
 // What can be added to the flow: the choices under the newest pose, the ones for an
 // insert under the row it follows, and the first pose of an empty flow.
 
-/** How the "Get to" list groups poses: by where the body is, standing down to lying. */
-const BASES: [Base, string][] = [
+/** How the "Get to" list (and the poses page) group poses: by where the body is, standing down to lying. */
+export const BASES: [Base, string][] = [
   ['standing', 'Standing'],
   ['hands', 'On hands and feet'],
   ['kneeling', 'Kneeling'],

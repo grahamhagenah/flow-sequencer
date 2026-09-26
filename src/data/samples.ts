@@ -300,6 +300,36 @@ function birdOfParadisePeak() {
   return f.seq;
 }
 
+/**
+ * Opens the shoulders (Thread the Needle) and outer hips (Pigeon), builds the legs in
+ * Chair and the balance in Tree and Warrior III, then three rounds of Eagle each side;
+ * Cow Face stretches the shoulders again on the way down.
+ */
+function eaglePeak() {
+  const f = new FlowBuilder('easy-seat', 8);
+  f.path(['table', 2]);
+  f.bothSides((f) => f.path(['thread-needle', 6], ['table', 2]));
+  catCow(f).path(['table', 1, 'Return'], ['down-dog', 5]);
+  f.bothSides((f) => f.path(['three-leg-dog', 2], ['pigeon', 8], ['down-dog', 2, 'step back']));
+  f.path(['forward-fold', 3, 'Walk'], ['mountain', 3, 'Roll up']);
+  sunA(f);
+  sunA(f);
+  f.path(['chair', 4]).lead('right').go('twisted-chair', 4).go('twisted-chair', 4).go('chair', 2, 'Unwind');
+  f.path(['mountain', 2, 'Straighten legs, hands']);
+  f.bothSides((f) => f.path(['tree', 5], ['warrior-3', 4], ['mountain', 2]));
+  // Three rounds of Eagle: from Chair, from standing, then unwinding into Warrior III.
+  f.path(['chair', 3]).lead('right').go('eagle', 5).go('eagle', 5).go('chair', 2, 'Unwind');
+  f.path(['mountain', 2, 'Straighten legs, hands']);
+  f.lead('right').go('eagle', 8).go('eagle', 8).go('mountain', 3, 'Unwind');
+  f.bothSides((f) => f.path(['eagle', 6], ['warrior-3', 3], ['mountain', 2]));
+  f.path(['forward-fold', 3, 'Exhale'], ['garland', 3], ['easy-seat', 2]);
+  f.lead('right').go('cow-face', 6).go('cow-face', 6).go('easy-seat', 2, 'Release');
+  f.path(['staff', 2], ['seated-forward-fold', 10], ['staff', 2], ['savasana', 2, 'Roll down'], ['knees-to-chest', 4]);
+  f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
+  f.path(['knees-to-chest', 3, 'Bring'], ['savasana', 25]);
+  return f.seq;
+}
+
 export const SAMPLE_FLOWS: SampleFlow[] = [
   {
     id: 'morning-vinyasa',
@@ -374,5 +404,13 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     seq: birdOfParadisePeak(),
     peak: true,
     peakPose: 'bird-of-paradise',
+  },
+  {
+    id: 'eagle-peak',
+    name: 'Eagle · wrap',
+    description: 'Shoulder and hip openers, Chair and Tree for strong legs, then three rounds of Eagle.',
+    seq: eaglePeak(),
+    peak: true,
+    peakPose: 'eagle',
   },
 ];
