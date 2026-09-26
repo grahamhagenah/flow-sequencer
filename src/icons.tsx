@@ -49,12 +49,6 @@ export const LinkIcon = () => (
   </Icon>
 );
 
-export const PencilIcon = () => (
-  <Icon>
-    <path d="M17 3a2.8 2.8 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5z" />
-  </Icon>
-);
-
 /** My flows: a shelf of books, your library of flows. */
 export const FlowsIcon = () => (
   <Icon>

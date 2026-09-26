@@ -127,11 +127,8 @@ h2 {
 .bar h1 { flex: none; display: flex; align-items: center; gap: var(--space-2); letter-spacing: 0; line-height: 28px; }
 .bar .home { display: flex; align-items: center; gap: var(--space-2); color: inherit; text-decoration: none; border-radius: var(--radius-sm); }
 .bar .home:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-/* The slash only when a flow name or page name follows (not on the start page). */
-.bar h1:has(+ .bar-title, + .bar-page)::after { content: '/'; margin-left: var(--space-2); font-weight: 400; color: var(--border); }
-/* Title and status keep at least 320px; when the buttons don't fit beside them they wrap to a second line. */
-.bar-title { flex: 1 1 320px; min-width: 0; display: flex; align-items: center; gap: var(--space-3); }
-/* Where you are, in the spot the flow title takes in the builder. */
+/* The slash only when a page name follows ("My flows"). */
+.bar h1:has(+ .bar-page)::after { content: '/'; margin-left: var(--space-2); font-weight: 400; color: var(--border); }
 .bar-page { font-weight: 500; }
 /* The start page's tagline beside the app's name, where a flow's name goes otherwise. */
 .bar-tagline { min-width: 0; font-size: var(--text-md); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -152,15 +149,13 @@ input {
 input:hover { border-color: var(--border); }
 input:focus { outline: none; border-color: var(--accent); background: var(--surface); }
 
-/* The name with a pencil right after it, so it's plain it can be edited. The input is
-   as wide as its text (field-sizing), so the pencil sits beside the words. */
+/* The name, editable in place: outlined on hover, as wide as its text (field-sizing). */
 .name-field { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: var(--space-1); cursor: text; }
-.flow-name { flex: 0 1 auto; min-width: 6ch; max-width: 100%; field-sizing: content; font-weight: 500; padding: var(--space-1) var(--space-2); margin-left: calc(-1 * var(--space-2)); }
-.name-field .icon { flex: none; color: var(--muted); }
+.flow-name { flex: 0 1 auto; min-width: 6ch; max-width: 100%; field-sizing: content; font-weight: 600; padding: var(--space-1) var(--space-2); margin-left: calc(-1 * var(--space-2)); text-overflow: ellipsis; }
 .name-field:hover .flow-name { border-color: var(--border); }
-.name-field:hover .icon { color: var(--text); }
-.name-field:focus-within .icon { color: var(--accent); }
-.flow-name::placeholder { color: var(--muted); font-weight: 500; }
+.flow-name::placeholder { color: var(--muted); font-weight: 600; }
+/* The list's heading: the flow's colour dot and its name, as large as a section title. */
+.list-title { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: var(--space-3); font-size: var(--text-lg); }
 /* Fixed width for the longest status, so the title and buttons don't shift as it changes. */
 /* The accent's tint, worked out where the flow's colour is set (on .app) so it follows it. */
 :root, .app { --accent-bg: color-mix(in srgb, var(--accent) 13%, var(--bg)); }
@@ -174,7 +169,7 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
   border-radius: 50%;
   transition: box-shadow 120ms ease, transform 120ms ease;
 }
-.color-dot { width: 16px; height: 16px; background: var(--accent); box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px transparent; }
+.color-dot { width: 12px; height: 12px; background: var(--accent); box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px transparent; }
 .color-dot:hover:not(:disabled), .color-dot[aria-expanded='true'] {
   box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px color-mix(in srgb, var(--accent) 60%, transparent);
 }
@@ -199,6 +194,9 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 }
 .color-swatches button[aria-checked='true'] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--text); }
 .status { font-size: var(--text-sm); color: var(--muted); white-space: nowrap; min-width: 7.5em; text-align: right; }
+/* In the bar, beside the buttons it's about. */
+.bar > .status { margin-left: auto; }
+.bar > .status + .flow-buttons { margin-left: 0; }
 .flow-buttons { display: flex; gap: var(--space-1); margin-left: auto; }
 /* A quiet link back, no box: just the arrow and its words (hidden on phones). */
 .bar .nav { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 var(--space-2); font-size: var(--text-sm); background: none; border: none; color: var(--muted); }
@@ -526,16 +524,16 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   border-bottom: 1px solid var(--rule);
 }
 .timeline-head > * { white-space: nowrap; }
-.timeline-head h2 { margin: 0; }
 .timeline-head .meta { font-size: var(--text-sm); }
 .timeline-head.empty-head { display: none; }
 /* The pose count and the view toggle, at the heading's right. */
 .timeline-head-end { display: flex; align-items: center; gap: var(--space-3); margin-left: auto; }
-/* One pose at a time, or the list: two small words, the chosen one lit. */
-.layout-toggle { display: flex; gap: 2px; padding: 2px; background: var(--surface); border-radius: var(--radius-sm); }
+/* One pose at a time, or the list. */
+/* Quiet: two words, no box; the chosen one in the text colour on a faint tint. */
+.layout-toggle { display: flex; gap: 2px; }
 .layout-toggle button { height: 28px; padding: 0 var(--space-3); font-size: var(--text-sm); font-weight: 500; white-space: nowrap; color: var(--muted); background: none; border: none; border-radius: 6px; }
 .layout-toggle button:hover:not(:disabled) { color: var(--text); }
-.layout-toggle button[aria-pressed='true'] { color: var(--accent); background: var(--surface-2); }
+.layout-toggle button[aria-pressed='true'] { color: var(--text); background: var(--surface); }
 
 /* One pose at a time: the pose large, its words beside it (under it on phones), and
    what's next below. */
@@ -570,7 +568,8 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 /* Before a class, how many: the line is always there, so nothing shifts when the class starts. */
 .single-breath.idle { font-weight: 400; color: var(--muted); }
 .timeline-head.empty-head + .get-started { padding-top: var(--space-5); }
-.pager { display: flex; align-items: center; gap: var(--space-1); margin-right: auto; margin-left: var(--space-3); font-size: var(--text-sm); color: var(--muted); font-variant-numeric: tabular-nums; }
+/* Under the rows, centred. */
+.pager { display: flex; align-items: center; justify-content: center; gap: var(--space-1); margin: var(--space-3) 0 0; font-size: var(--text-sm); color: var(--muted); font-variant-numeric: tabular-nums; }
 .pager span { min-width: 3.2em; text-align: center; }
 .pager button { display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; color: var(--muted); background: none; border-color: transparent; border-radius: 50%; }
 .pager button svg { width: var(--icon-md); height: var(--icon-md); }
@@ -943,11 +942,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
      icon already says whether there's anything to save, so the status text is left out. */
   .bar { padding: var(--space-2) var(--space-4); gap: var(--space-1) var(--space-2); }
   .bar h1 { font-size: var(--text-md); }
-  /* The flow name wraps to its own line, so no slash before it; "My flows" on the Flows
-     page shares the logo's line and keeps it. */
-  .bar h1:has(+ .bar-title)::after { content: none; }
-  .flow-buttons { order: 1; gap: 0; }
-  .bar-title { order: 2; flex: 1 1 200px; }
+  .flow-buttons { order: 1; gap: 0; margin-left: auto; }
   .status, .bar-tagline { display: none; }
   /* Taller targets for the icon buttons, as wide as fits beside the name (a 44px square
      each would push them onto a line of their own). */
@@ -968,14 +963,10 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 
   /* The player already shows the pose count and the time. */
   .timeline-head .meta { display: none; }
-  /* The heading, a long flow's pager and the view toggle on one line. The pager has a
-     column of its own between them, so it never pushes the toggle when it appears. */
-  .timeline-head { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: 'title pager end'; column-gap: var(--space-2); }
-  .timeline-head h2 { grid-area: title; }
-  .timeline-head-end { grid-area: end; }
-  .pager { grid-area: pager; justify-self: center; margin: 0; }
+  /* The flow's name and the view toggle on one line; the name gives way (with an ellipsis)
+     so the toggle keeps its place. */
+  .timeline-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--space-3); }
   .layout-toggle button { height: 36px; padding: 0 var(--space-2); }
-  .pager { gap: 0; }
   /* Phones: the pose large and centred, its words centred under it. */
   .single { gap: var(--space-4); padding-top: var(--space-2); }
   .single-pose { flex-direction: column; align-items: center; gap: var(--space-1); padding: 0 0 var(--space-3); text-align: center; }

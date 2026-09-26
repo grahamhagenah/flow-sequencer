@@ -49,6 +49,7 @@ const saveLayout = (layout: Layout) => {
 export function Builder({
   seq,
   set,
+  title,
   banner,
   timelineRef,
   onOpenSample,
@@ -68,6 +69,8 @@ export function Builder({
   seq: Sequence;
   set: SetSeq;
   /** A notice shown above the current pose, if any. */
+  /** The flow's name and colour, heading the list. */
+  title: ReactNode;
   banner: ReactNode;
   timelineRef: React.RefObject<HTMLElement | null>;
   onOpenSample: (f: SampleFlow) => void;
@@ -284,8 +287,7 @@ export function Builder({
       <aside className="timeline" ref={timelineRef}>
         {banner}
         <div className={seq.length || choosing ? 'timeline-head' : 'timeline-head empty-head'}>
-          <h2>Sequence</h2>
-          {!single && pageCount > 1 && <Pager page={first / pageSize} pageCount={pageCount} onPage={goToPage} />}
+          {title}
           {seq.length > 0 && (
             <span className="timeline-head-end">
               <span className="meta">
@@ -362,6 +364,10 @@ export function Builder({
               ];
             })}
           </ol>
+        )}
+        {/* A long flow's pages, under its rows. */}
+        {!single && seq.length > 0 && pageCount > 1 && (
+          <Pager page={first / pageSize} pageCount={pageCount} onPage={goToPage} />
         )}
 
         {/* What comes next, right under the newest pose (on the last page; from any

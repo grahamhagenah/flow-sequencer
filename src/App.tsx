@@ -8,7 +8,7 @@ import { ColorPicker } from './ColorPicker';
 import { Dialog, type DialogSpec } from './Dialog';
 import { unlockPlayback } from './player/conductor';
 import { FlowList } from './FlowList';
-import { ArrowLeftIcon, CheckIcon, FlowsIcon, LinkIcon, NewFlowIcon, PencilIcon, SaveIcon, UndoIcon } from './icons';
+import { ArrowLeftIcon, CheckIcon, FlowsIcon, LinkIcon, NewFlowIcon, SaveIcon, UndoIcon } from './icons';
 import { Logo } from './Logo';
 import { deleteFlow, listFlows, loadDraft, loadResume, newId, putFlow, type SavedFlow, saveDraft, saveResume } from './library';
 import { decodeSteps, encodeSteps, fromHash, shareUrl, toHash } from './link';
@@ -313,7 +313,8 @@ export function App() {
     // The open flow's colour is the accent everywhere: its poses, the play button, highlights.
     <div className="app" style={{ '--accent': flowColor(color).hex } as CSSProperties}>
       <Dialog spec={dialog} onClose={() => setDialog(null)} />
-      {/* One bar: the app name, the open flow's title and status, and everything you do with it. */}
+      {/* One bar: the app's name, the open flow's save status, and everything you do with it (the
+          flow's name heads its list, in Builder). */}
       <header className="bar">
         <h1>
           {/* Home is the start page (see goHome); opening it in a new tab starts fresh there too. */}
@@ -335,25 +336,7 @@ export function App() {
             {/* The start page has no flow yet, so no name for it; the app's tagline instead
                 (on wider screens). */}
             {seq.length === 0 && !choosing && <span className="bar-tagline">Build a yoga flow, one pose at a time</span>}
-            {(seq.length > 0 || choosing) && (
-              <div className="bar-title">
-                {/* The flow's colour, as a dot before its name. */}
-                <ColorPicker value={color} onChange={setColor} />
-                {/* The name is editable in place; the pencil says so, and clicking it (it's inside the label) edits it. */}
-                <label className="name-field" title="Rename this flow">
-                  <input
-                    className="flow-name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Untitled flow"
-                    aria-label="Flow name"
-                    maxLength={80}
-                  />
-                  <PencilIcon />
-                </label>
-                <span className="status">{status}</span>
-              </div>
-            )}
+            {(seq.length > 0 || choosing) && <span className="status">{status}</span>}
             {/* Icon-only; data-tip is the hover/focus tooltip and aria-label the spoken name. */}
             <div className="flow-buttons" ref={buttonsRef}>
               <button className="icon-btn" onClick={undo} disabled={!canUndo} aria-label="Undo" data-tip="Undo (⌘Z)">
@@ -431,6 +414,22 @@ export function App() {
         <Builder
           seq={seq}
           set={set}
+          title={
+            // The flow's colour, as a dot, then its name, editable in place (outlined on hover).
+            <div className="list-title">
+              <ColorPicker value={color} onChange={setColor} />
+              <label className="name-field" title="Rename this flow">
+                <input
+                  className="flow-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Untitled flow"
+                  aria-label="Flow name"
+                  maxLength={80}
+                />
+              </label>
+            </div>
+          }
           timelineRef={timelineRef}
           onOpenSample={(f) => openSample(f)}
           onPlaySample={playSample}
