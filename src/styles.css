@@ -119,6 +119,7 @@ h2 {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2) var(--space-4);
+  /* Full width: the logo at the far left, the icons at the far right. */
   padding: var(--space-2) var(--gutter);
   /* Same colour as the page with a hairline under it, so the bar doesn't read as a heavy band. */
   border-bottom: 1px solid var(--border);
@@ -197,7 +198,8 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 /* In the bar, beside the buttons it's about. */
 .bar > .status { margin-left: auto; }
 .bar > .status + .flow-buttons { margin-left: 0; }
-.flow-buttons { display: flex; gap: var(--space-1); margin-left: auto; }
+/* The last icon's drawing, not its button, meets the bar's right edge. */
+.flow-buttons { display: flex; gap: var(--space-1); margin-left: auto; margin-right: calc((var(--icon-md) - 36px) / 2); }
 /* A quiet link back, no box: just the arrow and its words (hidden on phones). */
 .bar .nav { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 var(--space-2); font-size: var(--text-sm); background: none; border: none; color: var(--muted); }
 .bar .nav:hover { color: var(--text); }
@@ -581,7 +583,9 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   position: sticky;
   bottom: 0;
   margin-top: auto;
-  padding: var(--space-4) 0 calc(var(--space-5) + env(safe-area-inset-bottom));
+  /* Nothing above the player (rows scroll right up to it); the band below it hides them
+     under it. The space from the list when it's short is on what comes before. */
+  padding: 0 0 calc(var(--space-5) + env(safe-area-inset-bottom));
   background: var(--bg);
   /* As wide as the rows (which reach 8px past the panel's padding for their hover
      highlight), so rows scrolling underneath don't show at the sides. */
@@ -590,18 +594,8 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   padding-left: var(--space-2);
   padding-right: var(--space-2);
 }
-/* Rows fade out into the page just above the player instead of being cut through
-   mid-line, which left slivers of text peeking out. A static fade, nothing moves. */
-.play-footer::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -28px;
-  height: 28px;
-  background: linear-gradient(to bottom, transparent, var(--bg));
-  pointer-events: none;
-}
+/* Room between the list (or the composer) and the player, when the list is short. */
+.timeline > :has(+ .play-footer) { margin-bottom: var(--space-4); }
 .timeline ol { list-style: none; margin: 0; padding: 0; }
 .row {
   display: flex;
@@ -942,7 +936,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
      icon already says whether there's anything to save, so the status text is left out. */
   .bar { padding: var(--space-2) var(--space-4); gap: var(--space-1) var(--space-2); }
   .bar h1 { font-size: var(--text-md); }
-  .flow-buttons { order: 1; gap: 0; margin-left: auto; }
+  .flow-buttons, .bar > .status + .flow-buttons { order: 1; gap: 0; margin-left: auto; margin-right: calc((var(--icon-md) - 34px) / 2); }
   .status, .bar-tagline { display: none; }
   /* Taller targets for the icon buttons, as wide as fits beside the name (a 44px square
      each would push them onto a line of their own). */
@@ -975,7 +969,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
      the rest (name, cue, breaths) below: less to read in one place. */
   .single-text { display: contents; }
   /* Just above the drawing it belongs to. */
-  .single-via { order: -1; margin: var(--space-3) 0 calc(-1 * var(--space-2)); font-size: var(--text-lg); color: var(--soft); max-width: 28ch; }
+  .single-via { order: -1; margin: var(--space-4) 0 var(--space-1); font-size: var(--text-lg); color: var(--soft); max-width: 28ch; }
   .timeline .single-name { font-size: var(--text-2xl); }
   .single-cue { max-width: 30ch; margin-top: 0; }
   /* Less to read on a phone: the Sanskrit name stays on wider screens. */
@@ -1021,7 +1015,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   /* Five player buttons share a phone's width: bigger targets and icons for thumbs,
      with the gaps tightened so the row fits. The main ones are a step past the icon
      scale, on purpose. */
-  .play-footer { padding-top: 10px; padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom)); }
+  .play-footer { padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom)); }
   .play-controls { gap: 6px; }
   .play-controls .play-side { width: 48px; height: 48px; }
   .play-controls .play-side svg { width: var(--icon-lg); height: var(--icon-lg); }
