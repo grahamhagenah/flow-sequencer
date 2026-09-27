@@ -6,10 +6,10 @@ import { SAMPLE_FLOWS, type SampleFlow } from '../data/samples';
 import { sampleLook } from '../data/sampleLooks';
 import { TRANSITIONS } from '../data/transitions';
 import type { Pose } from '../data/types';
-import { LOTUS } from '../Logo';
 import { encodeSteps, toHash } from '../link';
 import { classMs } from '../player/conductor';
 import { PoseFigure } from '../PoseFigure';
+import { SiteBar } from '../SiteBar';
 import { SiteFooter } from '../SiteFooter';
 
 // Pages for search engines (and people arriving from them), written out at build time
@@ -57,9 +57,12 @@ function doc({
   jsonLd,
   body,
   assets,
+  section,
 }: {
   path: string;
   root: string;
+  /** The part of the site it's in, for the bar: its name, and a link unless this is its index. */
+  section: { name: string; href?: string };
   title: string;
   description: string;
   accent?: string;
@@ -91,15 +94,8 @@ function doc({
   const html = renderToStaticMarkup(
     // In the flow's colour on a flow's page; elsewhere white, like the poses page.
     <body style={{ '--accent': accent ?? 'var(--text)' } as CSSProperties}>
+      <SiteBar root={root} section={section.name} sectionHref={section.href} logoColor={accent} />
       <div className="guide">
-        <header className="guide-bar">
-          <a className="guide-home" href={root}>
-            <svg width="22" height="22" viewBox="0 0 256 256" fill="var(--accent)" aria-hidden="true">
-              <path d={LOTUS} />
-            </svg>
-            {NAME}
-          </a>
-        </header>
         <main>{body}</main>
         <SiteFooter root={root} />
       </div>
@@ -108,26 +104,10 @@ function doc({
   return `<!doctype html>\n<html lang="en">\n<head>\n${head.map((h) => `  ${h}`).join('\n')}\n</head>\n${html}\n</html>\n`;
 }
 
-/** "Home › Flows › Crow Pose": the trail above a page's title, and its structured data. */
-function crumbs(root: string, trail: [name: string, path: string][]) {
+/** "Flow Sequencer › Flows › Crow Pose": the page's place in the site, as structured data. */
+function crumbs(trail: [name: string, path: string][]) {
   const all: [string, string][] = [[NAME, ''], ...trail];
   return {
-    nav: (
-      <nav className="guide-crumbs" aria-label="Breadcrumb">
-        {all.map(([name, path], i) =>
-          i < all.length - 1 ? (
-            <span key={path}>
-              <a href={`${root}${path}`}>{name}</a>
-              <span aria-hidden="true"> › </span>
-            </span>
-          ) : (
-            <span key={path} aria-current="page">
-              {name}
-            </span>
-          ),
-        )}
-      </nav>
-    ),
     jsonLd: {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
@@ -157,7 +137,7 @@ function flowPage(f: SampleFlow, assets: Assets): Page {
   const mins = minutes(f);
   const poses = posesIn(f);
   const appLink = `${root}#${toHash(f.name, encodeSteps(f.seq), look.colorId, look.iconId)}`;
-  const trail = crumbs(root, [
+  const trail = crumbs([
     ['Ready-made flows', 'flows/'],
     [title, path],
   ]);
@@ -171,7 +151,6 @@ function flowPage(f: SampleFlow, assets: Assets): Page {
 
   const body = (
     <>
-      {trail.nav}
       <article className="guide-flow">
         <p className="guide-kicker">{f.peak ? 'Peak pose flow' : 'Ready-made flow'}</p>
         <h1 className="guide-title">
@@ -255,6 +234,7 @@ function flowPage(f: SampleFlow, assets: Assets): Page {
   return {
     fileName: `${path}index.html`,
     content: doc({
+      section: { name: 'Flows', href: `${root}flows/` },
       path,
       root,
       title: `${title} · ${mins}-minute ${f.peak ? 'peak pose yoga flow' : 'yoga flow'} · ${NAME}`,
@@ -298,10 +278,9 @@ function FlowLinks({ flows, root }: { flows: SampleFlow[]; root: string }) {
 function flowsIndex(assets: Assets): Page {
   const root = '../';
   const path = 'flows/';
-  const trail = crumbs(root, [['Ready-made flows', path]]);
+  const trail = crumbs([['Ready-made flows', path]]);
   const body = (
     <>
-      {trail.nav}
       <h1 className="guide-title">Ready-made yoga flows</h1>
       <p className="guide-lede">
         {SAMPLE_FLOWS.length} complete classes, from a ten-minute desk break to peak pose flows that build to Crow,
@@ -336,6 +315,7 @@ function flowsIndex(assets: Assets): Page {
   return {
     fileName: `${path}index.html`,
     content: doc({
+      section: { name: 'Flows' },
       path,
       root,
       title: `Ready-made yoga flows, with a voice to guide you · ${NAME}`,
@@ -362,7 +342,7 @@ function moves(poseId: string, dir: 'from' | 'to') {
 function posePage(p: Pose, assets: Assets): Page {
   const root = '../../';
   const path = posePath(p);
-  const trail = crumbs(root, [
+  const trail = crumbs([
     ['Poses', 'poses/'],
     [p.name, path],
   ]);
@@ -393,7 +373,6 @@ function posePage(p: Pose, assets: Assets): Page {
 
   const body = (
     <>
-      {trail.nav}
       <article className="guide-pose">
         <div className="guide-pose-head">
           <div className="guide-pose-figures">
@@ -440,6 +419,7 @@ function posePage(p: Pose, assets: Assets): Page {
   return {
     fileName: `${path}index.html`,
     content: doc({
+      section: { name: 'Poses', href: `${root}poses/` },
       path,
       root,
       title: `${p.name}${p.sanskrit ? ` (${p.sanskrit})` : ''} · yoga pose, and what flows next · ${NAME}`,

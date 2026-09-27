@@ -3,9 +3,10 @@ import { FLOW_COLORS } from './colors';
 import { sideLabel } from './data/graph';
 import { BASES, POSES } from './data/poses';
 import type { Pose, Side } from './data/types';
-import { ArrowLeftIcon, DownloadIcon } from './icons';
+import { DownloadIcon } from './icons';
 import { PoseFigure } from './PoseFigure';
 import { poseSvg } from './poseSvg';
+import { SiteBar } from './SiteBar';
 import { SiteFooter } from './SiteFooter';
 import { zip } from './zip';
 
@@ -49,11 +50,10 @@ export function PosesPage() {
   const shown = POSES.filter((p) => matches(p, query));
 
   return (
+    <>
+    <SiteBar root="../" section="Poses" />
     <main className="poses-page" style={{ '--ink': ink.hex } as CSSProperties}>
       <header className="poses-head">
-        <a className="poses-back" href="../">
-          <ArrowLeftIcon /> Flow Sequencer
-        </a>
         <h1>Poses</h1>
         <p>
           All {POSES.length} pose drawings. Click one to download it as an SVG, or download them all as a zip (both sides
@@ -148,5 +148,6 @@ export function PosesPage() {
 
       <SiteFooter root="../" />
     </main>
+    </>
   );
 }
