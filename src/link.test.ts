@@ -56,4 +56,10 @@ describe('share links', () => {
     expect(fromHash(`#${toHash('', steps, 'teal')}`)?.icon).toBeNull();
     expect(fromHash(`#i=unicorn&f=${steps}`)?.icon).toBeNull();
   });
+
+  it('reads a link that means to play the flow', () => {
+    const steps = encodeSteps(start('savasana'));
+    expect(fromHash(`#${toHash('', steps)}&p=1`)?.play).toBe(true);
+    expect(fromHash(`#${toHash('', steps)}`)?.play).toBe(false);
+  });
 });

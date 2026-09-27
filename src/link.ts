@@ -85,13 +85,24 @@ export function shareUrl(name: string, steps: string, color: string | null = nul
   return `${location.origin}${location.pathname}#${toHash(name, steps, color, icon)}`;
 }
 
+/**
+ * A share link's flow. `play` is set by a link that means to play it (`p=1`, from the
+ * guide pages): the app opens it in the one-pose view, the player ready.
+ */
 export function fromHash(
   hash: string,
-): { name: string; color: string | null; icon: string | null; seq: Sequence; dropped: number } | null {
+): { name: string; color: string | null; icon: string | null; seq: Sequence; dropped: number; play: boolean } | null {
   const params = new URLSearchParams(hash.replace(/^#/, ''));
   const f = params.get('f');
   if (f === null) return null;
   const { seq, dropped } = decodeSteps(f);
   if (seq.length === 0) return null;
-  return { name: params.get('n') ?? '', color: colorId(params.get('c')), icon: iconId(params.get('i')), seq, dropped };
+  return {
+    name: params.get('n') ?? '',
+    color: colorId(params.get('c')),
+    icon: iconId(params.get('i')),
+    seq,
+    dropped,
+    play: params.get('p') === '1',
+  };
 }

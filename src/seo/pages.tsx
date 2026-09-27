@@ -42,6 +42,12 @@ const posePath = (p: Pose | string) => `poses/${typeof p === 'string' ? p : p.id
 /** A plural for a count: "1 pose", "3 poses". */
 const n = (count: number, one: string, many = `${one}s`) => `${count} ${count === 1 ? one : many}`;
 
+/** The link that opens a flow in the app on its first pose, the player ready (see fromHash). */
+const playLink = (f: SampleFlow, root: string) => {
+  const look = sampleLook(f.id);
+  return `${root}#${toHash(f.name, encodeSteps(f.seq), look.colorId, look.iconId)}&p=1`;
+};
+
 const flowsWith = (poseId: string) => SAMPLE_FLOWS.filter((f) => f.seq.some((s) => s.poseId === poseId));
 
 /** The poses in a flow, each once, in the order they first come. */
@@ -136,7 +142,6 @@ function flowPage(f: SampleFlow, assets: Assets): Page {
   const style = flowStyle(f);
   const mins = minutes(f);
   const poses = posesIn(f);
-  const appLink = `${root}#${toHash(f.name, encodeSteps(f.seq), look.colorId, look.iconId)}`;
   const trail = crumbs([
     ['Ready-made flows', 'flows/'],
     [title, path],
@@ -164,13 +169,13 @@ function flowPage(f: SampleFlow, assets: Assets): Page {
         </p>
         <p className="guide-lede">{f.description}</p>
         <p>
-          <a className="guide-play" href={appLink}>
-            <PlayIcon /> Open this flow in {NAME}
+          <a className="guide-play" href={playLink(f, root)}>
+            <PlayIcon /> Play this flow
           </a>
         </p>
         <p className="guide-note">
-          It opens in the app, ready to play: a voice calls each move and counts your breaths, and you can change
-          anything first.
+          It opens in {NAME} on the first pose: press play, and a voice calls each move and counts your breaths. You
+          can change anything in it first.
         </p>
 
         <h2>The sequence</h2>
@@ -247,7 +252,10 @@ function flowPage(f: SampleFlow, assets: Assets): Page {
   };
 }
 
-/** Flows as a list of cards: icon, title, length and description. */
+/**
+ * Flows as cards, like the app's: icon and title (to the flow's page), length and
+ * description, and Play, straight into the app.
+ */
 function FlowLinks({ flows, root }: { flows: SampleFlow[]; root: string }) {
   return (
     <ul className="guide-flow-list">
@@ -255,18 +263,24 @@ function FlowLinks({ flows, root }: { flows: SampleFlow[]; root: string }) {
         const look = sampleLook(f.id);
         return (
           <li key={f.id} style={{ '--tone': look.color } as CSSProperties}>
-            <a href={`${root}${flowPath(f)}`}>
-              <span className="guide-flow-name">
-                <span className="guide-icon" aria-hidden="true">
-                  {look.icon}
-                </span>
-                {flowTitle(f)}
+            <a className="guide-flow-name" href={`${root}${flowPath(f)}`}>
+              <span className="guide-icon" aria-hidden="true">
+                {look.icon}
               </span>
-              <span className="guide-flow-meta">
-                {cap(flowStyle(f))} · about {minutes(f)} min
-              </span>
-              <span className="guide-flow-desc">{f.description}</span>
+              {flowTitle(f)}
             </a>
+            <span className="guide-flow-meta">
+              {cap(flowStyle(f))} · about {minutes(f)} min
+            </span>
+            <span className="guide-flow-desc">{f.description}</span>
+            <span className="guide-flow-actions">
+              <a className="guide-flow-play" href={playLink(f, root)} aria-label={`Play ${flowTitle(f)}`}>
+                <PlayIcon /> Play
+              </a>
+              <a href={`${root}${flowPath(f)}`} aria-label={`${flowTitle(f)}: the steps and poses`}>
+                Steps and poses
+              </a>
+            </span>
           </li>
         );
       })}

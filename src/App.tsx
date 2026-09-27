@@ -56,6 +56,9 @@ function initial(): Opened {
       icon: linked.icon,
       seq: linked.seq,
       notice: droppedNotice(linked.dropped),
+      // A link to play it opens on its first pose with the player ready (browsers need a
+      // tap before the voice can start, so it waits for Play).
+      layout: linked.play ? 'single' : undefined,
     };
   }
   if (draft?.steps) saveResume(draft);
@@ -86,7 +89,7 @@ export function App() {
   const [dialog, setDialog] = useState<DialogSpec | null>(null);
   const [autoplay, setAutoplay] = useState(false);
   /** Bumped each time a flow is opened, so the sequence list can start it on its first page. */
-  const [openCount, setOpenCount] = useState(0);
+  const [openCount, setOpenCount] = useState(init.layout ? 1 : 0);
   const [resume, setResume] = useState(loadResume);
   // An empty flow shows the start page until "Start a new sequence" opens the empty sequencer.
   const [choosing, setChoosing] = useState(false);
@@ -147,7 +150,9 @@ export function App() {
   }, [copied]);
 
   // Which view the latest open asked for, and for which open (see Builder).
-  const [openLayout, setOpenLayout] = useState<OpenLayout | null>(null);
+  const [openLayout, setOpenLayout] = useState<OpenLayout | null>(() =>
+    init.layout ? { count: 1, layout: init.layout } : null,
+  );
   const openCountRef = useRef(openCount);
   openCountRef.current = openCount;
   const open = useCallback(

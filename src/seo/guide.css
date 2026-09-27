@@ -49,14 +49,21 @@
 .guide .guide-moves a:hover { background: var(--surface); }
 .guide-moves a > span { display: flex; flex-direction: column; }
 
-/* Flows as quiet cards: icon and title in the flow's colour, length, description. */
+/* Flows as cards, like the app's: icon and title in the flow's colour (to its page),
+   length, description, then Play (into the app) and the way to its steps. */
 .guide-flow-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
-.guide .guide-flow-list a { display: flex; flex-direction: column; gap: var(--space-1); height: 100%; box-sizing: border-box; padding: var(--space-4); background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); text-decoration: none; }
-.guide .guide-flow-list a:hover { border-color: var(--muted); }
-.guide-flow-name { display: flex; align-items: center; gap: var(--space-2); font-weight: 600; }
+.guide-flow-list li { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-4); background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); }
+.guide .guide-flow-name { display: flex; align-items: center; gap: var(--space-2); font-weight: 600; text-decoration: none; }
+.guide a.guide-flow-name:hover { text-decoration: underline; text-decoration-color: var(--muted); }
 .guide-flow-name .guide-icon svg { width: 20px; height: 20px; }
 .guide-flow-meta { font-size: var(--text-sm); color: var(--muted); }
-.guide-flow-desc { margin-top: var(--space-1); font-size: var(--text-sm); color: var(--soft); }
+.guide-flow-desc { flex: 1; margin-top: var(--space-1); font-size: var(--text-sm); color: var(--soft); }
+.guide-flow-actions { display: flex; align-items: center; gap: var(--space-4); margin-top: var(--space-3); font-size: var(--text-sm); }
+.guide .guide-flow-actions a { color: var(--muted); text-decoration: none; }
+.guide .guide-flow-actions a:hover { color: var(--text); }
+.guide .guide-flow-actions .guide-flow-play { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 var(--space-3) 0 var(--space-2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-weight: 500; }
+.guide-flow-play svg { color: var(--tone); }
+.guide .guide-flow-actions .guide-flow-play:hover { color: var(--tone); border-color: var(--tone); background: color-mix(in srgb, var(--tone) 13%, var(--bg)); }
 
 @media (max-width: 480px) {
   .guide-steps li { grid-template-columns: 1.6em 32px 1fr auto; gap: var(--space-2); }
