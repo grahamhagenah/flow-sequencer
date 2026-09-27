@@ -50,8 +50,6 @@ const playLink = (f: SampleFlow, root: string) => {
 
 const flowsWith = (poseId: string) => SAMPLE_FLOWS.filter((f) => f.seq.some((s) => s.poseId === poseId));
 
-/** The poses in a flow, each once, in the order they first come. */
-const posesIn = (f: SampleFlow) => [...new Set(f.seq.map((s) => s.poseId))].map(getPose);
 
 /** The whole document around a page's body. */
 function doc({
@@ -141,7 +139,6 @@ function flowPage(f: SampleFlow, assets: Assets): Page {
   const title = flowTitle(f);
   const style = flowStyle(f);
   const mins = minutes(f);
-  const poses = posesIn(f);
   const trail = crumbs([
     ['Ready-made flows', 'flows/'],
     [title, path],
@@ -198,17 +195,6 @@ function flowPage(f: SampleFlow, assets: Assets): Page {
           })}
         </ol>
 
-        <h2>The poses in it</h2>
-        <ul className="guide-pose-grid">
-          {poses.map((p) => (
-            <li key={p.id}>
-              <a href={`${root}${posePath(p)}`}>
-                <PoseFigure poseId={p.id} size={56} />
-                <span>{p.name}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
 
         <h2>{f.peak ? 'More peak pose flows' : 'More ready-made flows'}</h2>
         <FlowLinks flows={others} root={root} />
