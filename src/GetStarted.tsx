@@ -7,6 +7,7 @@ import type { Draft, SavedFlow } from './library';
 import { decodeSteps } from './link';
 import { aboutMinutes, classMs } from './player/conductor';
 import { loadSettings } from './player/usePlayer';
+import { SiteFooter } from './SiteFooter';
 
 const RECENT = 3;
 
@@ -95,6 +96,8 @@ export function GetStarted({
           onOpenSample={onOpenSample}
         />
       </section>
+
+      <SiteFooter here="app" />
     </div>
   );
 }

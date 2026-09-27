@@ -1,4 +1,4 @@
-import { POSE_ART } from './data/poseArt';
+import { neckPath, POSE_ART, type PoseArt } from './data/poseArt';
 
 // A pose's drawing as a standalone SVG file, for the poses page's downloads. The same
 // shapes PoseFigure draws, with the colour and line weight written in, since a file has
@@ -8,7 +8,14 @@ import { POSE_ART } from './data/poseArt';
 export const FLOOR_PATH = 'M4 45h40';
 export const MAT_RECT = { x: 2, y: 14, width: 44, height: 20, rx: 2 };
 
-export function poseSvg(poseId: string, color: string, strokeWidth = 2): string {
+/**
+ * How a one-sided pose is drawn for the left side: a side view turns to face the other
+ * way; one seen from above flips across the mat, so the head stays at its top end.
+ */
+export const leftSideTransform = (art: PoseArt) => (art.topView ? 'matrix(1 0 0 -1 0 48)' : 'matrix(-1 0 0 1 48 0)');
+
+/** `left` mirrors the drawing for the left side (only meaningful for one-sided poses). */
+export function poseSvg(poseId: string, color: string, { left = false, strokeWidth = 2 } = {}): string {
   const art = POSE_ART[poseId];
   if (!art) throw new Error(`No drawing for ${poseId}`);
   const m = MAT_RECT;
@@ -18,8 +25,10 @@ export function poseSvg(poseId: string, color: string, strokeWidth = 2): string 
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="480" height="480" fill="none" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round">`,
     `  ${mat}`,
-    `  <path d="${art.d}"/>`,
-    `  <circle cx="${art.head[0]}" cy="${art.head[1]}" r="3.3" fill="${color}" stroke="none"/>`,
+    `  <g${left ? ` transform="${leftSideTransform(art)}"` : ''}>`,
+    `    <path d="${art.d}${neckPath(art)}"/>`,
+    `    <circle cx="${art.head[0]}" cy="${art.head[1]}" r="3.3" fill="${color}" stroke="none"/>`,
+    `  </g>`,
     `</svg>`,
     '',
   ].join('\n');

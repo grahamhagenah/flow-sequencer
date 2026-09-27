@@ -1,5 +1,6 @@
 import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
 import { SampleList } from './GetStarted';
+import { SiteFooter } from './SiteFooter';
 import { InfoIcon, NewFlowIcon } from './icons';
 import type { SavedFlow } from './library';
 import { decodeSteps } from './link';
@@ -97,6 +98,8 @@ export function FlowList({
           />
         </section>
       ))}
+
+      <SiteFooter here="app" />
     </main>
   );
 }

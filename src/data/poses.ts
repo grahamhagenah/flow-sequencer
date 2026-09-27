@@ -29,7 +29,7 @@ export const POSES: Pose[] = [
   { id: 'boat', name: 'Boat', sanskrit: 'Navasana', base: 'seated', sided: false, breaths: 5, cue: 'Balance on the sit bones, chest lifted, shins parallel to the floor.' },
   { id: 'bound-angle', name: 'Bound Angle', sanskrit: 'Baddha Konasana', base: 'seated', sided: false, breaths: 6, cue: 'Soles of the feet together, knees fall open.' },
   { id: 'head-to-knee', name: 'Head to Knee', sanskrit: 'Janu Sirsasana', base: 'seated', sided: true, breaths: 6, cue: 'One leg long, the other foot to the inner thigh, fold over the straight leg.' },
-  { id: 'seated-twist', name: 'Seated Twist', sanskrit: 'Ardha Matsyendrasana', base: 'seated', sided: true, breaths: 5, cue: 'Lengthen on the inhale, twist on the exhale.' },
+  { id: 'seated-twist', name: 'Seated Twist', sanskrit: 'Parivrtta Sukhasana', aka: ['Easy Seat Twist'], base: 'seated', sided: true, breaths: 5, cue: 'Sit cross-legged, lengthen on the inhale, twist on the exhale.' },
   { id: 'pigeon', name: 'Pigeon', sanskrit: 'Eka Pada Rajakapotasana', base: 'seated', sided: true, breaths: 10, cue: 'Front shin angled across the mat, back leg long, hips level.' },
 
   // Kneeling
@@ -40,7 +40,7 @@ export const POSES: Pose[] = [
   { id: 'thunderbolt', name: 'Thunderbolt', sanskrit: 'Vajrasana', base: 'kneeling', sided: false, breaths: 4, cue: 'Sit on the heels, spine tall.' },
   { id: 'camel', name: 'Camel', sanskrit: 'Ustrasana', base: 'kneeling', sided: false, breaths: 4, cue: 'Hips over knees, lift the chest, reach back for the heels.' },
   { id: 'thread-needle', name: 'Thread the Needle', base: 'kneeling', sided: true, breaths: 5, cue: 'Slide one arm under, rest the shoulder and ear down.' },
-  { id: 'low-lunge', name: 'Low Lunge', sanskrit: 'Anjaneyasana', base: 'kneeling', sided: true, breaths: 5, cue: 'Front knee over ankle, back knee down, hips sink forward.' },
+  { id: 'low-lunge', name: 'Low Lunge', sanskrit: 'Anjaneyasana', aka: ['Crescent Moon'], base: 'kneeling', sided: true, breaths: 5, cue: 'Front knee over ankle, back knee down, hips sink forward.' },
   { id: 'half-split', name: 'Half Split', sanskrit: 'Ardha Hanumanasana', base: 'kneeling', sided: true, breaths: 5, cue: 'Hips over the back knee, front leg straight, fold over it.' },
 
   // Hands and feet
@@ -68,7 +68,7 @@ export const POSES: Pose[] = [
   { id: 'twisted-chair', name: 'Twisted Chair', sanskrit: 'Parivrtta Utkatasana', base: 'standing', sided: true, breaths: 4, cue: 'Hands at heart, hook the elbow outside the opposite knee.' },
   { id: 'garland', name: 'Garland', sanskrit: 'Malasana', base: 'standing', sided: false, breaths: 5, cue: 'Deep squat, elbows press the knees wide, chest lifts.' },
   { id: 'wide-leg-fold', name: 'Wide-Legged Forward Fold', sanskrit: 'Prasarita Padottanasana', base: 'standing', sided: false, breaths: 5, cue: 'Feet wide and parallel, fold from the hips.' },
-  { id: 'high-lunge', name: 'High Lunge', sanskrit: 'Ashta Chandrasana', base: 'standing', sided: true, breaths: 4, cue: 'Back heel lifted, front knee bent, arms reach up.' },
+  { id: 'high-lunge', name: 'High Lunge', sanskrit: 'Ashta Chandrasana', aka: ['Crescent Lunge'], base: 'standing', sided: true, breaths: 4, cue: 'Back heel lifted, front knee bent, arms reach up.' },
   { id: 'warrior-1', name: 'Warrior I', sanskrit: 'Virabhadrasana I', base: 'standing', sided: true, breaths: 4, cue: 'Back heel down, hips face forward, arms up.' },
   { id: 'warrior-2', name: 'Warrior II', sanskrit: 'Virabhadrasana II', base: 'standing', sided: true, breaths: 4, cue: 'Hips open to the side, arms wide, gaze over the front hand.' },
   { id: 'reverse-warrior', name: 'Reverse Warrior', sanskrit: 'Viparita Virabhadrasana', base: 'standing', sided: true, breaths: 3, cue: 'Front arm reaches up and back, back hand slides down the leg.' },
@@ -84,7 +84,7 @@ export const POSES: Pose[] = [
   { id: 'shoulder-stand', name: 'Shoulder Stand', sanskrit: 'Salamba Sarvangasana', base: 'supine', sided: false, breaths: 10, cue: 'Hands support the back, legs reach up, keep the neck still.' },
   { id: 'plow', name: 'Plow', sanskrit: 'Halasana', base: 'supine', sided: false, breaths: 8, cue: 'Feet lower overhead toward the floor, hands support the back.' },
   { id: 'lotus', name: 'Lotus', sanskrit: 'Padmasana', base: 'seated', sided: false, breaths: 10, cue: 'Each foot on the opposite thigh, or one for half lotus, spine tall.' },
-  { id: 'half-lord-fishes', name: 'Half Lord of the Fishes', sanskrit: 'Ardha Matsyendrasana', base: 'seated', sided: true, breaths: 6, cue: 'One knee up, foot crossed over, twist toward the raised knee.' },
+  { id: 'half-lord-fishes', name: 'Half Lord of the Fishes', sanskrit: 'Ardha Matsyendrasana', aka: ['Seated Spinal Twist'], base: 'seated', sided: true, breaths: 6, cue: 'One knee up, foot crossed over, twist toward the raised knee.' },
   { id: 'cow-face', name: 'Cow Face', sanskrit: 'Gomukhasana', base: 'seated', sided: true, breaths: 6, cue: 'Knees stacked, one arm up and one down, hands reach for each other behind.' },
   { id: 'hero', name: 'Hero', sanskrit: 'Virasana', base: 'kneeling', sided: false, breaths: 8, cue: 'Knees together, sit between the heels, spine tall.' },
   { id: 'lizard', name: 'Lizard', sanskrit: 'Utthan Pristhasana', base: 'kneeling', sided: true, breaths: 8, cue: 'Both hands inside the front foot, forearms down if they reach.' },

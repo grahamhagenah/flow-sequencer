@@ -6,6 +6,8 @@ export interface Pose {
   id: string;
   name: string;
   sanskrit?: string;
+  /** Other English names it goes by, found by the poses page search. */
+  aka?: string[];
   base: Base;
   /** Done on one side at a time. What "side" means is noted per pose in poses.ts. */
   sided: boolean;

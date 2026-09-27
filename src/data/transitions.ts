@@ -39,7 +39,7 @@ const ROWS: Row[] = [
   [24, 'easy-seat', 'savasana', 'Lower down onto your back'],
   [25, 'staff', 'seated-forward-fold', 'Inhale lengthen, exhale fold'],
   [26, 'staff', 'head-to-knee', 'Bend {other} knee, fold over {side} leg'],
-  [27, 'staff', 'seated-twist', 'Cross {side} foot over, twist to the {side}'],
+  [27, 'staff', 'seated-twist', 'Cross the legs, twist to the {side}'],
   [28, 'staff', 'boat', 'Bend knees, lean back, lift feet'],
   [29, 'staff', 'easy-seat', 'Cross legs'],
   [30, 'staff', 'savasana', 'Roll down onto your back'],

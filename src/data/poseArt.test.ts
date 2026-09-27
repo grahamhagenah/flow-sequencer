@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { POSE_ART } from './poseArt';
+import { neckPath, pathPoints, POSE_ART } from './poseArt';
 import { POSES } from './poses';
 
 describe('pose drawings', () => {
@@ -16,5 +16,23 @@ describe('pose drawings', () => {
       expect(y + 3.3, id).toBeLessThanOrEqual(48);
       expect(art.d, id).toMatch(/^M[\d\s.,MLHVCSQTcsqtlhv-]+$/);
     }
+  });
+
+  it('draws a neck only for a drawing that asks for one', () => {
+    for (const [id, art] of Object.entries(POSE_ART)) {
+      expect(neckPath(art) !== '', id).toBe(art.neck === true);
+    }
+    expect(neckPath({ head: [24, 8], d: 'M24 14v14', neck: true })).toBe('M24 14L24 8');
+  });
+
+  it('reads the points of a path, relative moves and all', () => {
+    expect(pathPoints('M2 3h4v2l1 1M10 10 12 12')).toEqual([
+      [2, 3],
+      [6, 3],
+      [6, 5],
+      [7, 6],
+      [10, 10],
+      [12, 12],
+    ]);
   });
 });
