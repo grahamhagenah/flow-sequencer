@@ -1,111 +1,14 @@
 import type { ReactNode } from 'react';
 import { DEFAULT_COLOR, flowColor } from '../colors';
+import { flowIcon } from '../flowIcons';
 
-// Icons and colours for the sample classes. The icons are Phosphor Icons'
-// duotone "Sun Horizon", "Waves", "Moon Stars", "Fire", "Leaf", "Sun", "Bird",
-// "Person Simple Tai Chi", "Rainbow" and "Flower Tulip" (phosphoricons.com), MIT License, Copyright (c) 2023
-// Phosphor Icons. The peak pose classes take an icon after their peak pose (Eagle's
-// feather, like the stones, is drawn for this app).
-
-const SunHorizon = () => (
-  <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-    <path d="M192,144a64.33,64.33,0,0,1-2,16H66a64,64,0,1,1,126-16Z" opacity="0.2" />
-    <path d="M240,152H199.55a73.54,73.54,0,0,0,.45-8,72,72,0,0,0-144,0,73.54,73.54,0,0,0,.45,8H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM72,144a56,56,0,1,1,111.41,8H72.59A56.13,56.13,0,0,1,72,144Zm144,56a8,8,0,0,1-8,8H48a8,8,0,0,1,0-16H208A8,8,0,0,1,216,200ZM72.84,43.58a8,8,0,0,1,14.32-7.16l8,16a8,8,0,0,1-14.32,7.16Zm-56,48.84a8,8,0,0,1,10.74-3.57l16,8a8,8,0,0,1-7.16,14.31l-16-8A8,8,0,0,1,16.84,92.42Zm192,15.16a8,8,0,0,1,3.58-10.73l16-8a8,8,0,1,1,7.16,14.31l-16,8a8,8,0,0,1-10.74-3.58Zm-48-55.16,8-16a8,8,0,0,1,14.32,7.16l-8,16a8,8,0,1,1-14.32-7.16Z" />
-  </svg>
-);
-
-const Waves = () => (
-  <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-    <path d="M216,70.39v112c-72,59.69-104-56.47-176,3.22v-112C112,13.92,144,130.08,216,70.39Z" opacity="0.2" />
-    <path d="M222.16,177.25a8,8,0,0,1-1,11.25c-17.36,14.39-32.86,19.5-47,19.5-18.58,0-34.82-8.82-49.93-17-25.35-13.76-47.24-25.64-79.07.74a8,8,0,1,1-10.22-12.31c40.17-33.28,70.32-16.92,96.93-2.48,25.35,13.75,47.24,25.63,79.07-.74A8,8,0,0,1,222.16,177.25Zm-11.27-57c-31.83,26.38-53.72,14.5-79.07.74-26.61-14.43-56.76-30.79-96.93,2.49a8,8,0,0,0,10.22,12.31c31.83-26.38,53.72-14.5,79.07-.74,15.11,8.19,31.35,17,49.93,17,14.14,0,29.64-5.11,47-19.5a8,8,0,1,0-10.22-12.31ZM45.11,79.8c31.83-26.37,53.72-14.49,79.07-.74,15.11,8.2,31.35,17,49.93,17,14.14,0,29.64-5.12,47-19.5a8,8,0,1,0-10.22-12.31c-31.83,26.38-53.72,14.5-79.07.74C105.21,50.58,75.06,34.22,34.89,67.5A8,8,0,1,0,45.11,79.8Z" />
-  </svg>
-);
-
-const MoonStars = () => (
-  <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-    <path d="M210.69,158.18A88,88,0,1,1,97.82,45.31,96.08,96.08,0,0,0,192,160,96.78,96.78,0,0,0,210.69,158.18Z" opacity="0.2" />
-    <path d="M240,96a8,8,0,0,1-8,8H216v16a8,8,0,0,1-16,0V104H184a8,8,0,0,1,0-16h16V72a8,8,0,0,1,16,0V88h16A8,8,0,0,1,240,96ZM144,56h8v8a8,8,0,0,0,16,0V56h8a8,8,0,0,0,0-16h-8V32a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16Zm72.77,97a8,8,0,0,1,1.43,8A96,96,0,1,1,95.07,37.8a8,8,0,0,1,10.6,9.06A88.07,88.07,0,0,0,209.14,150.33,8,8,0,0,1,216.77,153Zm-19.39,14.88c-1.79.09-3.59.14-5.38.14A104.11,104.11,0,0,1,88,64c0-1.79,0-3.59.14-5.38A80,80,0,1,0,197.38,167.86Z" />
-  </svg>
-);
-
-const Fire = () => (
-  <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-    <path d="M208,144a80,80,0,0,1-160,0c0-30.57,14.42-58.26,31-80l33,32,26.27-72C159.86,41.92,208,88.15,208,144Z" opacity="0.2" />
-    <path d="M183.89,153.34a57.6,57.6,0,0,1-46.56,46.55A8.75,8.75,0,0,1,136,200a8,8,0,0,1-1.32-15.89c16.57-2.79,30.63-16.85,33.44-33.45a8,8,0,0,1,15.78,2.68ZM216,144a88,88,0,0,1-176,0c0-27.92,11-56.47,32.66-84.85a8,8,0,0,1,11.93-.89l24.12,23.41,22-60.41a8,8,0,0,1,12.63-3.41C165.21,36,216,84.55,216,144Zm-16,0c0-46.09-35.79-85.92-58.21-106.33L119.52,98.74a8,8,0,0,1-13.09,3L80.06,76.16C64.09,99.21,56,122,56,144a72,72,0,0,0,144,0Z" />
-  </svg>
-);
-
-const Sun = () => (
-  <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-    <path d="M184,128a56,56,0,1,1-56-56A56,56,0,0,1,184,128Z" opacity="0.2" />
-    <path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z" />
-  </svg>
-);
-
-const Leaf = () => (
-  <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-    <path d="M63.81,192.19c-47.89-79.81,16-159.62,151.64-151.64C223.43,176.23,143.62,240.08,63.81,192.19Z" opacity="0.2" />
-    <path d="M223.45,40.07a8,8,0,0,0-7.52-7.52C139.8,28.08,78.82,51,52.82,94a87.09,87.09,0,0,0-12.76,49c.57,15.92,5.21,32,13.79,47.85l-19.51,19.5a8,8,0,0,0,11.32,11.32l19.5-19.51C81,210.73,97.09,215.37,113,215.94q1.67.06,3.33.06A86.93,86.93,0,0,0,162,203.18C205,177.18,227.93,116.21,223.45,40.07ZM153.75,189.5c-22.75,13.78-49.68,14-76.71.77l88.63-88.62a8,8,0,0,0-11.32-11.32L65.73,179c-13.19-27-13-54,.77-76.71,22.09-36.47,74.6-56.44,141.31-54.06C210.2,114.89,190.22,167.41,153.75,189.5Z" />
-  </svg>
-);
-
-const Bird = () => (
-  <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-    <path d="M232,80,208,96v24a96,96,0,0,1-96,96H24a8,8,0,0,1-6.25-13L104,99.52V76.89c0-28.77,23-52.75,51.74-52.89a52,52,0,0,1,50.59,38.89Z" opacity="0.2" />
-    <path d="M176,68a12,12,0,1,1-12-12A12,12,0,0,1,176,68Zm64,12a8,8,0,0,1-3.56,6.66L216,100.28V120A104.11,104.11,0,0,1,112,224H24a16,16,0,0,1-12.49-26l.1-.12L96,96.63V76.89C96,43.47,122.79,16.16,155.71,16H156a60,60,0,0,1,57.21,41.86l23.23,15.48A8,8,0,0,1,240,80Zm-22.42,0L201.9,69.54a8,8,0,0,1-3.31-4.64A44,44,0,0,0,156,32h-.22C131.64,32.12,112,52.25,112,76.89V99.52a8,8,0,0,1-1.85,5.13L24,208h26.9l70.94-85.12a8,8,0,1,1,12.29,10.24L71.75,208H112a88.1,88.1,0,0,0,88-88V96a8,8,0,0,1,3.56-6.66Z" />
-  </svg>
-);
-
-// A small stack of balanced stones, drawn for this app in the same duotone style.
-const Stones = () => (
-  <svg width="22" height="22" viewBox="0 0 256 256" aria-hidden="true">
-    <g fill="currentColor" opacity="0.2">
-      <ellipse cx="128" cy="196" rx="84" ry="28" />
-      <ellipse cx="128" cy="130" rx="56" ry="22" />
-      <ellipse cx="128" cy="76" rx="32" ry="18" />
-    </g>
-    <g fill="none" stroke="currentColor" strokeWidth="16">
-      <ellipse cx="128" cy="196" rx="84" ry="28" />
-      <ellipse cx="128" cy="130" rx="56" ry="22" />
-      <ellipse cx="128" cy="76" rx="32" ry="18" />
-    </g>
-  </svg>
-);
-
-const PersonBalancing = () => (
-  <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-    <path d="M152,48a24,24,0,1,1-24-24A24,24,0,0,1,152,48Z" opacity="0.2" />
-    <path d="M128,80A32,32,0,1,0,96,48,32,32,0,0,0,128,80Zm0-48a16,16,0,1,1-16,16A16,16,0,0,1,128,32Zm96,72a8,8,0,0,1-8,8H136v26.72l51.15,21.93A8,8,0,0,1,192,168v48a8,8,0,0,1-16,0V173.28l-46.45-19.91L53.35,222a8,8,0,1,1-10.7-11.9L120,140.44V112H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,104Z" />
-  </svg>
-);
-
-const Rainbow = () => (
-  <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-    <path d="M240,168v16H176V168a48,48,0,0,0-96,0v16H16V168a112,112,0,0,1,224,0Z" opacity="0.2" />
-    <path d="M184,168v16a8,8,0,0,1-16,0V168a40,40,0,0,0-80,0v16a8,8,0,0,1-16,0V168a56,56,0,0,1,112,0ZM128,80a88.1,88.1,0,0,0-88,88v16a8,8,0,0,0,16,0V168a72,72,0,0,1,144,0v16a8,8,0,0,0,16,0V168A88.1,88.1,0,0,0,128,80Zm0-32A120.13,120.13,0,0,0,8,168v16a8,8,0,0,0,16,0V168a104,104,0,0,1,208,0v16a8,8,0,0,0,16,0V168A120.13,120.13,0,0,0,128,48Z" />
-  </svg>
-);
-
-const FlowerTulip = () => (
-  <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
-    <path d="M169.23,66v0A80,80,0,0,0,128,136,80,80,0,0,0,86.77,66v0C100,38,128,24,128,24S156,38,169.23,66Z" opacity="0.2" />
-    <path d="M208,48a87.48,87.48,0,0,0-35.36,7.43c-15.1-25.37-39.92-38-41.06-38.59a8,8,0,0,0-7.16,0c-1.14.58-26,13.22-41.06,38.59A87.48,87.48,0,0,0,48,48a8,8,0,0,0-8,8V96a88.11,88.11,0,0,0,80,87.63v35.43L83.58,200.84a8,8,0,1,0-7.16,14.32l48,24a8,8,0,0,0,7.16,0l48-24a8,8,0,0,0-7.16-14.32L136,219.06V183.63A88.11,88.11,0,0,0,216,96V56A8,8,0,0,0,208,48ZM128,33.21c6.65,4.08,21.08,14.19,30.64,30A88.46,88.46,0,0,0,128,99.36,88.4,88.4,0,0,0,97.36,63.19C106.93,47.4,121.35,37.29,128,33.21ZM56,96V64.44A72.1,72.1,0,0,1,120,136v31.56A72.1,72.1,0,0,1,56,96Zm144,0a72.1,72.1,0,0,1-64,71.56V136a72.1,72.1,0,0,1,64-71.56Z" />
-  </svg>
-);
-
-// A feather, for Eagle, drawn for this app in the same duotone style.
-const Feather = () => (
-  <svg width="22" height="22" viewBox="0 0 256 256" aria-hidden="true">
-    <path d="M216,40C140,40,72,92,72,168v16H88C164,184,216,116,216,40Z" fill="currentColor" opacity="0.2" />
-    <g fill="none" stroke="currentColor" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M216,40C140,40,72,92,72,168v16H88C164,184,216,116,216,40Z" />
-      <path d="M40,216,168,88M112,144h56" />
-    </g>
-  </svg>
-);
+// Icons (from the flow icon set) and colours for the sample classes. The peak pose
+// classes take an icon after their peak pose.
 
 export interface SampleLook {
   icon: ReactNode;
+  /** That icon's id in FLOW_ICONS, which the flow opens with. */
+  iconId: string;
   /** The card's accent: the icon, its tinted square and the style pill. */
   color: string;
   /** That colour's id in FLOW_COLORS, which the flow opens in. */
@@ -113,23 +16,23 @@ export interface SampleLook {
 }
 
 // One of the flow colours each, so a class opens in the colour of its card.
-const LOOKS: Record<string, { icon: ReactNode; color: string }> = {
-  'morning-vinyasa': { icon: <SunHorizon />, color: 'apricot' },
-  'slow-hips': { icon: <Waves />, color: 'aqua' },
-  'evening-wind-down': { icon: <MoonStars />, color: 'lilac' },
-  'power-flow': { icon: <Fire />, color: 'coral' },
-  'midday-reset': { icon: <Leaf />, color: 'sage' },
-  'sun-salutations': { icon: <Sun />, color: 'sun' },
-  'steady-balance': { icon: <Stones />, color: 'lime' },
-  'crow-peak': { icon: <Bird />, color: 'sky' },
-  'dancer-peak': { icon: <PersonBalancing />, color: 'rose' },
-  'wheel-peak': { icon: <Rainbow />, color: 'teal' },
-  'bird-of-paradise-peak': { icon: <FlowerTulip />, color: 'tangerine' },
-  'eagle-peak': { icon: <Feather />, color: 'sand' },
+const LOOKS: Record<string, { icon: string; color: string }> = {
+  'morning-vinyasa': { icon: 'sun-horizon', color: 'apricot' },
+  'slow-hips': { icon: 'waves', color: 'aqua' },
+  'evening-wind-down': { icon: 'moon-stars', color: 'lilac' },
+  'power-flow': { icon: 'fire', color: 'coral' },
+  'midday-reset': { icon: 'leaf', color: 'sage' },
+  'sun-salutations': { icon: 'sun', color: 'sun' },
+  'steady-balance': { icon: 'stones', color: 'lime' },
+  'crow-peak': { icon: 'bird', color: 'sky' },
+  'dancer-peak': { icon: 'balance', color: 'rose' },
+  'wheel-peak': { icon: 'rainbow', color: 'teal' },
+  'bird-of-paradise-peak': { icon: 'flower', color: 'tangerine' },
+  'eagle-peak': { icon: 'feather', color: 'sand' },
 };
 
 export const sampleLook = (id: string): SampleLook => {
-  const look = LOOKS[id] ?? { icon: <Sun />, color: DEFAULT_COLOR };
+  const look = LOOKS[id] ?? { icon: 'sun', color: DEFAULT_COLOR };
   const c = flowColor(look.color);
-  return { icon: look.icon, color: c.hex, colorId: c.id };
+  return { icon: flowIcon(look.icon)?.glyph, iconId: look.icon, color: c.hex, colorId: c.id };
 };

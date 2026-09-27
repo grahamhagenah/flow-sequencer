@@ -11,6 +11,8 @@ export interface SavedFlow {
   steps: string;
   /** A FLOW_COLORS id; missing (flows saved before colours, or never picked) is the default. */
   color?: string | null;
+  /** A FLOW_ICONS id; missing is none. */
+  icon?: string | null;
   updatedAt: number;
 }
 
@@ -20,6 +22,7 @@ export interface Draft {
   name: string;
   steps: string;
   color?: string | null;
+  icon?: string | null;
 }
 
 // Keys keep the app's first name so flows saved before the rename still load.

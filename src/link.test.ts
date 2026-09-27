@@ -49,4 +49,11 @@ describe('share links', () => {
     expect(fromHash(`#${toHash('', steps)}`)?.color).toBeNull();
     expect(fromHash(`#c=chartreuse&f=${steps}`)?.color).toBeNull();
   });
+
+  it('carries the icon, and ignores one it does not know', () => {
+    const steps = encodeSteps(start('savasana'));
+    expect(fromHash(`#${toHash('', steps, 'teal', 'leaf')}`)?.icon).toBe('leaf');
+    expect(fromHash(`#${toHash('', steps, 'teal')}`)?.icon).toBeNull();
+    expect(fromHash(`#i=unicorn&f=${steps}`)?.icon).toBeNull();
+  });
 });

@@ -190,7 +190,9 @@ export const POSE_ART: Record<string, PoseArt> = {
   // From the front: one elbow up by the head and one down by the waist, the forearms bending
   // back to meet at the spine; the knees stacked, the shins folded in a Z.
   'cow-face': { head: [24, 11.5], d: 'M24 17v19M20.5 19.5h7M27.5 19.5 29.5 6 25 19.5M20.5 19.5 18 31l5.5-9M24 36H13l22 4.5H14' },
-  hero: { head: [24, 13], d: 'M24 18v18M24 38l-9 5H8M24 38l9 5h7M24 22l-5 14M24 22l5 14' },
+  // From the side, from Graham's front-on drawing: the shins flat on the floor, the thighs
+  // folded over them, the back tall and the hand resting on the knee.
+  hero: { head: [28, 17], d: 'M31 43H12L28 38.5V22.5M28 22.5 17 39.3' },
   // Graham's drawing, from the side, mirrored to face left: hips low, the front knee high with
   // the foot planted, the forearm flat on the floor inside it, the back leg long behind; the head
   // free, low and forward.

@@ -1,6 +1,7 @@
 import { type CSSProperties, useLayoutEffect, useRef, useState } from 'react';
 import { sampleLook } from './data/sampleLooks';
 import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
+import { FlowMark } from './flowIcons';
 import { PlayIcon, PlusIcon } from './icons';
 import { PoseFigure } from './PoseFigure';
 import type { Draft, SavedFlow } from './library';
@@ -62,7 +63,10 @@ export function GetStarted({
               return (
                 <li key={f.id}>
                   <button className="gs-item" onClick={() => onOpenSaved(f)}>
-                    <span className="gs-title">{f.name}</span>
+                    <span className="gs-title">
+                      <FlowMark color={f.color} icon={f.icon} />
+                      {f.name}
+                    </span>
                     <span className="gs-meta">
                       {seq.length} {seq.length === 1 ? 'pose' : 'poses'} · {aboutMinutes(length(seq))}
                     </span>
@@ -114,7 +118,10 @@ function ResumeFlow({ draft, onResume }: { draft: Draft; onResume: () => void })
       <ul className="gs-list">
         <li>
           <button className="gs-item" onClick={onResume}>
-            <span className="gs-title">{draft.name.trim() || 'Untitled flow'}</span>
+            <span className="gs-title">
+              <FlowMark color={draft.color} icon={draft.icon} />
+              {draft.name.trim() || 'Untitled flow'}
+            </span>
             <span className="gs-meta">
               {seq.length} {seq.length === 1 ? 'pose' : 'poses'} · {aboutMinutes(length(seq))}
             </span>

@@ -4,7 +4,8 @@ import { FIRST_POSE } from './data/poses';
 import type { SampleFlow } from './data/samples';
 import { sampleLook } from './data/sampleLooks';
 import { colorId, flowColor, randomColor } from './colors';
-import { ColorPicker } from './ColorPicker';
+import { LookPicker } from './LookPicker';
+import { iconId } from './flowIcons';
 import { Dialog, type DialogSpec } from './Dialog';
 import { unlockPlayback } from './player/conductor';
 import { FlowList } from './FlowList';
@@ -22,13 +23,15 @@ interface Opened {
   name: string;
   /** A FLOW_COLORS id, or null for the default. */
   color: string | null;
+  /** A FLOW_ICONS id, or null for none. */
+  icon: string | null;
   seq: Sequence;
   notice: string | null;
   /** Which view it opens in: the list from Open, one pose at a time from Play. Otherwise the last one used. */
   layout?: Layout;
 }
 
-const EMPTY: Opened = { id: null, name: '', color: null, seq: [], notice: null };
+const EMPTY: Opened = { id: null, name: '', color: null, icon: null, seq: [], notice: null };
 const FRESH_STEPS = encodeSteps(start(FIRST_POSE));
 
 const droppedNotice = (dropped: number) =>
@@ -50,6 +53,7 @@ function initial(): Opened {
       id: isDraft ? draft.id : null,
       name: linked.name,
       color: linked.color,
+      icon: linked.icon,
       seq: linked.seq,
       notice: droppedNotice(linked.dropped),
     };
@@ -74,6 +78,7 @@ export function App() {
   const [id, setId] = useState(init.id);
   const [name, setName] = useState(init.name);
   const [color, setColor] = useState(init.color);
+  const [icon, setIcon] = useState(init.icon);
   const [notice, setNotice] = useState(init.notice);
   const [flows, setFlows] = useState(listFlows);
   const [view, setView] = useState<'builder' | 'flows'>('builder');
@@ -107,16 +112,19 @@ export function App() {
   // A flow started from scratch and not yet touched: just its pre-chosen first pose.
   const untouched = !id && !name.trim() && steps === FRESH_STEPS;
   const dirty = saved
-    ? saved.steps !== steps || saved.name !== name.trim() || colorId(saved.color) !== color
+    ? saved.steps !== steps ||
+      saved.name !== name.trim() ||
+      colorId(saved.color) !== color ||
+      iconId(saved.icon) !== icon
     : seq.length > 0 && !untouched;
 
   // Keep the draft and the address bar in step with the flow, so a reload or a
   // bookmark always lands back here.
   useEffect(() => {
-    saveDraft({ id, name, steps, color });
-    const url = seq.length ? `#${toHash(name.trim(), steps, color)}` : location.pathname + location.search;
+    saveDraft({ id, name, steps, color, icon });
+    const url = seq.length ? `#${toHash(name.trim(), steps, color, icon)}` : location.pathname + location.search;
     history.replaceState(null, '', url);
-  }, [id, name, steps, color, seq.length]);
+  }, [id, name, steps, color, icon, seq.length]);
 
   // Coming back from the Flows page, show the newest pose and its choices. Only the
   // desktop panel scrolls on its own (on phones the page does, and this does nothing).
@@ -151,6 +159,7 @@ export function App() {
       setId(next.id);
       setName(next.name);
       setColor(next.color);
+      setIcon(next.icon);
       setNotice(next.notice);
       setView('builder');
     },
@@ -170,7 +179,7 @@ export function App() {
   }, [undo, redo, view]);
 
   const save = () => {
-    const flow: SavedFlow = { id: id ?? newId(), name: name.trim() || 'Untitled flow', steps, color, updatedAt: Date.now() };
+    const flow: SavedFlow = { id: id ?? newId(), name: name.trim() || 'Untitled flow', steps, color, icon, updatedAt: Date.now() };
     putFlow(flow);
     setFlows(listFlows());
     setId(flow.id);
@@ -205,21 +214,38 @@ export function App() {
   useEffect(() => {
     const onHash = () => {
       const linked = fromHash(location.hash);
-      if (!linked || (encodeSteps(linked.seq) === steps && linked.name === name.trim() && linked.color === color)) return;
+      if (
+        !linked ||
+        (encodeSteps(linked.seq) === steps && linked.name === name.trim() && linked.color === color && linked.icon === icon)
+      )
+        return;
       guardUnsaved(
         'Open the linked flow?',
         'Save and open',
         () =>
-          open({ id: null, name: linked.name, color: linked.color, seq: linked.seq, notice: droppedNotice(linked.dropped) }),
-        () => history.replaceState(null, '', `#${toHash(name.trim(), steps, color)}`),
+          open({
+            id: null,
+            name: linked.name,
+            color: linked.color,
+            icon: linked.icon,
+            seq: linked.seq,
+            notice: droppedNotice(linked.dropped),
+          }),
+        () => history.replaceState(null, '', `#${toHash(name.trim(), steps, color, icon)}`),
       );
     };
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   });
 
-  const copyLink = async (key: string, flowName: string, flowSteps: string, flowColor: string | null) => {
-    if (await copyText(shareUrl(flowName, flowSteps, flowColor))) setCopied(key);
+  const copyLink = async (
+    key: string,
+    flowName: string,
+    flowSteps: string,
+    flowColor: string | null,
+    flowIcon: string | null,
+  ) => {
+    if (await copyText(shareUrl(flowName, flowSteps, flowColor, flowIcon))) setCopied(key);
   };
 
   const newFlow = () =>
@@ -241,7 +267,7 @@ export function App() {
     guardUnsaved('Go to the start page?', 'Save and leave', ({ discarded, savedId }) => {
       if (discarded) forgetResume();
       else {
-        const d = { id: savedId, name: name.trim(), steps, color };
+        const d = { id: savedId, name: name.trim(), steps, color, icon };
         saveResume(d);
         setResume(d);
       }
@@ -258,6 +284,7 @@ export function App() {
         id: resume.id,
         name: resume.name,
         color: colorId(resume.color),
+        icon: iconId(resume.icon),
         seq: decodeSteps(resume.steps).seq,
         notice: null,
         layout: 'list',
@@ -268,15 +295,32 @@ export function App() {
   const openSaved = (f: SavedFlow) => {
     if (f.id === id) return setView('builder');
     guardUnsaved(`Open “${f.name}”?`, 'Save and open', () =>
-      open({ id: f.id, name: f.name, color: colorId(f.color), seq: decodeSteps(f.steps).seq, notice: null, layout: 'list' }),
+      open({
+        id: f.id,
+        name: f.name,
+        color: colorId(f.color),
+        icon: iconId(f.icon),
+        seq: decodeSteps(f.steps).seq,
+        notice: null,
+        layout: 'list',
+      }),
     );
   };
 
   // A sample opens as an unsaved copy, so the sample itself never changes.
   const openSample = (f: SampleFlow, play = false) =>
     guardUnsaved(`Open “${f.name}”?`, 'Save and open', () => {
-      // In the colour of its card.
-      open({ id: null, name: f.name, color: sampleLook(f.id).colorId, seq: f.seq, notice: null, layout: play ? 'single' : 'list' });
+      // In the colour and with the icon of its card.
+      const look = sampleLook(f.id);
+      open({
+        id: null,
+        name: f.name,
+        color: look.colorId,
+        icon: look.iconId,
+        seq: f.seq,
+        notice: null,
+        layout: play ? 'single' : 'list',
+      });
       if (play) setAutoplay(true);
     });
 
@@ -286,7 +330,7 @@ export function App() {
   };
 
   const duplicate = (f: SavedFlow) => {
-    putFlow({ id: newId(), name: `${f.name} (copy)`, steps: f.steps, color: f.color, updatedAt: Date.now() });
+    putFlow({ id: newId(), name: `${f.name} (copy)`, steps: f.steps, color: f.color, icon: f.icon, updatedAt: Date.now() });
     setFlows(listFlows());
   };
 
@@ -359,7 +403,7 @@ export function App() {
               </button>
               <button
                 className={copied === 'current' ? 'icon-btn tip-shown' : 'icon-btn'}
-                onClick={() => copyLink('current', name.trim(), steps, color)}
+                onClick={() => copyLink('current', name.trim(), steps, color, icon)}
                 disabled={seq.length === 0}
                 aria-label={copied === 'current' ? 'Link copied' : 'Copy link'}
                 data-tip={copied === 'current' ? 'Link copied' : 'Copy share link'}
@@ -404,7 +448,7 @@ export function App() {
           copiedKey={copied}
           onOpen={openSaved}
           onNew={newFlow}
-          onCopyLink={(f) => copyLink(f.id, f.name, f.steps, colorId(f.color))}
+          onCopyLink={(f) => copyLink(f.id, f.name, f.steps, colorId(f.color), iconId(f.icon))}
           onDuplicate={duplicate}
           onDelete={remove}
           onOpenSample={(f) => openSample(f)}
@@ -415,9 +459,10 @@ export function App() {
           seq={seq}
           set={set}
           title={
-            // The flow's colour, as a dot, then its name, editable in place (outlined on hover).
+            // The flow's icon (or a dot) in its colour, then its name, editable in place
+            // (outlined on hover).
             <div className="list-title">
-              <ColorPicker value={color} onChange={setColor} />
+              <LookPicker color={color} icon={icon} onColor={setColor} onIcon={setIcon} />
               <label className="name-field" title="Rename this flow">
                 <input
                   className="flow-name"

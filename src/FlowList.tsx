@@ -1,6 +1,7 @@
 import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
 import { SampleList } from './GetStarted';
 import { SiteFooter } from './SiteFooter';
+import { FlowMark } from './flowIcons';
 import { InfoIcon, NewFlowIcon } from './icons';
 import type { SavedFlow } from './library';
 import { decodeSteps } from './link';
@@ -66,7 +67,10 @@ export function FlowList({
             return (
               <li key={f.id} className={f.id === currentId ? 'flow current' : 'flow'}>
                 <button className="flow-main" onClick={() => onOpen(f)}>
-                  <span className="flow-title">{f.name}</span>
+                  <span className="flow-title">
+                    <FlowMark color={f.color} icon={f.icon} />
+                    {f.name}
+                  </span>
                   <span className="flow-meta">
                     {seq.length} {seq.length === 1 ? 'pose' : 'poses'} · {aboutMinutes(length(seq))} · saved{' '}
                     {new Date(f.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}

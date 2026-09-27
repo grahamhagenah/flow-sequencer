@@ -161,39 +161,56 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 /* The accent's tint, worked out where the flow's colour is set (on .app) so it follows it. */
 :root, .app { --accent-bg: color-mix(in srgb, var(--accent) 13%, var(--bg)); }
 
-/* The flow's colour: a dot before its name, opening the swatches under it. On hover each
-   one gains a ring in its own colour, a gap of the background between. */
-.color-picker { position: relative; flex: none; display: flex; }
-.color-dot, .color-swatches button {
+/* The flow's look: its icon in its colour before its name (a dot, with no icon), opening
+   the colours and icons under it. On hover each swatch gains a ring in its own colour, a
+   gap of the background between. */
+.look-picker { position: relative; flex: none; display: flex; }
+.look-trigger, .color-swatches button {
   padding: 0;
   border: none;
   border-radius: 50%;
-  transition: box-shadow 120ms ease, transform 120ms ease;
+  transition: box-shadow 120ms ease, transform 120ms ease, background 120ms ease;
 }
-.color-dot { width: 12px; height: 12px; background: var(--accent); box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px transparent; }
-.color-dot:hover:not(:disabled), .color-dot[aria-expanded='true'] {
+.look-trigger { width: 12px; height: 12px; background: var(--accent); box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px transparent; }
+.look-trigger:hover:not(:disabled), .look-trigger[aria-expanded='true'] {
   box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px color-mix(in srgb, var(--accent) 60%, transparent);
 }
-.color-swatches {
+/* With an icon: the icon itself, a quiet tint behind it on hover. */
+.look-trigger.has-icon { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; margin: -5px; border-radius: var(--radius); background: none; color: var(--accent); box-shadow: none; }
+.look-trigger.has-icon svg { width: 20px; height: 20px; }
+.look-trigger.has-icon:hover:not(:disabled), .look-trigger.has-icon[aria-expanded='true'] { background: var(--accent-bg); box-shadow: none; }
+.look-panel {
   position: absolute;
   top: calc(100% + var(--space-3));
   left: calc(-1 * var(--space-2));
   z-index: 30;
-  display: grid;
-  grid-template-columns: repeat(6, 22px);
-  gap: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
   padding: var(--space-3);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: 0 12px 32px rgb(0 0 0 / 0.45);
 }
+.color-swatches, .icon-swatches { display: grid; grid-template-columns: repeat(6, 22px); gap: var(--space-2); }
 .color-swatches button { --swatch: currentColor; width: 22px; height: 22px; background: var(--swatch); }
 .color-swatches button:hover:not(:disabled) {
   transform: scale(1.08);
   box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px color-mix(in srgb, var(--swatch) 60%, transparent);
 }
 .color-swatches button[aria-checked='true'] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--text); }
+/* The icons, in the flow's colour, under a hairline; the chosen one on a tint of it. */
+.icon-swatches { padding-top: var(--space-3); border-top: 1px solid var(--border); }
+.icon-swatches button { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; padding: 0; border: none; border-radius: var(--radius); background: none; color: var(--muted); transition: color 120ms ease, background 120ms ease; }
+.icon-swatches button svg { width: 18px; height: 18px; }
+.icon-swatches button:hover:not(:disabled) { color: var(--accent); }
+.icon-swatches button[aria-checked='true'] { color: var(--accent); background: var(--accent-bg); box-shadow: 0 0 0 3px var(--accent-bg); }
+.look-none { align-self: flex-start; font-size: var(--text-sm); }
+/* A saved flow's icon in its colour before its name in lists (a dot, with no icon). */
+.flow-mark { display: inline-flex; vertical-align: -3px; margin-right: var(--space-2); color: var(--tone); }
+.flow-mark svg { width: 16px; height: 16px; }
+.flow-mark.dot { width: 8px; height: 8px; vertical-align: 1px; margin: 0 calc(var(--space-2) + 4px) 0 4px; border-radius: 50%; background: var(--tone); }
 .status { font-size: var(--text-sm); color: var(--muted); white-space: nowrap; min-width: 7.5em; text-align: right; }
 /* In the bar, beside the buttons it's about. */
 .bar > .status { margin-left: auto; }
@@ -459,7 +476,10 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 /* The icon grows with the title. */
 .featured-title .sample-icon svg { width: 1em; height: 1em; }
 .featured .sample-meta { font-size: var(--text-md); }
-.featured-desc { margin: 0; font-size: var(--text-lg); line-height: 1.55; color: var(--muted); max-width: 48ch; }
+/* Room for two lines whichever flow is picked, so the page doesn't shift between visits. */
+.featured-desc { margin: 0; min-height: calc(2 * 1.55em); font-size: var(--text-lg); line-height: 1.55; color: var(--muted); max-width: 48ch; }
+/* Phones wrap the longest descriptions to three. */
+@media (max-width: 440px) { .featured-desc { min-height: calc(3 * 1.55em); } }
 /* As many drawings as fit on one line (counted in GetStarted's useFitCount, which uses
    these sizes: 44px drawings, 16px apart). */
 .featured-poses { display: flex; gap: var(--space-4); height: 44px; margin-top: var(--space-2); overflow: hidden; }
