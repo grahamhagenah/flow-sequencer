@@ -1,4 +1,4 @@
-import type { Pose } from './types';
+import type { Base, Pose } from './types';
 
 // For sided poses, "side" is:
 //   lunges, warriors, triangle, pyramid, side angle   – the front foot
@@ -12,6 +12,16 @@ import type { Pose } from './types';
 //   dancer, eagle                                      – the standing foot
 //   bird of paradise                                   – the lifted (bound) leg
 //   cow face                                           – the top knee
+
+/** How the "Get to" list (and the poses page) group poses: by where the body is, standing down to lying. */
+export const BASES: [Base, string][] = [
+  ['standing', 'Standing'],
+  ['hands', 'On hands and feet'],
+  ['kneeling', 'Kneeling'],
+  ['seated', 'Seated'],
+  ['prone', 'Lying face down'],
+  ['supine', 'Lying on your back'],
+];
 
 export const POSES: Pose[] = [
   // Supine

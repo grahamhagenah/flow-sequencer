@@ -1,22 +1,13 @@
 import { useMemo } from 'react';
 import { ChoiceButton, choosesSide, MoveChoice, Stepper } from './choices';
 import { applySide, getPose, otherSide, outgoing, routesFrom, sideLabel } from './data/graph';
-import { POSES, SHOW_SANSKRIT, START_POSES } from './data/poses';
-import type { Base, Transition } from './data/types';
+import { BASES, POSES, SHOW_SANSKRIT, START_POSES } from './data/poses';
+import type { Transition } from './data/types';
 import { type Insertion, insertOptions, mirror, mirrorRange, type Sequence, type SetSeq, setLeadingSide } from './sequence';
 
 // What can be added to the flow: the choices under the newest pose, the ones for an
 // insert under the row it follows, and the first pose of an empty flow.
 
-/** How the "Get to" list (and the poses page) group poses: by where the body is, standing down to lying. */
-export const BASES: [Base, string][] = [
-  ['standing', 'Standing'],
-  ['hands', 'On hands and feet'],
-  ['kneeling', 'Kneeling'],
-  ['seated', 'Seated'],
-  ['prone', 'Lying face down'],
-  ['supine', 'Lying on your back'],
-];
 
 /**
  * "Choose the next pose", under the newest one: its breaths and the side to lead

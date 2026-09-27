@@ -192,6 +192,35 @@ function middayReset() {
   return f.seq;
 }
 
+/** For a break from the desk: twists, cat and cow, shoulders, hips and hamstrings, back on your feet. */
+function deskBreak() {
+  const f = new FlowBuilder('easy-seat', 6);
+  f.lead('right').go('seated-twist', 4).go('seated-twist', 4).go('easy-seat', 2, 'Unwind to center');
+  catCow(f.path(['table', 2])).path(['table', 1, 'Return']);
+  f.bothSides((f) => f.path(['thread-needle', 5], ['table', 2]));
+  f.path(['down-dog', 5]);
+  f.bothSides((f) => f.path(['low-lunge', 4, 'lower back knee'], ['half-split', 4], ['low-lunge', 1], ['down-dog', 2, 'Step back']));
+  f.path(['forward-fold', 4, 'Walk'], ['halfway-lift', 1], ['forward-fold', 2], ['mountain', 3, 'Roll up']);
+  f.path(['upward-salute', 2], ['forward-fold', 2, 'Swan'], ['mountain', 5, 'Roll up']);
+  return f.seq;
+}
+
+/** After a run: lunges for the hip flexors, half split and pyramid for the hamstrings, pigeon, then the floor. */
+function runnersStretch() {
+  const f = new FlowBuilder('mountain', 5);
+  f.path(['forward-fold', 6, 'Exhale'], ['halfway-lift', 1], ['forward-fold', 3], ['down-dog', 6, 'Step back']);
+  f.bothSides((f) =>
+    f.path(['runners-lunge', 4, 'between'], ['low-lunge', 5], ['lizard', 8], ['half-split', 8], ['low-lunge', 2])
+      .path(['high-lunge', 2, 'Tuck'], ['pyramid', 6], ['down-dog', 2, 'Hands down'], ['three-leg-dog', 2])
+      .path(['pigeon', 10], ['down-dog', 3, 'step back']),
+  );
+  f.path(['table', 2, 'Lower knees'], ['easy-seat', 2, 'Swing'], ['staff', 2], ['seated-forward-fold', 10], ['staff', 2]);
+  f.path(['savasana', 2, 'Roll down'], ['knees-to-chest', 4]);
+  f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
+  f.path(['knees-to-chest', 3, 'Bring'], ['happy-baby', 6], ['savasana', 20]);
+  return f.seq;
+}
+
 /** Standing balances on each side, from Tree to Half Moon, then Eagle and Dancer, core and rest. */
 function steadyBalance() {
   const f = new FlowBuilder('mountain', 8);
@@ -330,6 +359,51 @@ function eaglePeak() {
   return f.seq;
 }
 
+/**
+ * Dolphin builds the shoulders, Thread the Needle opens them and Boat the core, then three
+ * tries at Headstand from Dolphin; Shoulder Stand, Plow and Fish to finish, as taught.
+ */
+function headstandPeak() {
+  const f = new FlowBuilder('easy-seat', 6);
+  catCow(f.path(['table', 2])).path(['table', 1, 'Return']);
+  f.bothSides((f) => f.path(['thread-needle', 5], ['table', 2]));
+  f.path(['down-dog', 5], ['forward-fold', 3, 'Walk'], ['mountain', 3, 'Roll up']);
+  sunA(f);
+  sunA(f);
+  toDownDog(f, 3);
+  f.path(['dolphin', 5], ['down-dog', 2], ['dolphin', 5], ['down-dog', 2], ['plank', 5, 'Shift forward']);
+  f.path(['down-dog', 3, 'Lift hips'], ['child', 5, 'Lower knees'], ['table', 2], ['easy-seat', 2, 'Swing']);
+  f.path(['staff', 2], ['boat', 5], ['staff', 2], ['boat', 5], ['staff', 2], ['easy-seat', 2], ['table', 2]);
+  f.path(['dolphin', 3], ['headstand', 3], ['dolphin', 2, 'Lower feet'], ['child', 5, 'Lower knees']);
+  f.path(['table', 2], ['dolphin', 2], ['headstand', 6], ['dolphin', 2, 'Lower feet'], ['child', 5, 'Lower knees']);
+  f.path(['table', 2], ['dolphin', 2], ['headstand', 10], ['child', 10, 'Lower feet']);
+  f.path(['table', 2], ['easy-seat', 2, 'Swing'], ['savasana', 2, 'Lower down'], ['knees-to-chest', 3]);
+  f.path(['shoulder-stand', 10], ['plow', 6], ['shoulder-stand', 2], ['fish', 5], ['savasana', 25]);
+  return f.seq;
+}
+
+/** Lunges open the hip flexors and belly backbends the spine, then Camel from Thunderbolt and from Hero. */
+function camelPeak() {
+  const f = new FlowBuilder('mountain', 5);
+  sunA(f);
+  sunA(f);
+  toDownDog(f, 3);
+  f.bothSides((f) => {
+    f.path(['three-leg-dog', 2], ['low-lunge', 6, 'lower back knee'], ['high-lunge', 3, 'Tuck'])
+      .path(['down-dog', 1, 'Hands down']);
+    vinyasa(f);
+  });
+  f.path(['plank', 2, 'Shift forward'], ['belly', 2, 'Lower all'], ['sphinx', 6], ['cobra', 3], ['belly', 2]);
+  f.path(['locust', 5], ['belly', 2], ['locust', 5], ['bow', 5, 'Bend'], ['child', 5, 'Release, press back']);
+  f.path(['thunderbolt', 2], ['camel', 3], ['thunderbolt', 2, 'Lift chest'], ['camel', 5], ['thunderbolt', 2, 'Lift chest']);
+  f.path(['hero', 5], ['camel', 6], ['child', 10, 'Come up slowly'], ['table', 2], ['easy-seat', 2, 'Swing']);
+  f.lead('right').go('seated-twist', 6).go('seated-twist', 6).go('easy-seat', 2, 'Unwind to center');
+  f.path(['savasana', 2, 'Lower down'], ['knees-to-chest', 4]);
+  f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
+  f.path(['knees-to-chest', 3, 'Bring'], ['savasana', 25]);
+  return f.seq;
+}
+
 export const SAMPLE_FLOWS: SampleFlow[] = [
   {
     id: 'morning-vinyasa',
@@ -342,6 +416,12 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     name: 'Slow Hip Opening · floor',
     description: 'Long holds low to the ground: lunge, lizard, half split and pigeon on each side.',
     seq: slowHips(),
+  },
+  {
+    id: 'runners-stretch',
+    name: 'Runner’s Stretch · after a run',
+    description: 'Lunges, lizard, half split and pyramid for tired legs, then pigeon and the floor.',
+    seq: runnersStretch(),
   },
   {
     id: 'evening-wind-down',
@@ -360,6 +440,12 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     name: 'Midday Reset · quick',
     description: 'A short break: fold, lunge and half split each side, then twist and rest.',
     seq: middayReset(),
+  },
+  {
+    id: 'desk-break',
+    name: 'Desk Break · at work',
+    description: 'Twists, cat and cow, shoulders, hips and hamstrings, then back on your feet.',
+    seq: deskBreak(),
   },
   {
     id: 'sun-salutations',
@@ -412,5 +498,21 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     seq: eaglePeak(),
     peak: true,
     peakPose: 'eagle',
+  },
+  {
+    id: 'headstand-peak',
+    name: 'Headstand · inversion',
+    description: 'Dolphin and core build the strength, three tries at Headstand, then Shoulder Stand.',
+    seq: headstandPeak(),
+    peak: true,
+    peakPose: 'headstand',
+  },
+  {
+    id: 'camel-peak',
+    name: 'Camel · heart opener',
+    description: 'Lunges and belly backbends open the front body, then Camel from Thunderbolt and Hero.',
+    seq: camelPeak(),
+    peak: true,
+    peakPose: 'camel',
   },
 ];

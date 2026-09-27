@@ -29,6 +29,10 @@ const LOOKS: Record<string, { icon: string; color: string }> = {
   'wheel-peak': { icon: 'rainbow', color: 'teal' },
   'bird-of-paradise-peak': { icon: 'flower', color: 'tangerine' },
   'eagle-peak': { icon: 'feather', color: 'sand' },
+  'desk-break': { icon: 'coffee', color: 'tangerine' },
+  'runners-stretch': { icon: 'run', color: 'sky' },
+  'headstand-peak': { icon: 'upside-down', color: 'lilac' },
+  'camel-peak': { icon: 'heart', color: 'rose' },
 };
 
 export const sampleLook = (id: string): SampleLook => {

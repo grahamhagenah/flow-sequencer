@@ -1,16 +1,24 @@
-// The footer under the start page, My flows and the poses page (the sequencer has the
+// The footer under the start page, My flows, the poses page and the guide pages (the sequencer has the
 // player at its foot instead): where things are, a few facts worth knowing, and credits.
 
 const REPO = 'https://github.com/grahamhagenah/flow-sequencer';
 
-/** `here` says which page it's on, for the link to the other one and the relative paths. */
-export function SiteFooter({ here }: { here: 'app' | 'poses' }) {
+/** `root` is the relative path to the site's root from the page it's on ('./' in the app). */
+export function SiteFooter({ root = './' }: { root?: string }) {
   return (
     <footer className="site-footer">
       <div className="site-footer-col">
         <h2>Explore</h2>
         <ul>
-          <li>{here === 'app' ? <a href="./poses/">Pose drawings</a> : <a href="../">Flow Sequencer</a>}</li>
+          <li>
+            <a href={root}>Flow Sequencer</a>
+          </li>
+          <li>
+            <a href={`${root}flows/`}>Ready-made flows</a>
+          </li>
+          <li>
+            <a href={`${root}poses/`}>Pose drawings</a>
+          </li>
           <li>
             <a href={REPO}>Source on GitHub</a>
           </li>

@@ -101,7 +101,7 @@ export function GetStarted({
         />
       </section>
 
-      <SiteFooter here="app" />
+      <SiteFooter />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "flow-sequencer", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev", "--", "--port", "5174"], "port": 5174 }
+    { "name": "flow-sequencer", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev", "--", "--port", "5174"], "port": 5174 },
+    { "name": "flow-sequencer-build", "runtimeExecutable": "npx", "runtimeArgs": ["vite", "preview", "--port", "4174", "--strictPort"], "port": 4174 }
   ]
 }

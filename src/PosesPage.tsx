@@ -1,8 +1,7 @@
 import { type CSSProperties, useState } from 'react';
 import { FLOW_COLORS } from './colors';
-import { BASES } from './Composer';
 import { sideLabel } from './data/graph';
-import { POSES } from './data/poses';
+import { BASES, POSES } from './data/poses';
 import type { Pose, Side } from './data/types';
 import { ArrowLeftIcon, DownloadIcon } from './icons';
 import { PoseFigure } from './PoseFigure';
@@ -147,7 +146,7 @@ export function PosesPage() {
         );
       })}
 
-      <SiteFooter here="poses" />
+      <SiteFooter root="../" />
     </main>
   );
 }

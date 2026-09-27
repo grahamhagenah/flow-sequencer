@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://yoga.grahamhagenah.com/sitemap.xml

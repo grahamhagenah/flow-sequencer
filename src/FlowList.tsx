@@ -103,7 +103,7 @@ export function FlowList({
         </section>
       ))}
 
-      <SiteFooter here="app" />
+      <SiteFooter />
     </main>
   );
 }
