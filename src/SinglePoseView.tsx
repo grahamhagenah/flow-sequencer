@@ -1,6 +1,5 @@
 import { MoveLabel, namesSide } from './choices';
 import { getPose, sideLabel, TRANSITION_BY_ID } from './data/graph';
-import { ChevronIcon } from './icons';
 import { PoseFigure } from './PoseFigure';
 import type { Sequence, Step } from './sequence';
 
@@ -12,21 +11,18 @@ export interface LiveBreath {
 
 /**
  * One pose at a time, large: the pose shown (the playing one during a class), how you
- * got into it, its cue, its breaths, and the poses either side. During a class it shows
- * the breath being taken (the player keeps the breath ring). For following along:
- * everything is edited in the list.
+ * got into it, its cue and its breaths. During a class it shows the breath being taken
+ * (the player keeps the breath ring). The player under it says where you are and what's
+ * next, and steps through the poses. For following along: everything is edited in the list.
  */
 export function SinglePoseView({
   seq,
   index,
   live,
-  onStep,
 }: {
   seq: Sequence;
   index: number;
   live: LiveBreath | null;
-  /** Shows the pose before (-1) or after (+1). */
-  onStep: (by: -1 | 1) => void;
 }) {
   const step = seq[index];
   const pose = getPose(step.poseId);
@@ -63,48 +59,9 @@ export function SinglePoseView({
         </div>
       </div>
 
-      {/* The poses either side, quietly, with where you are between them. */}
-      <div className="single-around">
-        <Neighbour label="Before" step={seq[index - 1]} dir="left" onClick={() => onStep(-1)} empty="The first pose" />
-        <span className="single-count">
-          Pose {index + 1} <span>of {seq.length}</span>
-        </span>
-        <Neighbour label="Up next" step={seq[index + 1]} dir="right" onClick={() => onStep(1)} empty="The last pose" />
-      </div>
     </section>
   );
 }
 
-function Neighbour({
-  label,
-  step,
-  dir,
-  onClick,
-  empty,
-}: {
-  label: string;
-  step: Step | undefined;
-  dir: 'left' | 'right';
-  onClick: () => void;
-  empty: string;
-}) {
-  if (!step) return <p className={`single-neighbour single-end ${dir}`}>{empty}</p>;
-  const pose = getPose(step.poseId);
-  const via = moveInto(step);
-  return (
-    <button className={`single-neighbour ${dir}`} onClick={onClick}>
-      {dir === 'left' && <ChevronIcon dir="left" />}
-      <PoseFigure poseId={step.poseId} side={step.side} size={32} />
-      <span className="single-neighbour-text">
-        <span className="single-neighbour-label">{label}</span>
-        <span className="single-neighbour-name">
-          {pose.name}
-          {pose.sided && !(via && namesSide(via.label)) && ` · ${sideLabel(step.side)}`}
-        </span>
-      </span>
-      {dir === 'right' && <ChevronIcon dir="right" />}
-    </button>
-  );
-}
 
 const moveInto = (step: Step) => (step.via === undefined ? undefined : TRANSITION_BY_ID.get(step.via));

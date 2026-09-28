@@ -563,12 +563,9 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .layout-toggle button:hover:not(:disabled) { color: var(--text); }
 .layout-toggle button[aria-pressed='true'] { color: var(--text); background: var(--surface); }
 
-/* One pose at a time: the pose large, its words beside it (under it on phones), and
-   what's next below. */
+/* One pose at a time: the pose large, its words beside it (under it on phones). */
 .single { display: flex; flex-direction: column; gap: var(--space-5); padding: var(--space-5) 0 var(--space-6); }
-.single-count { font-size: var(--text-sm); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.single-count span { font-weight: 400; color: var(--muted); }
-/* Room above and below the pose, so it sits on its own, apart from the heading and the poses either side. */
+/* Room above and below the pose, so it sits on its own, apart from the heading and the player. */
 .single-pose { display: flex; align-items: center; gap: var(--space-6); padding: var(--space-7) 0; }
 .single-figure > .pose-figure { color: var(--accent); }
 .single-text { min-width: 0; display: flex; flex-direction: column; gap: var(--space-2); }
@@ -577,16 +574,6 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .single-name .side, .single-name .last-tag { font-size: var(--text-sm); }
 .single-sanskrit { margin-left: var(--space-3); font-size: var(--text-lg); font-weight: 400; font-style: italic; color: var(--muted); }
 .single-cue { margin: var(--space-1) 0 0; font-size: var(--text-lg); line-height: 1.5; color: var(--soft); max-width: 44ch; }
-/* The poses either side, under a rule: quiet, a little brighter on hover. */
-.single-around { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--rule); }
-.single-neighbour { min-width: 0; display: flex; align-items: center; gap: var(--space-3); padding: 0; text-align: left; background: none; border: none; border-radius: 0; opacity: 0.75; }
-.single-neighbour:hover:not(:disabled) { opacity: 1; }
-.single-neighbour.right { justify-content: flex-end; text-align: right; }
-.single-neighbour > svg.icon { flex: none; width: var(--icon-md); height: var(--icon-md); color: var(--muted); }
-.single-neighbour .pose-figure { width: 32px; height: 32px; }
-.single-neighbour-text { min-width: 0; display: flex; flex-direction: column; }
-.single-neighbour-label { white-space: nowrap; font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
-.single-neighbour-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .single-end { margin: 0; align-self: center; font-size: var(--text-sm); color: var(--muted); }
 /* The pose's drawing, large. */
 .single-figure { flex: none; display: grid; place-items: center; }
@@ -595,7 +582,11 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .single { flex: 1 0 auto; }
 .single-pose { flex: 1; }
 @media (min-width: 761px) {
-  .single-pose { padding: var(--space-5) 0; }
+  /* The drawing and its words as one group in the middle of the column. The words get a
+     fixed width, so the group is the same for every pose and the drawing stays in one
+     place from pose to pose (only a narrow window squeezes it, the same for all). */
+  .single-pose { justify-content: center; padding: var(--space-5) 0; }
+  .single-text { flex: 0 1 440px; }
   .single-figure > .pose-figure { width: clamp(140px, 30vh, 280px); height: auto; aspect-ratio: 1; }
   /* The words larger too, to match the drawing. */
   .single-via { font-size: var(--text-lg); }
@@ -1054,8 +1045,6 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .single-cue { max-width: 30ch; margin-top: 0; }
   /* Less to read on a phone: the Sanskrit name stays on wider screens. */
   .single-sanskrit { display: none; }
-  /* No Before / Up next row on phones: the player under it steps through the poses. */
-  .single-around { display: none; }
   .pager button { width: 32px; height: 36px; }
 
   /* No row numbers on phones (the playing row keeps its apricot edge), so the pose

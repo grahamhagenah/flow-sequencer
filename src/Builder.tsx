@@ -326,7 +326,6 @@ export function Builder({
           <SinglePoseView
             seq={seq}
             index={singleIndex}
-            onStep={stepSingle}
             live={liveBreath}
           />
         ) : (
