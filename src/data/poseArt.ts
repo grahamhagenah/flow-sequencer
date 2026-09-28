@@ -208,9 +208,11 @@ export const POSE_ART: Record<string, PoseArt> = {
   // planted behind, the other elbow hooked just above the tall knee, forearm up; the head
   // turned back over the shoulder.
   'half-lord-fishes': { head: [33.2, 20], d: 'M8.7 42.35H29.45L31.85 24.9L39.2 42.35M29.45 42.35L22.8 31.8L15.2 42.35M31.85 24.9L22.85 29.65V22.55' },
-  // From the front: one elbow up by the head and one down by the waist, the forearms bending
-  // back to meet at the spine; the knees stacked, the shins folded in a Z.
-  'cow-face': { head: [24, 11.5], d: 'M24 17v19M20.5 19.5h7M27.5 19.5 29.5 6 25 19.5M20.5 19.5 18 31l5.5-9M24 36H13l22 4.5H14' },
+  // Graham's drawing, from the front: the knees stacked close in the middle, the shins
+  // fanning out low to the feet either side; one elbow high by the head, its hand reaching
+  // behind it (stopping short of it), the other elbow down by the waist, its hand behind the
+  // back. Its halves joined at one shoulder and one hip point.
+  'cow-face': { head: [25.3, 16.6], d: 'M23.95 21.5L31 29.55L26.45 28.45M23.95 21.5L15.8 15.95H20.7M23.95 21.5V35.5L19.45 38.4L28.65 42.46M23.95 35.5L28.4 38.45L19.2 42.51' },
   // From the side, from Graham's front-on drawing: the shins flat on the floor, the thighs
   // folded over them, the back tall and the hand resting on the knee.
   hero: { head: [28, 17], d: 'M31 43H12L28 38.5V22.5M28 22.5 17 39.3' },
