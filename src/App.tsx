@@ -7,6 +7,7 @@ import { colorId, flowColor, randomColor } from './colors';
 import { LookPicker } from './LookPicker';
 import { iconId } from './flowIcons';
 import { Dialog, type DialogSpec } from './Dialog';
+import { FlowFinished, SharedWelcome } from './ShareScreens';
 import { unlockPlayback } from './player/conductor';
 import { FlowList } from './FlowList';
 import { ArrowLeftIcon, CheckIcon, FlowsIcon, NewFlowIcon, SaveIcon, UndoIcon } from './icons';
@@ -29,6 +30,8 @@ interface Opened {
   notice: string | null;
   /** Which view it opens in: the list from Open, one pose at a time from Play. Otherwise the last one used. */
   layout?: Layout;
+  /** Someone else's shared link: it opens on a welcome, not the editor. */
+  welcome?: boolean;
 }
 
 const EMPTY: Opened = { id: null, name: '', color: null, icon: null, seq: [], notice: null };
@@ -66,6 +69,8 @@ function initial(): Opened {
       // A link to play it opens on its first pose with the player ready (browsers need a
       // tap before the voice can start, so it waits for Play).
       layout: linked.play ? 'single' : undefined,
+      // Not for a reload of your own flow (its address is its link), nor a link that plays it.
+      welcome: !isDraft && !linked.play,
     };
   }
   if (draft?.steps) saveResume(draft);
@@ -92,6 +97,7 @@ export function App() {
   // An unsaved flow opened from a sample or a link has nothing to save until it's changed.
   const [openedAs, setOpenedAs] = useState(() => openedKey(init));
   const [notice, setNotice] = useState(init.notice);
+  const [welcome, setWelcome] = useState(!!init.welcome);
   const [flows, setFlows] = useState(listFlows);
   const [view, setView] = useState<'builder' | 'flows'>('builder');
   const [copied, setCopied] = useState<string | null>(null);
@@ -179,6 +185,7 @@ export function App() {
       setColor(next.color);
       setIcon(next.icon);
       setNotice(next.notice);
+      setWelcome(!!next.welcome);
       setView('builder');
     },
     [reset],
@@ -248,6 +255,7 @@ export function App() {
             icon: linked.icon,
             seq: linked.seq,
             notice: droppedNotice(linked.dropped),
+            welcome: true,
           }),
         () => history.replaceState(null, '', `#${toHash(name.trim(), steps, color, icon)}`),
       );
@@ -345,6 +353,14 @@ export function App() {
   const playSample = (f: SampleFlow) => {
     unlockPlayback(); // inside the click, so the voice can start once the flow is loaded
     openSample(f, true);
+  };
+
+  // From a shared link's welcome: the flow as it is, played one pose at a time or shown as a list.
+  const openShared = (layout: Layout) => open({ id, name, color, icon, seq, notice, layout });
+  const startShared = () => {
+    unlockPlayback(); // inside the click, so the voice can start once the flow is in place
+    openShared('single');
+    setAutoplay(true);
   };
 
   const duplicate = (f: SavedFlow) => {
@@ -506,6 +522,21 @@ export function App() {
             setChoosing(on);
           }}
           onAutoplayStarted={() => setAutoplay(false)}
+          welcome={
+            welcome && (
+              <SharedWelcome seq={seq} name={name} icon={icon} onStart={startShared} onBrowse={() => openShared('list')} />
+            )
+          }
+          renderFinish={(close) => (
+            <FlowFinished
+              seq={seq}
+              name={name}
+              url={shareUrl(name.trim(), steps, color, icon)}
+              canSave={!saved || dirty}
+              onSave={save}
+              onClose={close}
+            />
+          )}
           banner={
             notice && (
               <div className="notice" role="status">

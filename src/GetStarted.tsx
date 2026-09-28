@@ -146,11 +146,11 @@ function posePreview(flow: SampleFlow, max: number) {
 }
 
 // The featured strip's drawings and the space between them (keep in step with .featured-poses).
-const STRIP_ITEM = 64;
-const STRIP_GAP = 16;
+export const STRIP_ITEM = 64;
+export const STRIP_GAP = 16;
 
 /** How many items of `item` px, `gap` apart, fit across the element (up to `max`), kept up to date as it resizes. */
-function useFitCount(ref: React.RefObject<HTMLElement | null>, item: number, gap: number, max: number) {
+export function useFitCount(ref: React.RefObject<HTMLElement | null>, item: number, gap: number, max: number) {
   const [count, setCount] = useState(max);
   useLayoutEffect(() => {
     const el = ref.current;

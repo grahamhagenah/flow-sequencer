@@ -8,20 +8,27 @@ export interface FlowColor {
   hex: string;
 }
 
-// In order round the colour wheel, warm to cool; twelve, so they sit in two rows of six.
+// In order round the colour wheel, warm to cool, then a pale one; eighteen, so they sit in
+// three rows of six. Only tones light and clear enough to glow on the near-black page.
 export const FLOW_COLORS: FlowColor[] = [
+  { id: 'poppy', name: 'Poppy', hex: '#ff6f7d' },
   { id: 'coral', name: 'Coral', hex: '#f5866a' },
   { id: 'tangerine', name: 'Tangerine', hex: '#fb9a4b' },
   { id: 'apricot', name: 'Apricot', hex: '#f2b27a' },
   { id: 'sand', name: 'Sand', hex: '#d8b07a' },
   { id: 'sun', name: 'Sun', hex: '#f4d25a' },
+  { id: 'butter', name: 'Butter', hex: '#f3e3a0' },
   { id: 'lime', name: 'Lime', hex: '#b8d86a' },
   { id: 'sage', name: 'Sage', hex: '#72d19a' },
+  { id: 'mint', name: 'Mint', hex: '#a3e8c6' },
   { id: 'teal', name: 'Teal', hex: '#5cc8b0' },
   { id: 'aqua', name: 'Aqua', hex: '#62c4e0' },
   { id: 'sky', name: 'Sky', hex: '#7fb2f0' },
+  { id: 'periwinkle', name: 'Periwinkle', hex: '#93a0ff' },
   { id: 'lilac', name: 'Lilac', hex: '#b4a4f5' },
+  { id: 'orchid', name: 'Orchid', hex: '#d99cf0' },
   { id: 'rose', name: 'Rose', hex: '#f08fc0' },
+  { id: 'pearl', name: 'Pearl', hex: '#e6e0d6' },
 ];
 
 export const DEFAULT_COLOR = 'apricot';

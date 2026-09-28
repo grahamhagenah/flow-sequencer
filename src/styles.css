@@ -172,7 +172,9 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 /* The flow's look: its icon in its colour before its name (a dot, with no icon), opening
    the colours and icons under it. On hover each swatch gains a ring in its own colour, a
    gap of the background between. */
-.look-picker { position: relative; flex: none; display: flex; }
+/* A fixed 20px box, the icon's size, so switching between the dot and an icon moves
+   neither the name beside it nor the panel under it. */
+.look-picker { position: relative; flex: none; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; }
 .look-trigger, .color-swatches button {
   padding: 0;
   border: none;
@@ -209,7 +211,17 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 }
 .color-swatches button[aria-checked='true'] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--text); }
 /* The icons, in the flow's colour, under a hairline; the chosen one on a tint of it. */
-.icon-swatches { padding-top: var(--space-3); border-top: 1px solid var(--border); }
+/* So many that they scroll: seven and a half rows show, the half-row hinting at more. Room
+   at the sides and foot for the chosen one's tint, which would otherwise be clipped. */
+.icon-swatches {
+  max-height: calc(7.5 * (22px + var(--space-2)) + var(--space-3));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  margin: 0 calc(-1 * var(--space-1));
+  padding: var(--space-3) var(--space-1) var(--space-1);
+  border-top: 1px solid var(--border);
+}
 .icon-swatches button { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; padding: 0; border: none; border-radius: var(--radius); background: none; color: var(--muted); transition: color 120ms ease, background 120ms ease; }
 .icon-swatches button svg { width: 18px; height: 18px; }
 .icon-swatches button:hover:not(:disabled) { color: var(--accent); }
@@ -477,6 +489,43 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   gap: var(--space-3);
 }
 .sample-grid { container-type: inline-size; }
+
+/* A shared link's welcome and the end of a class: the featured class's pieces, in the
+   open flow's colour, with one clear action. */
+.share-screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-7) 0 var(--space-7);
+}
+.share-kicker { font-size: var(--text-sm); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+.share-title { display: flex; align-items: center; gap: var(--space-3); margin: 0; font-size: clamp(var(--text-2xl), 4.5vw, 36px); line-height: 1.15; font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--text); }
+.share-icon { flex: none; display: inline-flex; color: var(--accent); }
+.share-icon svg { width: 1em; height: 1em; }
+.share-dot { flex: none; width: 0.4em; height: 0.4em; border-radius: 50%; background: var(--accent); }
+.share-meta { font-size: var(--text-md); color: var(--soft); }
+.share-poses { display: flex; gap: var(--space-4); height: 64px; margin-top: var(--space-3); overflow: hidden; }
+.share-poses .pose-figure { color: var(--accent); }
+.share-note { margin: var(--space-3) 0 0; font-size: var(--text-md); line-height: 1.5; color: var(--muted); max-width: 46ch; }
+.share-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-4); }
+.share-actions button { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: 44px; padding: 0 var(--space-5); font-size: var(--text-md); font-weight: 500; border-radius: var(--radius); }
+.share-actions button.primary { font-weight: 600; padding-left: var(--space-4); }
+.share-actions button:disabled { opacity: 1; color: var(--soft); }
+.share-actions .share-quiet { padding: 0 var(--space-3); color: var(--muted); background: none; border-color: transparent; }
+.share-actions .share-quiet:hover:not(:disabled) { color: var(--text); border-color: transparent; text-decoration: underline; }
+/* The end of a class, a little celebration: the label and name rise in as it appears. */
+.share-screen.finished > * { animation: share-rise 480ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.share-screen.finished > :nth-child(2) { animation-delay: 60ms; }
+.share-screen.finished > :nth-child(3) { animation-delay: 120ms; }
+.share-screen.finished > :nth-child(n + 4) { animation-delay: 180ms; }
+@keyframes share-rise { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .share-screen.finished > * { animation: none; } }
+@media (max-width: 760px) {
+  .share-screen { padding: var(--space-6) 0; }
+  .share-actions button { min-height: 48px; }
+  /* The main action full width on a phone, the others under it. */
+  .share-actions button.primary { flex: 1 1 100%; }
+}
 
 /* The featured class: the same pieces as a grid item, given more room and weight
    (no box around it). Its colour marks the label and icon. */

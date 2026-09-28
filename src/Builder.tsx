@@ -65,6 +65,8 @@ export function Builder({
   openLayout,
   choosing,
   setChoosing,
+  welcome,
+  renderFinish,
 }: {
   seq: Sequence;
   set: SetSeq;
@@ -92,6 +94,10 @@ export function Builder({
   /** An empty flow shows the start page until "Start a new sequence" opens the empty sequencer. */
   choosing: boolean;
   setChoosing: (on: boolean) => void;
+  /** Shown in place of the whole panel, player and all: a shared link's welcome. */
+  welcome?: ReactNode;
+  /** What the panel shows when a class ends, until `close` puts the flow back. */
+  renderFinish?: (close: () => void) => ReactNode;
 }) {
   const current = seq[seq.length - 1];
   const player = usePlayer(seq);
@@ -269,6 +275,18 @@ export function Builder({
     const holding = phase === 'holding';
     return { breath: holding ? Math.min(seq[index].breaths, Math.floor(holdElapsed / breathMs) + 1) : null };
   })();
+  // The end of a class, shown until it's closed or the class starts again.
+  const done = player.active && player.state.phase === 'done';
+  const [finishClosed, setFinishClosed] = useState(false);
+  useEffect(() => {
+    if (!done) setFinishClosed(false);
+  }, [done]);
+  const finish = done && !finishClosed && renderFinish ? renderFinish(() => setFinishClosed(true)) : null;
+  useEffect(() => {
+    if (!finish) return;
+    timelineRef.current?.scrollTo(0, 0);
+    window.scrollTo(0, 0);
+  }, [!!finish]);
   // ← and → step through the poses in single view (not while typing).
   useEffect(() => {
     if (!single) return;
@@ -281,6 +299,15 @@ export function Builder({
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   });
+
+  if (welcome)
+    return (
+      <main className="layout">
+        <aside className="timeline" ref={timelineRef}>
+          {welcome}
+        </aside>
+      </main>
+    );
 
   return (
     <main className="layout">
@@ -307,6 +334,8 @@ export function Builder({
         </div>
         {seq.length === 0 && choosing ? (
           <FirstPoseChoices onPick={(id) => set(start(id))} />
+        ) : finish ? (
+          finish
         ) : seq.length === 0 ? (
           <GetStarted
             onBuild={() => {
@@ -365,7 +394,7 @@ export function Builder({
           </ol>
         )}
         {/* A long flow's pages, under its rows. */}
-        {!single && seq.length > 0 && pageCount > 1 && (
+        {!single && !finish && seq.length > 0 && pageCount > 1 && (
           <Pager page={first / pageSize} pageCount={pageCount} onPage={goToPage} />
         )}
 
@@ -373,6 +402,7 @@ export function Builder({
             other page, a way there). */}
         {current &&
           !single &&
+          !finish &&
           (onLastPage ? (
             <Composer
               seq={seq}
