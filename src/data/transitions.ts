@@ -302,6 +302,11 @@ const ROWS: Row[] = [
   [277, 'extended-side-angle', 'bird-of-paradise', 'Bind under the {side} thigh, step back foot in, rise and lift the {side} leg'],
   [278, 'bird-of-paradise', 'extended-side-angle', 'Bend the standing knee, step back to side angle, keep the bind'],
   [279, 'bird-of-paradise', 'mountain', 'Release the bind, lower the foot'],
+  // Fallen Triangle: a leg threads under from the dogs, the chest opening to the sky.
+  [280, 'down-dog', 'fallen-triangle', 'Thread {side} leg under and through, open the chest'],
+  [281, 'three-leg-dog', 'fallen-triangle', 'Sweep the {side} leg under and through, open the chest'],
+  [282, 'fallen-triangle', 'down-dog', 'Unthread the leg, back to down dog'],
+  [283, 'fallen-triangle', 'three-leg-dog', 'Sweep the leg back and up'],
 ];
 
 export const TRANSITIONS: Transition[] = ROWS.map(([id, from, to, label, side = 'keep']) => ({

@@ -68,7 +68,8 @@
     "dancer",
     "eagle",
     "revolved-triangle",
-    "bird-of-paradise"
+    "bird-of-paradise",
+    "fallen-triangle"
   ],
   "transitions": {
     "1": "savasana>knees-to-chest",
@@ -349,6 +350,10 @@
     "276": "handstand>down-dog",
     "277": "extended-side-angle>bird-of-paradise",
     "278": "bird-of-paradise>extended-side-angle",
-    "279": "bird-of-paradise>mountain"
+    "279": "bird-of-paradise>mountain",
+    "280": "down-dog>fallen-triangle",
+    "281": "three-leg-dog>fallen-triangle",
+    "282": "fallen-triangle>down-dog",
+    "283": "fallen-triangle>three-leg-dog"
   }
 }

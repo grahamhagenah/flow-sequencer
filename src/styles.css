@@ -47,6 +47,8 @@
   /* The one content column, on every page. */
   --column: 860px;
   --gutter: 20px;
+  /* The top bar's icon buttons, and so the bar's height. */
+  --bar-button: 36px;
 }
 
 * { box-sizing: border-box; }
@@ -124,6 +126,9 @@ h2 {
   /* Same colour as the page with a hairline under it, so the bar doesn't read as a heavy band. */
   border-bottom: 1px solid var(--border);
   background: var(--bg);
+  /* As tall as a row of its icon buttons (36px, 44px on phones), even on the pages with
+     none (My flows, the poses and guide pages), so every page's bar is the same height. */
+  min-height: calc(var(--bar-button) + 2 * var(--space-2) + 1px);
 }
 .bar h1 { flex: none; display: flex; align-items: center; gap: var(--space-2); letter-spacing: 0; line-height: 28px; }
 .bar .home { display: flex; align-items: center; gap: var(--space-2); color: inherit; text-decoration: none; border-radius: var(--radius-sm); }
@@ -241,7 +246,7 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 }
 
 /* Square icon buttons with a tooltip from data-tip, shown on hover or keyboard focus. */
-.icon-btn { position: relative; width: 36px; height: 36px; padding: 0; justify-content: center; }
+.icon-btn { position: relative; width: 36px; height: var(--bar-button); padding: 0; justify-content: center; }
 .icon-btn svg { width: var(--icon-md); height: var(--icon-md); }
 /* In the bar the action icons are borderless and only show a background on hover. */
 .bar .icon-btn { background: none; border-color: transparent; color: var(--soft); }
@@ -422,6 +427,8 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 }
 /* Build your own: dashed, like the choices of what to add, as it isn't a flow yet. */
 .build-own { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4) var(--space-5); padding: var(--space-5); border: 1px dashed var(--border); }
+/* Set further apart from the flow to try above it, on top of the page's gap. */
+.featured + .build-own { margin-top: var(--space-5); }
 .build-own-text { display: flex; flex-direction: column; gap: var(--space-1); flex: 1 1 280px; }
 .get-started .build-own h3 { margin: 0; font-size: var(--text-lg); font-weight: 600; color: var(--text); }
 .build-own p { margin: 0; font-size: var(--text-md); line-height: 1.45; color: var(--muted); }
@@ -477,18 +484,19 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   gap: var(--space-2);
   padding: var(--space-6) 0 var(--space-1);
 }
-.featured-kicker { font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tone); }
-.get-started h3.featured-title { display: flex; align-items: center; gap: var(--space-3); margin: 0; font-size: var(--text-2xl); line-height: 1.2; font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--text); }
+.featured-kicker { font-size: var(--text-sm); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tone); }
+.get-started h3.featured-title { display: flex; align-items: center; gap: var(--space-3); margin: 0; font-size: clamp(var(--text-2xl), 4.5vw, 36px); line-height: 1.15; font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--text); }
 /* The icon grows with the title. */
 .featured-title .sample-icon svg { width: 1em; height: 1em; }
-.featured .sample-meta { font-size: var(--text-md); }
+.featured .sample-meta { font-size: var(--text-md); color: var(--soft); }
 /* Room for two lines whichever flow is picked, so the page doesn't shift between visits. */
-.featured-desc { margin: 0; min-height: calc(2 * 1.55em); font-size: var(--text-lg); line-height: 1.55; color: var(--muted); max-width: 48ch; }
-/* Phones wrap the longest descriptions to three. */
-@media (max-width: 440px) { .featured-desc { min-height: calc(3 * 1.55em); } }
+.featured-desc { margin: 0; min-height: calc(2 * 1.5em); font-size: var(--text-xl); line-height: 1.5; color: var(--soft); max-width: 46ch; }
+/* Phones wrap the longest descriptions to three lines, the narrowest to four. */
+@media (max-width: 470px) { .featured-desc { min-height: calc(3 * 1.5em); } }
+@media (max-width: 335px) { .featured-desc { min-height: calc(4 * 1.5em); } }
 /* As many drawings as fit on one line (counted in GetStarted's useFitCount, which uses
-   these sizes: 44px drawings, 16px apart). */
-.featured-poses { display: flex; gap: var(--space-4); height: 44px; margin-top: var(--space-2); overflow: hidden; }
+   these sizes: 64px drawings, 16px apart). */
+.featured-poses { display: flex; gap: var(--space-4); height: 64px; margin-top: var(--space-2); overflow: hidden; }
 /* A peak class's peak pose, at the end: in the class's colour. */
 .featured-poses.has-peak > .pose-figure:last-child { color: var(--tone); }
 .featured-actions { margin-top: var(--space-3); }
@@ -898,7 +906,6 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .play-bar-text { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .play-bar-top { display: flex; align-items: baseline; gap: var(--space-2); }
 .play-bar .play-pose-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.play-bar-cue { font-size: var(--text-sm); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .play-bar .play-controls { display: flex; gap: var(--space-2); margin-top: 0; }
 .play-bar .play-controls .play-side { width: 36px; height: 36px; }
 .play-bar .play-controls .play-skip { width: 40px; height: 40px; }
@@ -983,7 +990,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 
 @media (max-width: 480px) {
   /* Stacked full width: the main action, then Cancel (boxed, so it reads as a button),
-     then Discard last, as red text, furthest from the thumb's first reach. */
+     then Discard last, as quiet text, furthest from the thumb’s first reach. */
   .dialog-actions { flex-direction: column; align-items: stretch; gap: var(--space-2); }
   .dialog-actions button { min-height: 48px; }
   .dialog-actions .main { order: 0; }
@@ -997,6 +1004,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
     --text-xs: 13px;
     --text-sm: 14px;
     --text-md: 16px;
+    --bar-button: 44px;
     --text-lg: 18px;
     --text-xl: 20px;
     --text-2xl: 26px;
@@ -1011,7 +1019,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .status, .bar-tagline { display: none; }
   /* Taller targets for the icon buttons, as wide as fits beside the name (a 44px square
      each would push them onto a line of their own). */
-  .icon-btn { width: 34px; height: 44px; }
+  .icon-btn { width: 34px; }
   /* No back button on phones (the logo goes back); it keeps its room, invisible, so the
      bar stays as tall as the start page's, with its 44px icons. */
   .bar .nav { order: 3; visibility: hidden; width: 0; height: 44px; padding: 0; }

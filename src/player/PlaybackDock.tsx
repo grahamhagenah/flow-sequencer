@@ -193,9 +193,6 @@ export function PlaybackDock({
               {pose.name}
               {pose.sided && <span className="side">{sideLabel(step.side)}</span>}
             </span>
-            <span className="play-bar-cue" title={pose.cue}>
-              {pose.cue}
-            </span>
             </div>
           </div>
           <div className="play-controls">

@@ -12,6 +12,7 @@ import type { Base, Pose } from './types';
 //   dancer, eagle                                      – the standing foot
 //   bird of paradise                                   – the lifted (bound) leg
 //   cow face                                           – the top knee
+//   fallen triangle                                    – the leg threaded under
 
 /** How the "Get to" list (and the poses page) group poses: by where the body is, standing down to lying. */
 export const BASES: [Base, string][] = [
@@ -106,6 +107,7 @@ export const POSES: Pose[] = [
   { id: 'eagle', name: 'Eagle', sanskrit: 'Garudasana', base: 'standing', sided: true, breaths: 5, cue: 'Sit low, wrap the legs and the arms, elbows lift.' },
   { id: 'bird-of-paradise', name: 'Bird of Paradise', sanskrit: 'Svarga Dvijasana', base: 'standing', sided: true, breaths: 4, cue: 'Keep the bind, stand tall on one leg, straighten the lifted leg.' },
   { id: 'revolved-triangle', name: 'Revolved Triangle', sanskrit: 'Parivrtta Trikonasana', base: 'standing', sided: true, breaths: 5, cue: 'Hips square, opposite hand down, twist open to the sky.' },
+  { id: 'fallen-triangle', name: 'Fallen Triangle', sanskrit: 'Patita Tarasana', base: 'hands', sided: true, breaths: 3, cue: 'Thread one leg under and through, open the chest, top arm reaches up.' },
 ];
 
 /** Poses offered when a sequence is empty. */

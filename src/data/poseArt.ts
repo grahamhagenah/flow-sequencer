@@ -39,7 +39,9 @@ export const POSE_ART: Record<string, PoseArt> = {
   // Graham's drawing, already facing left: sitting tall, the legs long in front; the arms
   // left out, since beside the body they would only double its line.
   staff: { head: [30, 18.8], d: 'M30 23.9V42.9H8' },
-  'seated-forward-fold': { head: [10, 34.7], d: 'M32 43H8M32 43l-17-8M17 36l-9 6' },
+  // Graham's drawing, already facing left: the legs long on the floor, the back folded
+  // forward over them from the hips, the arms reaching on toward the feet; the head above.
+  'seated-forward-fold': { head: [15.1, 33.6], d: 'M8 42.9H33.4L19.95 36.9L10.5 40.4' },
   // Graham's drawing, already facing left: balanced on the sit bones in a V, the legs
   // straight up and out, the back leaning away, the arms level forward alongside the legs.
   boat: { head: [13.9, 22.6], d: 'M39 26.9L24 42.9L16 27.9H32.7' },
@@ -50,9 +52,10 @@ export const POSE_ART: Record<string, PoseArt> = {
   // Graham's drawing, from the front: sitting cross-legged, the spine curving as it turns,
   // the head turned over the shoulder, one arm bent back behind toward the floor.
   'seated-twist': { head: [29.5, 17.1], d: 'M26.75 21.25C26.75 21.25 24.44 24.06 23.7 27.45C23 30.66 23.4 35.9 23.4 35.9L14.2 38.6L29.6 42.73M26.75 21.25L28.55 29L33.4 36.2M23.4 35.9L33.8 38.6L18.65 42.66' },
-  // Graham's drawing, from above on the mat: the arms reaching ahead in a wide V either side of
-  // the head, the front shin straight across the mat, the back leg long behind; no neck.
-  pigeon: { head: [10.4, 24], d: 'M28.7 24H18.1L7.55 15.25M28.7 24H42.75M28.7 24L20.25 31.95V16.4M18.1 24L7.5 32.65', topView: true },
+  // Graham's drawing, from the side, already facing left: the back leg long on the floor up to
+  // hips sunk low, the front shin folded under them, the chest low over it and the arm
+  // reaching down to the hand ahead; the head free above.
+  pigeon: { head: [11.8, 34.3], d: 'M40.85 42.9H33.2L25.9 41.75M25.9 41.75L16.15 37.25L7.05 42.9M25.9 41.75L14.35 43.3L20.55 45.75' },
 
   // Kneeling and on hands and knees
   table: { head: [8, 25], d: 'M12 28h20M12 28v15M32 28v15h12' },
@@ -97,7 +100,13 @@ export const POSE_ART: Record<string, PoseArt> = {
   'up-dog': { head: [13.5, 22.5], d: 'M44 43 28 41Q20 39 16 27.5v15.5' },
   // Graham's drawing: one long line from the stacked feet to the shoulder, the arms one line
   // through it, the lower hand on the floor and the top one reaching up; the head free.
-  'side-plank': { head: [12.7, 25.4], d: 'M42 42L17.6 27.65M19.05 14.4L17.6 27.65L16 43' },
+  // Graham's drawing, already facing left: side plank's long line from the stacked feet to
+  // the hand on the floor, the top arm reaching up, and the other leg threaded under and
+  // through from the hip; the head free past the shoulders.
+  'fallen-triangle': { head: [11.8, 29], d: 'M42 42L16.9 28.8M16.9 28.8L16 43M16.9 28.8L13.4 15.05M31.75 46.9L26.5 33.95' },
+  // Graham's drawing, already facing left: one long line from the stacked feet to the hand
+  // on the floor, the top arm reaching up; Fallen Triangle is this with a leg threaded under.
+  'side-plank': { head: [11.8, 29], d: 'M42 42L16.9 28.8M16.9 28.8L16 43M16.9 28.8L13.4 15.05' },
   // Graham's drawing: balanced on the hands, the arms angled forward, the body tipped over them
   // with the hips high, the knees tucked onto the upper arms and the feet lifted; the head free.
   crow: { head: [11.6, 33.4], d: 'M20.8 42.7L16 31L30.1 24.3L21 32.65L30.1 35' },
@@ -179,14 +188,26 @@ export const POSE_ART: Record<string, PoseArt> = {
   tree: { head: [24, 9.9], d: 'M25.84 1.85 33 9.01 24 16V43M24 26.75 33 32.05 24 37.45M22.11 1.8 14.95 8.96 24 16' },
 
   // Added later
-  fish: { head: [10, 40.5], d: 'M44 43H28q-7-14-15-6M20 34l2 9' },
-  'shoulder-stand': { head: [8, 40.5], d: 'M14 41l1-17 1-19M14 42.5h8l-5-12' },
-  plow: { head: [34, 40.5], d: 'M29 41l-2-19 17 20M28 42.5H14' },
-  lotus: { head: [24, 12], d: 'M24 17v19M24 36l-14 6 16-4M24 36l14 6-16-4M24 20l-11 18M24 20l11 18' },
+  // Graham's drawing, already facing left: the legs long on the floor, the chest arching up
+  // from them to the shoulders, the arm straight down and the forearm flat under the back;
+  // the head back beyond the shoulders.
+  fish: { head: [7.7, 36.1], d: 'M42.85 42.9H27.65C23.65 35.7 18.15 36.1 12.75 36.1V42.9H20.7' },
+  // Graham's drawing: on the shoulders, the body and legs one straight line up; the upper
+  // arms flat on the floor, the forearms up with the hands at the back; the head beside.
+  'shoulder-stand': { head: [8.9, 39.1], d: 'M14 5.85V41.1H24.05L17.2 30.45' },
+  // Graham's drawing, mirrored so the head is on the left as in Shoulder Stand, which it
+  // comes from: the hips high over the shoulders, the legs reaching over to the toes on
+  // the floor beyond the head, the arms long on the floor the other way.
+  plow: { head: [15.7, 40.4], d: 'M5.05 42.5L21 24.3V42.5H34' },
+  // Graham's drawing, from the front, made exactly symmetric (its halves sat a hair apart):
+  // sitting tall, each foot up on the opposite thigh, the knees wide and low; the arms
+  // straight down to the hands on the knees.
+  lotus: { head: [24, 16.6], d: 'M14.35 35.5L24 21.55L33.65 35.5M24 21.55V35.55M24 35.55L30.7 42.85L16.4 38.75M24 35.55L17.3 42.85L31.6 38.75' },
   // Graham's drawing, from the side, mirrored to face left: one leg long on the floor, the
-  // other knee tall with its foot planted across it; the elbow hooked outside that knee,
-  // forearm up, the other hand on the floor behind; the head turned back over the shoulder.
-  'half-lord-fishes': { head: [30.8, 18.2], d: 'M6.8 42.35H29.45V23.25L34 33.35L34.69 42.35M29.45 23.25L21.45 30.55V23.25M29.45 42.35L21.45 32.9L15.2 42.35' },
+  // other knee tall with its foot planted across it; the body leaning back onto the hand
+  // planted behind, the other elbow hooked just above the tall knee, forearm up; the head
+  // turned back over the shoulder.
+  'half-lord-fishes': { head: [33.2, 20], d: 'M8.7 42.35H29.45L31.85 24.9L39.2 42.35M29.45 42.35L22.8 31.8L15.2 42.35M31.85 24.9L22.85 29.65V22.55' },
   // From the front: one elbow up by the head and one down by the waist, the forearms bending
   // back to meet at the spine; the knees stacked, the shins folded in a Z.
   'cow-face': { head: [24, 11.5], d: 'M24 17v19M20.5 19.5h7M27.5 19.5 29.5 6 25 19.5M20.5 19.5 18 31l5.5-9M24 36H13l22 4.5H14' },
@@ -216,9 +237,9 @@ export const POSE_ART: Record<string, PoseArt> = {
   // head free of the shoulders, no neck.
   dancer: { head: [15.8, 13.1], d: 'M22 43V28M22 28 16 19M22 28l9.5 1.3 2.3-10.3H16M16 19 2.85 13.8' },
   // Graham's drawing, mirrored to face left: sitting low, the top leg wrapped over the
-  // standing thigh with its foot hooked behind the calf; the upper arms level at shoulder
-  // height, the forearms rising together in front of the face; the head free, no neck.
-  eagle: { head: [24.4, 10.8], d: 'M11.9 8.25 16.7 16H24.4V29.95L14.5 32 21 43M24.4 29.95 15.45 27.1 22.9 37M16.7 16 16.2 7.25' },
+  // standing thigh with its foot hooked behind the calf; the upper arm level at shoulder
+  // height, the wrapped forearms one line rising in front of the face; the head free, no neck.
+  eagle: { head: [24.4, 10.8], d: 'M16.2 7.25L16.7 16H24.4V29.95L14.5 32L21 43M24.4 29.95L15.45 27.1L22.9 37' },
   // Graham's drawing, front on with the lifted leg to the left: standing tall on one leg,
   // the arm bound around the lifted thigh to close a triangle at the knee, the leg
   // straightening up and out from it; the head free above the shoulders.

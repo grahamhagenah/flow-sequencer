@@ -25,15 +25,19 @@
 
 /* Every step in order: drawing, the move and the pose, breaths at the end. */
 .guide-steps { margin: 0; padding: 0; list-style: none; counter-reset: step; }
-.guide-steps li { counter-increment: step; display: grid; grid-template-columns: 2.2em 36px 1fr auto; align-items: center; gap: var(--space-3); padding: var(--space-2) 0; border-bottom: 1px solid var(--border); }
-.guide-steps li::before { content: counter(step); font-size: var(--text-xs); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.guide-steps li { counter-increment: step; display: grid; grid-template-columns: 2.2em 56px 1fr auto; align-items: center; gap: var(--space-4); padding: var(--space-3) 0; border-bottom: 1px solid var(--border); }
+.guide-steps li::before { content: counter(step); font-size: var(--text-sm); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
 .guide-steps .pose-figure, .guide-moves .pose-figure { color: var(--accent); }
 .guide-step-text { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--space-2); min-width: 0; }
 .guide-step-move { flex-basis: 100%; font-size: var(--text-sm); color: var(--muted); }
+/* In the sequence, larger: it's the heart of the page. */
+.guide-steps .guide-step-move { font-size: var(--text-md); }
+.guide-steps .guide-step-pose { font-size: var(--text-lg); }
+.guide-steps .guide-side { font-size: var(--text-sm); }
 .guide .guide-step-pose { font-weight: 600; text-decoration: none; }
 .guide a.guide-step-pose:hover { text-decoration: underline; }
 .guide-side { font-size: var(--text-xs); padding: 1px 6px; border-radius: 4px; color: var(--accent); background: var(--accent-bg); }
-.guide-breaths { font-size: var(--text-sm); color: var(--muted); white-space: nowrap; }
+.guide-breaths { font-size: var(--text-md); color: var(--muted); white-space: nowrap; }
 
 
 /* A few poses as drawings, on the flows' index. */
@@ -69,6 +73,9 @@
 
 @media (max-width: 480px) {
   .guide-pose-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .guide-steps li { grid-template-columns: 1.6em 32px 1fr auto; gap: var(--space-2); }
+  .guide-steps li { grid-template-columns: 1.6em 44px 1fr auto; gap: var(--space-3); }
+  .guide-steps .pose-figure { width: 44px; height: 44px; }
+  /* The breaths a step smaller, so the names have the width. */
+  .guide-breaths { font-size: var(--text-sm); }
   .guide-pose-figures .pose-figure { width: 120px; height: 120px; }
 }

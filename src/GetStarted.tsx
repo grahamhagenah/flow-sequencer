@@ -146,7 +146,7 @@ function posePreview(flow: SampleFlow, max: number) {
 }
 
 // The featured strip's drawings and the space between them (keep in step with .featured-poses).
-const STRIP_ITEM = 44;
+const STRIP_ITEM = 64;
 const STRIP_GAP = 16;
 
 /** How many items of `item` px, `gap` apart, fit across the element (up to `max`), kept up to date as it resizes. */

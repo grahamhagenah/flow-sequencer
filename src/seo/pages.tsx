@@ -181,7 +181,7 @@ function flowPage(f: SampleFlow, assets: Assets): Page {
             const { move, pose } = stepText(i);
             return (
               <li key={i}>
-                <PoseFigure poseId={s.poseId} side={s.side} size={36} />
+                <PoseFigure poseId={s.poseId} side={s.side} size={56} />
                 <span className="guide-step-text">
                   <span className="guide-step-move">{move}</span>
                   <a className="guide-step-pose" href={`${root}${posePath(pose)}`}>
