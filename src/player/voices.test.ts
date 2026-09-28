@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { outgoing } from '../data/graph';
+import { getPose, outgoing } from '../data/graph';
+import { TRANSITIONS } from '../data/transitions';
 import { advance, start } from '../sequence';
 import { speechMs } from './conductor';
 import { announcementParts, PHRASE_GAP_MS } from './script';
@@ -40,10 +41,24 @@ describe('announcement phrases', () => {
     expect(announcementParts(seq, 1)).toEqual([
       'Lift right leg high.',
       'Three-Legged Dog, right side.',
-      'One leg lifts high, hips stay level.',
+      'Hips stay level, reach back through the lifted heel.',
       'Hold for two breaths.',
     ]);
     expect(announcementParts(seq, 0)[0]).toBe('Begin in Downward-Facing Dog.');
+  });
+
+  // The voice says the move, then the pose's cue: a cue that restates the move is heard
+  // twice ("Exhale, round into Cat. Cat. Exhale, round the spine…"). Cues add to it instead.
+  it('never has a cue repeat the move into its pose', () => {
+    const skip = new Set('the and into your you with from down back over through for left right side other'.split(' '));
+    const words = (s: string) =>
+      new Set((s.toLowerCase().replace(/\{\w+\}/g, '').match(/[a-z]+/g) ?? []).filter((w) => w.length > 2 && !skip.has(w)));
+    const repeats = TRANSITIONS.flatMap((t) => {
+      const cue = words(getPose(t.to).cue);
+      const shared = [...words(t.label)].filter((w) => cue.has(w));
+      return shared.length > 2 || shared.some((w) => w === 'inhale' || w === 'exhale') ? [`${t.label} / ${getPose(t.to).cue}`] : [];
+    });
+    expect(repeats).toEqual([]);
   });
 
   it('counts the pauses between phrases in the speaking time', () => {
