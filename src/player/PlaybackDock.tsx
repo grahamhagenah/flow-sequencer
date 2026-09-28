@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getPose, sideLabel } from '../data/graph';
 import { SHOW_SANSKRIT } from '../data/poses';
 import { BackIcon, ChevronIcon, ForwardIcon, PauseIcon, PlayIcon, SettingsIcon, StopIcon } from '../icons';
@@ -85,10 +85,77 @@ export function PlaybackDock({
   const elapsedSeconds = Math.min(totalSeconds, Math.floor(elapsedMs / 1000));
   const elapsed = formatDuration(elapsedSeconds);
   const timeLeft = `−${formatDuration(totalSeconds - elapsedSeconds)}`;
+  // What Play, back and forward do right now: before a class, Play starts from the pose
+  // on screen and back and forward step through the poses.
+  const primary = () => (!active && startAt > 0 ? player.playFrom(index) : player.toggle());
+  const back = () => (!active && onBrowse ? onBrowse(-1) : player.prev());
+  const forward = () => (!active && onBrowse ? onBrowse(1) : player.next());
+  const actions = useRef({ primary, back, forward, playing: state.playing });
+  actions.current = { primary, back, forward, playing: state.playing };
+
+  // Space plays and pauses from anywhere on the page, for a laptop across the room.
+  // Not while typing, in a dialog, or on a focused button (Space already presses it).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== ' ' || e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+      const target = e.target instanceof Element ? e.target : null;
+      if (target?.closest('input, textarea, select, button, a, [contenteditable], dialog')) return;
+      if (document.querySelector('dialog[open]')) return;
+      e.preventDefault(); // not a page scroll
+      actions.current.primary();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  // The phone's lock screen and a headset's buttons: the pose in the class, with play,
+  // pause, next and previous. Browsers show these only while they count the page as playing.
+  const media = 'mediaSession' in navigator ? navigator.mediaSession : null;
+  useEffect(() => {
+    if (!media) return;
+    const handlers: [MediaSessionAction, () => void][] = [
+      ['play', () => !actions.current.playing && actions.current.primary()],
+      ['pause', () => actions.current.playing && actions.current.primary()],
+      ['nexttrack', () => actions.current.forward()],
+      ['previoustrack', () => actions.current.back()],
+    ];
+    for (const [action, run] of handlers) {
+      try {
+        media.setActionHandler(action, run);
+      } catch {
+        // An action this browser doesn't support.
+      }
+    }
+    return () => {
+      for (const [action] of handlers) {
+        try {
+          media.setActionHandler(action, null);
+        } catch {
+          // As above.
+        }
+      }
+      media.metadata = null;
+      media.playbackState = 'none';
+    };
+  }, [media]);
+  const nowTitle = `${pose.name}${pose.sided ? `, ${step.side} side` : ''}`;
+  useEffect(() => {
+    if (!media) return;
+    media.metadata =
+      active && typeof MediaMetadata !== 'undefined'
+        ? new MediaMetadata({
+            title: nowTitle,
+            artist: 'Flow Sequencer',
+            artwork: [{ src: new URL('favicon.svg', document.baseURI).href, sizes: 'any', type: 'image/svg+xml' }],
+          })
+        : null;
+    media.playbackState = !active ? 'none' : state.playing ? 'playing' : 'paused';
+  }, [media, active, nowTitle, state.playing]);
+
   const playButton = (
     <button
       className="primary play-main"
-      onClick={() => (!active && startAt > 0 ? player.playFrom(index) : player.toggle())}
+      onClick={primary}
       aria-label={primaryLabel}
       title={primaryLabel}
     >
@@ -99,7 +166,7 @@ export function PlaybackDock({
   const backButton = (
     <button
       className="play-skip"
-      onClick={() => (!active && onBrowse ? onBrowse(-1) : player.prev())}
+      onClick={back}
       disabled={(!active && !onBrowse) || index === 0}
       aria-label="Previous pose"
       title="Previous pose"
@@ -110,7 +177,7 @@ export function PlaybackDock({
   const forwardButton = (
     <button
       className="play-skip"
-      onClick={() => (!active && onBrowse ? onBrowse(1) : player.next())}
+      onClick={forward}
       disabled={(!active && !onBrowse) || index >= seq.length - 1}
       aria-label="Next pose"
       title="Next pose"
