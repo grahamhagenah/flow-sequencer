@@ -556,8 +556,10 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   align-items: center;
   justify-content: space-between;
   gap: var(--space-1) var(--space-3);
-  margin: calc(var(--space-5) - var(--space-2)) calc(-1 * var(--space-2)) 0;
-  padding: var(--space-2) var(--space-2);
+  /* The space above it is its own padding, not a margin, so it sits in the same place
+     whether it's stuck (a scrolled list) or not (one pose, or the list's top). */
+  margin: 0 calc(-1 * var(--space-2));
+  padding: var(--space-5) var(--space-2) var(--space-2);
   min-height: 32px;
   border-bottom: 1px solid var(--rule);
   /* Stays at the top of the panel while a long list scrolls under it (below the row menus). */
