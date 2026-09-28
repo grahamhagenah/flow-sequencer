@@ -579,6 +579,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .single-pose { display: flex; align-items: center; gap: var(--space-6); padding: var(--space-7) 0; }
 .single-figure > .pose-figure { color: var(--accent); }
 .single-text { min-width: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.single-words { display: flex; flex-direction: column; gap: var(--space-2); }
 .single-via { font-size: var(--text-md); color: var(--muted); }
 .timeline .single-name { margin: 0 0 var(--space-3); font-size: var(--text-2xl); font-weight: 700; line-height: 1.2; letter-spacing: 0; text-transform: none; color: var(--text); }
 .single-name .side, .single-name .last-tag { font-size: var(--text-sm); }
@@ -1062,7 +1063,13 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
      the rest (name, cue, breaths) below: less to read in one place. */
   .single-text { display: contents; }
   /* Just above the drawing it belongs to. */
-  .single-via { order: -1; margin: var(--space-6) 0 0; font-size: var(--text-lg); color: var(--soft); max-width: 28ch; }
+  /* Two lines' room whatever the move (three on the narrowest phones), the words sitting at
+     its foot, just above the drawing; with the words below kept to one height too, the
+     drawing lands in the same place on every pose. */
+  .single-via { order: -1; display: flex; flex-direction: column; justify-content: flex-end; min-height: calc(2 * 1.45em); margin: var(--space-6) 0 0; font-size: var(--text-lg); line-height: 1.45; color: var(--soft); max-width: 28ch; }
+  /* Room for the longest there is: a two-line name, a two-line cue and the breaths (measured
+     at 375px wide); the narrowest phones wrap cues and moves to three. */
+  .single-words { align-items: center; gap: 0; min-height: 163px; }
   .timeline .single-name { font-size: var(--text-2xl); }
   .single-cue { max-width: 30ch; margin-top: 0; }
   /* Less to read on a phone: the Sanskrit name stays on wider screens. */
@@ -1130,4 +1137,10 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .play-controls .play-side { width: 40px; height: 44px; }
   .play-controls .play-skip { width: 48px; height: 52px; }
   .play-controls .play-main { width: 60px; height: 60px; }
+}
+
+/* The narrowest phones: moves and cues can wrap to three lines (after the phone rules, so it wins). */
+@media (max-width: 340px) {
+  .single-via { min-height: calc(3 * 1.45em); }
+  .single-words { min-height: 190px; }
 }

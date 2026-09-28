@@ -34,6 +34,13 @@ interface Opened {
 const EMPTY: Opened = { id: null, name: '', color: null, icon: null, seq: [], notice: null };
 const FRESH_STEPS = encodeSteps(start(FIRST_POSE));
 
+/** A flow's contents as one string, to tell whether it has changed since it was opened. */
+const flowKey = (steps: string, name: string, color: string | null, icon: string | null) =>
+  JSON.stringify([steps, name.trim(), color, icon]);
+
+/** How a flow was when it was opened, or null for none (the start page). */
+const openedKey = (o: Opened) => (o.seq.length ? flowKey(encodeSteps(o.seq), o.name, o.color, o.icon) : null);
+
 const droppedNotice = (dropped: number) =>
   dropped > 0
     ? `This link had ${dropped} ${dropped === 1 ? 'step' : 'steps'} at the end that couldn’t be loaded, probably moves that have since changed. The rest is here.`
@@ -82,6 +89,8 @@ export function App() {
   const [name, setName] = useState(init.name);
   const [color, setColor] = useState(init.color);
   const [icon, setIcon] = useState(init.icon);
+  // An unsaved flow opened from a sample or a link has nothing to save until it's changed.
+  const [openedAs, setOpenedAs] = useState(() => openedKey(init));
   const [notice, setNotice] = useState(init.notice);
   const [flows, setFlows] = useState(listFlows);
   const [view, setView] = useState<'builder' | 'flows'>('builder');
@@ -113,7 +122,10 @@ export function App() {
   const steps = encodeSteps(seq);
   const saved = id ? flows.find((f) => f.id === id) : undefined;
   // A flow started from scratch and not yet touched: just its pre-chosen first pose.
-  const untouched = !id && !name.trim() && steps === FRESH_STEPS;
+  const fresh = !id && !name.trim() && steps === FRESH_STEPS;
+  // Or an unsaved one (a sample, a link) just as it was opened. Neither asks to be saved
+  // on the way out, though the second can still be saved to My flows.
+  const untouched = fresh || (!id && flowKey(steps, name, color, icon) === openedAs);
   const dirty = saved
     ? saved.steps !== steps ||
       saved.name !== name.trim() ||
@@ -158,6 +170,7 @@ export function App() {
   const open = useCallback(
     (next: Opened) => {
       reset(next.seq);
+      setOpenedAs(openedKey(next));
       setOpenCount((n) => n + 1);
       setOpenLayout(next.layout ? { count: openCountRef.current + 1, layout: next.layout } : null);
       setChoosing(false);
@@ -399,7 +412,7 @@ export function App() {
                   save();
                   setJustSaved(true);
                 }}
-                disabled={seq.length === 0 || !dirty}
+                disabled={seq.length === 0 || fresh || (!!saved && !dirty)}
                 aria-label={justSaved ? 'Saved' : dirty && seq.length > 0 ? 'Save, unsaved changes' : 'Save'}
                 data-tip={justSaved ? 'Saved' : 'Save to My flows'}
               >

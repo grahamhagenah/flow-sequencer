@@ -36,32 +36,37 @@ export function SinglePoseView({
         </div>
         <div className="single-text">
           {/* How you got here; the first pose is where you begin. */}
-          <span className="single-via">{via ? <MoveLabel label={via.label} side={step.side} /> : 'Begin here'}</span>
-          <h2 className="single-name">
-            {pose.name}
-            {/* Beside the name, quieter. Shown here even while SHOW_SANSKRIT keeps it out of the rows and the player. */}
-            {pose.sanskrit && <span className="single-sanskrit">{pose.sanskrit}</span>}
-            {pose.sided && !(via && namesSide(via.label)) && <span className="side">{sideLabel(step.side)}</span>}
-            {index === seq.length - 1 && <span className="last-tag">Last pose</span>}
-          </h2>
-          <p className="single-cue">{pose.cue}</p>
-          {/* Under the cue: the breath being taken during a class; before it, how many. Always
-              shown, so nothing shifts when a class starts. */}
-          {live?.breath ? (
-            <span className="single-breath">
-              Breath {live.breath} <span>of {step.breaths}</span>
-            </span>
-          ) : (
-            <span className="single-breath idle">
-              {step.breaths} {step.breaths === 1 ? 'breath' : 'breaths'}
-            </span>
-          )}
+          {/* The words in one inner span, so they wrap as a sentence inside the fixed-height box. */}
+          <span className="single-via">
+            <span>{via ? <MoveLabel label={via.label} side={step.side} /> : 'Begin here'}</span>
+          </span>
+          {/* The name, cue and breaths together: on phones this block keeps one height, so the
+              drawing above it doesn't move from pose to pose. */}
+          <div className="single-words">
+            <h2 className="single-name">
+              {pose.name}
+              {/* Beside the name, quieter. Shown here even while SHOW_SANSKRIT keeps it out of the rows and the player. */}
+              {pose.sanskrit && <span className="single-sanskrit">{pose.sanskrit}</span>}
+              {pose.sided && !(via && namesSide(via.label)) && <span className="side">{sideLabel(step.side)}</span>}
+              {index === seq.length - 1 && <span className="last-tag">Last pose</span>}
+            </h2>
+            <p className="single-cue">{pose.cue}</p>
+            {/* Under the cue: the breath being taken during a class; before it, how many. Always
+                shown, so nothing shifts when a class starts. */}
+            {live?.breath ? (
+              <span className="single-breath">
+                Breath {live.breath} <span>of {step.breaths}</span>
+              </span>
+            ) : (
+              <span className="single-breath idle">
+                {step.breaths} {step.breaths === 1 ? 'breath' : 'breaths'}
+              </span>
+            )}
+          </div>
         </div>
       </div>
-
     </section>
   );
 }
-
 
 const moveInto = (step: Step) => (step.via === undefined ? undefined : TRANSITION_BY_ID.get(step.via));

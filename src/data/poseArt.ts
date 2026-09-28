@@ -55,7 +55,7 @@ export const POSE_ART: Record<string, PoseArt> = {
   // Graham's drawing, from the side, already facing left: the back leg long on the floor up to
   // hips sunk low, the front shin folded under them, the chest low over it and the arm
   // reaching down to the hand ahead; the head free above.
-  pigeon: { head: [11.8, 34.3], d: 'M40.85 42.9H33.2L25.9 41.75M25.9 41.75L16.15 37.25L7.05 42.9M25.9 41.75L14.35 43.3L20.55 45.75' },
+  pigeon: { head: [11.8, 34.3], d: 'M43.4 42.9H34.7L26.95 41.1L16.85 37.4L5.7 42.9M26.95 41.1L14.35 43.3L21.3 46.7' },
 
   // Kneeling and on hands and knees
   // Graham's drawings, a set on one frame: the arm slanting up to the shoulder, the back to the hips,
