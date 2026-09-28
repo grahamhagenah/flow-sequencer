@@ -2,7 +2,7 @@ import { type CSSProperties, useLayoutEffect, useRef, useState } from 'react';
 import { sampleLook } from './data/sampleLooks';
 import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
 import { FlowMark } from './flowIcons';
-import { PlayIcon, PlusIcon } from './icons';
+import { CheckIcon, LinkIcon, PlayIcon, PlusIcon } from './icons';
 import { PoseFigure } from './PoseFigure';
 import type { Draft, SavedFlow } from './library';
 import { decodeSteps } from './link';
@@ -28,6 +28,8 @@ export function GetStarted({
   onOpenSample,
   onOpenSaved,
   onSeeAll,
+  onCopySampleLink,
+  copiedKey,
 }: {
   onBuild: () => void;
   recent: SavedFlow[];
@@ -37,13 +39,21 @@ export function GetStarted({
   onOpenSample: (f: SampleFlow) => void;
   onOpenSaved: (f: SavedFlow) => void;
   onSeeAll: () => void;
+  onCopySampleLink: (f: SampleFlow) => void;
+  copiedKey: string | null;
 }) {
   // A different class leads each time the page loads; the others follow in the grid.
   const [featured] = useState(() => SAMPLE_FLOWS[Math.floor(Math.random() * SAMPLE_FLOWS.length)]);
   const rest = SAMPLE_FLOWS.filter((f) => f.id !== featured.id);
   return (
     <div className="get-started">
-      <FeaturedClass flow={featured} onPlaySample={onPlaySample} onOpenSample={onOpenSample} />
+      <FeaturedClass
+        flow={featured}
+        onPlaySample={onPlaySample}
+        onOpenSample={onOpenSample}
+        onCopyLink={onCopySampleLink}
+        copied={copiedKey === `sample:${featured.id}`}
+      />
 
       <BuildYourOwn onBuild={onBuild} />
 
@@ -87,6 +97,8 @@ export function GetStarted({
           flows={rest.filter((f) => !f.peak)}
           onPlaySample={onPlaySample}
           onOpenSample={onOpenSample}
+          onCopyLink={onCopySampleLink}
+          copiedKey={copiedKey}
         />
       </section>
 
@@ -98,6 +110,8 @@ export function GetStarted({
           flows={rest.filter((f) => f.peak)}
           onPlaySample={onPlaySample}
           onOpenSample={onOpenSample}
+          onCopyLink={onCopySampleLink}
+          copiedKey={copiedKey}
         />
       </section>
 
@@ -169,10 +183,14 @@ function FeaturedClass({
   flow,
   onPlaySample,
   onOpenSample,
+  onCopyLink,
+  copied,
 }: {
   flow: SampleFlow;
   onPlaySample: (f: SampleFlow) => void;
   onOpenSample: (f: SampleFlow) => void;
+  onCopyLink: (f: SampleFlow) => void;
+  copied: boolean;
 }) {
   const { icon, color } = sampleLook(flow.id);
   const [title, style] = flow.name.split(' · ');
@@ -206,8 +224,37 @@ function FeaturedClass({
         <button onClick={() => onOpenSample(flow)} aria-label={`Open ${flow.name}`}>
           Open
         </button>
+        <ShareSample flow={flow} onCopyLink={onCopyLink} copied={copied} labelled />
       </div>
     </section>
+  );
+}
+
+/**
+ * Copies a link to a class (a check once copied): a quiet icon at the end of a card's
+ * actions, or, `labelled`, a "Share" button beside Play and Open.
+ */
+function ShareSample({
+  flow,
+  onCopyLink,
+  copied,
+  labelled = false,
+}: {
+  flow: SampleFlow;
+  onCopyLink: (f: SampleFlow) => void;
+  copied: boolean;
+  labelled?: boolean;
+}) {
+  return (
+    <button
+      className={labelled ? 'sample-share labelled' : 'sample-share'}
+      onClick={() => onCopyLink(flow)}
+      aria-label={copied ? 'Link copied' : `Copy a link to ${flow.name}`}
+      title={labelled ? undefined : copied ? 'Link copied' : 'Copy a link to share'}
+    >
+      {copied ? <CheckIcon /> : <LinkIcon />}
+      {labelled && (copied ? 'Link copied' : 'Share')}
+    </button>
   );
 }
 
@@ -256,11 +303,7 @@ export function SampleList({
                 <button onClick={() => onOpenSample(f)} aria-label={`Open ${f.name}`}>
                   Open
                 </button>
-                {onCopyLink && (
-                  <button onClick={() => onCopyLink(f)} aria-label={`Copy a link to ${f.name}`}>
-                    {copiedKey === `sample:${f.id}` ? 'Copied' : 'Copy link'}
-                  </button>
-                )}
+                {onCopyLink && <ShareSample flow={f} onCopyLink={onCopyLink} copied={copiedKey === `sample:${f.id}`} />}
               </div>
             </li>
           );

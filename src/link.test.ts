@@ -24,7 +24,25 @@ describe('share links', () => {
   it('writes default breaths and sides as bare codes', () => {
     const seq = path(start('down-dog'), 'three-leg-dog');
     expect(encodeSteps(seq)).toBe(`down-dog.${(72).toString(36)}`);
-    expect(encodeSteps(setLeadingSide(start('down-dog'), 'left'))).toBe('down-dog_');
+    expect(encodeSteps(setLeadingSide(start('down-dog'), 'left'))).toBe('down-dogS');
+  });
+
+  // "*" and "_" are formatting in chat apps, and iMessage cut links off at them.
+  it('writes only letters, digits, "-" and "."', () => {
+    let seq = path(start('down-dog'), 'three-leg-dog', 'warrior-2', 'down-dog');
+    seq = mirror(setBreaths(seq, 2, 8));
+    seq = setLeadingSide(seq, 'left');
+    expect(encodeSteps(seq)).toMatch(/^[A-Za-z0-9.-]+$/);
+    expect(encodeSteps(seq)).toContain('B8');
+  });
+
+  it('still reads links written with the old "*" and "_" markers', () => {
+    let seq = path(start('down-dog'), 'three-leg-dog', 'warrior-2', 'down-dog');
+    seq = mirror(setBreaths(seq, 2, 8));
+    seq = setLeadingSide(seq, 'left');
+    const old = encodeSteps(seq).replace(/B(\d+)/g, '*$1').replace(/S/g, '_');
+    expect(old).toContain('*8');
+    expect(decodeSteps(old)).toEqual({ seq, dropped: 0 });
   });
 
   it('keeps the steps before a move it can no longer follow', () => {

@@ -274,6 +274,12 @@ export function App() {
     if (await copyText(shareUrl(flowName, flowSteps, flowColor, flowIcon))) setCopied(key);
   };
 
+  // A ready-made flow's link, in the colour and with the icon of its card.
+  const copySampleLink = (f: SampleFlow) => {
+    const look = sampleLook(f.id);
+    copyLink(`sample:${f.id}`, f.name, encodeSteps(f.seq), look.colorId, look.iconId);
+  };
+
   const newFlow = () =>
     guardUnsaved('Start a new flow?', 'Save and start new', () => {
       forgetResume();
@@ -474,10 +480,7 @@ export function App() {
           onOpen={openSaved}
           onNew={newFlow}
           onCopyLink={(f) => copyLink(f.id, f.name, f.steps, colorId(f.color), iconId(f.icon))}
-          onCopySampleLink={(f) => {
-            const look = sampleLook(f.id);
-            copyLink(`sample:${f.id}`, f.name, encodeSteps(f.seq), look.colorId, look.iconId);
-          }}
+          onCopySampleLink={copySampleLink}
           onDuplicate={duplicate}
           onDelete={remove}
           onOpenSample={(f) => openSample(f)}
@@ -512,6 +515,8 @@ export function App() {
           onResume={openResume}
           onOpenSaved={openSaved}
           onSeeAll={() => setView('flows')}
+          onCopySampleLink={copySampleLink}
+          copiedKey={copied}
           autoplay={autoplay}
           openCount={openCount}
           openLayout={openLayout}

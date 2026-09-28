@@ -59,6 +59,8 @@ export function Builder({
   onResume,
   onOpenSaved,
   onSeeAll,
+  onCopySampleLink,
+  copiedKey,
   autoplay,
   onAutoplayStarted,
   openCount,
@@ -84,6 +86,9 @@ export function Builder({
   onResume: () => void;
   onOpenSaved: (f: SavedFlow) => void;
   onSeeAll: () => void;
+  /** Copies a link to a ready-made flow; `copiedKey` names the one just copied. */
+  onCopySampleLink: (f: SampleFlow) => void;
+  copiedKey: string | null;
   /** Start playback as soon as the flow that was just opened is in place. */
   autoplay: boolean;
   onAutoplayStarted: () => void;
@@ -350,6 +355,8 @@ export function Builder({
             onOpenSample={onOpenSample}
             onOpenSaved={onOpenSaved}
             onSeeAll={onSeeAll}
+            onCopySampleLink={onCopySampleLink}
+            copiedKey={copiedKey}
           />
         ) : single ? (
           <SinglePoseView

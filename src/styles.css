@@ -471,7 +471,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .gs-item:hover:not(:disabled) { background: var(--surface-2); }
 .gs-item .gs-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gs-open { font-size: var(--text-md); color: var(--muted); }
-.gs-item:hover .gs-open { color: var(--accent); }
+.gs-item:hover .gs-open { color: var(--text); }
 .gs-title { font-weight: 600; }
 .gs-meta { font-size: var(--text-sm); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* Quiet until hovered: only the ▶ is apricot at rest; the whole button turns apricot on hover or focus. */
@@ -588,6 +588,13 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .sample-actions .gs-play:hover .icon, .sample-actions .gs-play:focus-visible .icon { color: var(--text); }
 .sample-actions button:not(.gs-play) { padding: 0 var(--space-3); color: var(--muted); background: none; border: none; }
 .sample-actions button:not(.gs-play):hover:not(:disabled) { color: var(--text); text-decoration: underline; }
+/* The share link: a small quiet icon at the far end of the actions, a faint circle on hover. */
+.sample-actions .sample-share { margin-left: auto; justify-content: center; width: 36px; min-height: 36px; padding: 0; border-radius: 50%; color: var(--muted); }
+.sample-actions .sample-share svg { width: 18px; height: 18px; }
+.sample-actions .sample-share:hover:not(:disabled) { color: var(--text); background: var(--surface-2); text-decoration: none; }
+/* The featured class's: a word with the icon, right beside Play and Open. */
+.sample-actions .sample-share.labelled { margin-left: 0; width: auto; padding: 0 var(--space-3); border-radius: var(--radius-sm); }
+.sample-actions .sample-share.labelled:hover:not(:disabled) { background: none; text-decoration: underline; }
 
 /* The panel scrolls at full width (its scrollbar at the window's edge); the padding
    keeps the content in the centred column. */

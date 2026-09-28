@@ -6,24 +6,27 @@ import type { Sequence, Step } from './sequence';
 
 // A flow as text, for share links and storage. Steps are joined with ".":
 //
-//   down-dog.20.2c*6.3a_
+//   down-dog.20.2cB6.3aS
 //
 // The first token is the starting pose's id; each later one is a transition
-// code in base 36. A token can end with "*<n>" when its breaths differ from the
-// pose's default, and then "_" when its side isn't the one the flow would
-// arrive at on its own (on the first step: when it starts on the left).
+// code in base 36. A token can end with "B<n>" when its breaths differ from the
+// pose's default, and then "S" when its side isn't the one the flow would
+// arrive at on its own (on the first step: when it starts on the left). The
+// markers are capitals, which nothing else in a token uses.
 //
-// Only characters URLSearchParams leaves alone are used, so links stay readable.
+// Only letters, digits, "-" and "." are used, so a link survives being pasted into
+// a message: "*" and "_" (the markers until 2026) are formatting in chat apps, and
+// iMessage cut links off at them. Links and saved flows written with them still read.
 
-const TOKEN = /^([a-z0-9-]+)(?:\*(\d{1,2}))?(_)?$/;
+const TOKEN = /^([a-z0-9-]+)(?:[B*](\d{1,2}))?([S_])?$/;
 
 export function encodeSteps(seq: Sequence): string {
   return seq
     .map((step, i) => {
       const expected: Side = i === 0 ? 'right' : applySide(seq[i - 1].side, TRANSITION_BY_ID.get(step.via!)!.side);
       const head = i === 0 ? step.poseId : step.via!.toString(36);
-      const breaths = step.breaths === getPose(step.poseId).breaths ? '' : `*${step.breaths}`;
-      return head + breaths + (step.side === expected ? '' : '_');
+      const breaths = step.breaths === getPose(step.poseId).breaths ? '' : `B${step.breaths}`;
+      return head + breaths + (step.side === expected ? '' : 'S');
     })
     .join('.');
 }
