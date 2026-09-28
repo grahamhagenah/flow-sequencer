@@ -439,6 +439,8 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .build-own .build-own-btn:hover:not(:disabled), .build-own .build-own-btn:focus-visible { color: var(--text); background: var(--surface); border-color: var(--muted); }
 .build-own .build-own-btn:hover .icon, .build-own .build-own-btn:focus-visible .icon { color: var(--text); }
 .gs-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: var(--space-3); }
+/* "See all": white, like the text around it, not the flow's colour. */
+.gs-head .link-btn { color: var(--text); }
 .link-btn { position: relative; padding: 0; background: none; border: none; border-radius: 0; font-size: var(--text-sm); color: var(--accent); }
 .link-btn:hover:not(:disabled) { text-decoration: underline; }
 .gs-list { list-style: none; margin: 0; padding: 0; overflow: hidden; }
@@ -735,6 +737,14 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .poses-head { margin-bottom: var(--space-6); }
 .poses-head h1 { margin: 0 0 var(--space-2); font-size: var(--text-2xl); }
 .poses-head p { margin: 0 0 var(--space-5); max-width: 60ch; color: var(--soft); }
+/* Whose the drawings are: a small ⓘ at the end of the introduction, opening a note under it. */
+.poses-head p { position: relative; }
+.terms-info { display: inline-block; vertical-align: -3px; }
+.terms-btn { display: inline-flex; padding: 2px; color: var(--muted); background: none; border: none; border-radius: 50%; }
+.terms-btn:hover:not(:disabled), .terms-btn[aria-expanded='true'] { color: var(--text); }
+.terms-btn svg { width: 16px; height: 16px; }
+.terms-pop { position: absolute; top: calc(100% + var(--space-2)); left: 0; z-index: 30; width: min(340px, 100%); padding: var(--space-3); font-size: var(--text-sm); line-height: 1.45; color: var(--soft); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: 0 12px 32px rgb(0 0 0 / 0.45); }
+.terms-pop a { color: var(--text); text-decoration: underline; text-decoration-color: var(--muted); text-underline-offset: 3px; }
 .poses-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-4); }
 .poses-search { flex: 1 1 200px; max-width: 260px; min-height: 36px; padding: 0 var(--space-3); background: var(--surface); border-color: var(--border); }
 .poses-search::placeholder { color: var(--muted); }

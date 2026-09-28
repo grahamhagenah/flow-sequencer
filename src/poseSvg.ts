@@ -1,4 +1,6 @@
+import { getPose } from './data/graph';
 import { neckPath, POSE_ART, type PoseArt } from './data/poseArt';
+import { DRAWINGS_NOTICE } from './terms';
 
 // A pose's drawing as a standalone SVG file, for the poses page's downloads. The same
 // shapes PoseFigure draws, with the colour and line weight written in, since a file has
@@ -23,6 +25,8 @@ export function poseSvg(poseId: string, color: string, { left = false, strokeWid
     ? `<rect x="${m.x}" y="${m.y}" width="${m.width}" height="${m.height}" rx="${m.rx}" stroke-width="1.4" opacity="0.35"/>`
     : `<path d="${FLOOR_PATH}" stroke-width="1.4" opacity="0.35"/>`;
   return [
+    // Who drew it and on what terms, carried in the file wherever it goes.
+    `<!-- ${getPose(poseId).name}, from Flow Sequencer (https://yoga.grahamhagenah.com/poses/). ${DRAWINGS_NOTICE} -->`,
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="480" height="480" fill="none" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round">`,
     `  ${mat}`,
     `  <g${left ? ` transform="${leftSideTransform(art)}"` : ''}>`,

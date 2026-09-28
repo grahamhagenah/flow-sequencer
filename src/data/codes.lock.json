@@ -69,7 +69,8 @@
     "eagle",
     "revolved-triangle",
     "bird-of-paradise",
-    "fallen-triangle"
+    "fallen-triangle",
+    "humble-warrior"
   ],
   "transitions": {
     "1": "savasana>knees-to-chest",
@@ -354,6 +355,10 @@
     "280": "down-dog>fallen-triangle",
     "281": "three-leg-dog>fallen-triangle",
     "282": "fallen-triangle>down-dog",
-    "283": "fallen-triangle>three-leg-dog"
+    "283": "fallen-triangle>three-leg-dog",
+    "284": "warrior-1>humble-warrior",
+    "285": "high-lunge>humble-warrior",
+    "286": "humble-warrior>warrior-1",
+    "287": "humble-warrior>down-dog"
   }
 }

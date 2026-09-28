@@ -1,0 +1,56 @@
+Flow Sequencer is two kinds of work under two licences: the code, and the pose drawings.
+
+--------------------------------------------------------------------------------
+1. The pose drawings
+--------------------------------------------------------------------------------
+
+The pose drawings are the shapes in src/data/poseArt.ts and everything made from them:
+the drawings in the app and on its pages, and the SVG files the poses page downloads.
+
+Copyright © 2026 Graham Hagenah. All rights reserved, except as below.
+
+You may download the drawings and use them for your own personal, non-commercial
+purposes: your own practice, notes, or a class handout you give away for free.
+
+You may not, without written permission:
+  - sell them, alone or as part of anything else;
+  - redistribute them, as they are or changed, in bulk or as a set;
+  - use them in other apps, websites, products, courses or brands.
+
+The MIT licence below does not cover the drawings, even though their data sits in the
+source code. To ask about other uses, open an issue:
+https://github.com/grahamhagenah/flow-sequencer/issues
+
+--------------------------------------------------------------------------------
+2. The code
+--------------------------------------------------------------------------------
+
+Everything else in this repository, except the drawings above and the third-party work
+below, is under the MIT licence:
+
+Copyright (c) 2026 Graham Hagenah
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this
+software and associated documentation files (the "Software"), to deal in the Software
+without restriction, including without limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or
+substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+--------------------------------------------------------------------------------
+3. Third-party work
+--------------------------------------------------------------------------------
+
+The flow icons and the lotus logo are from Phosphor Icons (https://phosphoricons.com),
+MIT License, Copyright (c) 2023 Phosphor Icons; the stones, feather and upside-down
+figure are drawn from or after them for this app. The Figtree typeface is under the SIL
+Open Font License 1.1.

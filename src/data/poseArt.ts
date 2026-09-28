@@ -163,6 +163,10 @@ export const POSE_ART: Record<string, PoseArt> = {
   // long and straight to the heel; the body and arms one line straight up, the head just in
   // front of it. The hands stop at 1.2, as in High Lunge (drawn to -1.6, off the grid).
   'warrior-1': { head: [17.4, 10.8], d: 'M22.25 1.2V25.45M22.25 25.45L11.7 31.85L8.4 42.7M22.25 25.45L40.4 42.7' },
+  // Graham's drawing, already facing left: Warrior I's legs, the body bowed down along the
+  // inside of the front thigh, the clasped arms one line lifting away from the back, the
+  // head hanging low by the front foot.
+  'humble-warrior': { head: [8.7, 36.5], d: 'M41.35 42.6L24.1 31.35L14 34.3M14.85 42.65L14 34.3L18.85 23.8' },
   // Graham's drawing, front on with the bent knee to the left, as the app's side views face:
   // the arms one level line at the shoulders, the head just clear above it.
   'warrior-2': { head: [24, 10.2], d: 'M24 15.5V27M24 27L13 31L11 43M24 27L39 43M6 15.5H42' },

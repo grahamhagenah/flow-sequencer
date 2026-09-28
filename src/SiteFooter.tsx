@@ -1,3 +1,5 @@
+import { DRAWINGS_OWNER, LICENSE_URL } from './terms';
+
 // The footer under the start page, My flows, the poses page and the guide pages (the sequencer has the
 // player at its foot instead): where things are, a few facts worth knowing, and credits.
 
@@ -42,7 +44,10 @@ export function SiteFooter({ root = './' }: { root?: string }) {
             Made by <a href="https://grahamhagenah.com/">Graham Hagenah</a>
           </li>
           <li>
-            Icons from <a href="https://phosphoricons.com/">Phosphor</a> (MIT); pose drawings made for this app
+            Pose drawings © {DRAWINGS_OWNER}, for personal use (<a href={LICENSE_URL}>terms</a>)
+          </li>
+          <li>
+            Icons from <a href="https://phosphoricons.com/">Phosphor</a> (MIT)
           </li>
           <li>
             Set in <a href="https://fonts.google.com/specimen/Figtree">Figtree</a> (OFL)

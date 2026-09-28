@@ -307,6 +307,11 @@ const ROWS: Row[] = [
   [281, 'three-leg-dog', 'fallen-triangle', 'Sweep the {side} leg under and through, open the chest'],
   [282, 'fallen-triangle', 'down-dog', 'Unthread the leg, back to down dog'],
   [283, 'fallen-triangle', 'three-leg-dog', 'Sweep the leg back and up'],
+  // Humble Warrior: Warrior I's legs, bowing inside the front knee with the hands clasped behind.
+  [284, 'warrior-1', 'humble-warrior', 'Clasp hands behind, bow inside the {side} knee'],
+  [285, 'high-lunge', 'humble-warrior', 'Spin back heel down, clasp behind, bow inside the {side} knee'],
+  [286, 'humble-warrior', 'warrior-1', 'Rise up, release the hands overhead'],
+  [287, 'humble-warrior', 'down-dog', 'Release, hands down, step back to down dog'],
 ];
 
 export const TRANSITIONS: Transition[] = ROWS.map(([id, from, to, label, side = 'keep']) => ({

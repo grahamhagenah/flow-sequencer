@@ -3,11 +3,12 @@ import { FLOW_COLORS } from './colors';
 import { sideLabel } from './data/graph';
 import { BASES, POSES } from './data/poses';
 import type { Pose, Side } from './data/types';
-import { ChevronIcon, DownloadIcon } from './icons';
+import { ChevronIcon, DownloadIcon, InfoIcon } from './icons';
 import { PoseFigure } from './PoseFigure';
 import { poseSvg } from './poseSvg';
 import { SiteBar } from './SiteBar';
 import { SiteFooter } from './SiteFooter';
+import { DRAWINGS_LICENSE_TEXT, DRAWINGS_OWNER, LICENSE_URL } from './terms';
 import { zip } from './zip';
 
 // The poses page (/poses/): every drawing in a grid, grouped as the "Get to" list is,
@@ -57,7 +58,7 @@ export function PosesPage() {
         <h1>Poses</h1>
         <p>
           All {POSES.length} pose drawings. Click one to download it as an SVG, or download them all as a zip (both sides
-          of each one-sided pose), in the line colour chosen here.
+          of each one-sided pose), in the line colour chosen here. <TermsInfo />
         </p>
         <div className="poses-tools">
           <input
@@ -80,9 +81,16 @@ export function PosesPage() {
             className="poses-all"
             onClick={() =>
               save(
-                new Blob([zip(POSES.flatMap((p) => (p.sided ? [fileOf(p, 'right'), fileOf(p, 'left')] : [fileOf(p, 'right')])))], {
-                  type: 'application/zip',
-                }),
+                new Blob(
+                  [
+                    zip([
+                      ...POSES.flatMap((p) => (p.sided ? [fileOf(p, 'right'), fileOf(p, 'left')] : [fileOf(p, 'right')])),
+                      // The terms travel with the set.
+                      { name: 'LICENSE.txt', text: DRAWINGS_LICENSE_TEXT },
+                    ]),
+                  ],
+                  { type: 'application/zip' },
+                ),
                 `flow-sequencer-poses${suffix}.zip`,
               )
             }
@@ -195,5 +203,43 @@ function InkPicker({ inkId, onChange }: { inkId: string; onChange: (id: string) 
         </div>
       )}
     </div>
+  );
+}
+
+/** Whose the drawings are and what's allowed, behind a small ⓘ at the end of the introduction. */
+function TermsInfo() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const outside = (e: PointerEvent) => !ref.current?.contains(e.target as Node) && setOpen(false);
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    document.addEventListener('pointerdown', outside);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', outside);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  return (
+    <span className="terms-info" ref={ref}>
+      <button
+        className="terms-btn"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-label="Who owns the drawings, and how you may use them"
+        title="Terms of use"
+      >
+        <InfoIcon />
+      </button>
+      {open && (
+        <span className="terms-pop" role="note">
+          The drawings are © {DRAWINGS_OWNER}, free for your own personal use. Please don’t sell them or use them in
+          other apps, sites or products without asking. <a href={LICENSE_URL}>The full terms</a>
+        </span>
+      )}
+    </span>
   );
 }

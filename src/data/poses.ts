@@ -107,6 +107,7 @@ export const POSES: Pose[] = [
   { id: 'eagle', name: 'Eagle', sanskrit: 'Garudasana', base: 'standing', sided: true, breaths: 5, cue: 'Sit low, wrap the legs and the arms, elbows lift.' },
   { id: 'bird-of-paradise', name: 'Bird of Paradise', sanskrit: 'Svarga Dvijasana', base: 'standing', sided: true, breaths: 4, cue: 'Keep the bind, stand tall on one leg, straighten the lifted leg.' },
   { id: 'revolved-triangle', name: 'Revolved Triangle', sanskrit: 'Parivrtta Trikonasana', base: 'standing', sided: true, breaths: 5, cue: 'Hips square, opposite hand down, twist open to the sky.' },
+  { id: 'humble-warrior', name: 'Humble Warrior', sanskrit: 'Baddha Virabhadrasana', base: 'standing', sided: true, breaths: 4, cue: 'Hands clasped behind, bow inside the front knee, arms lift away from the back.' },
   { id: 'fallen-triangle', name: 'Fallen Triangle', sanskrit: 'Patita Tarasana', base: 'hands', sided: true, breaths: 3, cue: 'Thread one leg under and through, open the chest, top arm reaches up.' },
 ];
 
