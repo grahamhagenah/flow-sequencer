@@ -63,7 +63,9 @@ export function PlaybackDock({
         : !state.playing
           ? 'Paused'
           : state.phase === 'holding'
-            ? `Breath ${breath} of ${step.breaths}`
+            ? step.breaths === 1
+              ? 'One breath'
+              : `Breath ${breath} of ${step.breaths}`
             : 'Now';
 
   const primaryLabel = state.playing ? 'Pause' : !active ? 'Play sequence' : state.phase === 'done' ? 'Play again' : 'Resume';
@@ -193,10 +195,9 @@ export function PlaybackDock({
           <button className="play-mini-open" onClick={() => setOpen(true)} aria-label="Open the player" aria-expanded={false}>
             {ring}
             <span className="play-mini-text">
-              {/* The time left shares the label's line, leaving the pose's name the width. */}
+              {/* No time here: beside "Breath 3 of 5" it didn't fit a phone. The full player has it. */}
               <span className="play-mini-top">
                 <span className="play-label">{label}</span>
-                <span className="play-mini-time">{timeLeft}</span>
               </span>
               <span className="play-pose-name">
                 {pose.name}

@@ -1004,11 +1004,10 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .play-mini-open { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: var(--space-1) 0; text-align: left; background: none; border: none; }
 .play-mini-open .pose-ring { width: 30px; height: 30px; }
 .play-mini-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.play-mini-top { display: flex; align-items: baseline; gap: var(--space-2); white-space: nowrap; overflow: hidden; }
-.play-mini-time { font-size: var(--text-xs); color: var(--muted); font-variant-numeric: tabular-nums; }
+.play-mini-top { display: flex; align-items: baseline; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .play-mini .play-pose-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Back, play/pause and forward on the right, like a podcast app's mini player. */
-.play-mini-controls { flex: none; display: flex; align-items: center; gap: var(--space-2); }
+.play-mini-controls { flex: none; display: flex; align-items: center; gap: var(--space-1); }
 .play-mini-controls button { display: inline-flex; align-items: center; justify-content: center; padding: 0; border-radius: 50%; }
 .play-mini .play-main { width: 52px; height: 52px; }
 .play-mini .play-main svg { width: var(--icon-lg); height: var(--icon-lg); }
@@ -1190,11 +1189,8 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .flow-buttons { gap: 2px; }
 }
 
-/* The smallest phones: the player's row a little smaller so it still fits, and the
-   mini player leaves out the time (the full player has it) to keep room for the pose. */
+/* The smallest phones: the player's row a little smaller so it still fits. */
 @media (max-width: 360px) {
-  .play-mini-time { display: none; }
-  .play-mini-controls { gap: var(--space-1); }
   .timeline-head { column-gap: var(--space-1); }
   .play-controls { gap: 2px; }
   .play-controls .play-side { width: 40px; height: 44px; }
