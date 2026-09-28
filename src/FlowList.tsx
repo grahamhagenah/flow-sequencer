@@ -30,6 +30,7 @@ export function FlowList({
   onDelete,
   onOpenSample,
   onPlaySample,
+  onCopySampleLink,
 }: {
   flows: SavedFlow[];
   currentId: string | null;
@@ -42,6 +43,7 @@ export function FlowList({
   onDelete: (f: SavedFlow) => void;
   onOpenSample: (f: SampleFlow) => void;
   onPlaySample: (f: SampleFlow) => void;
+  onCopySampleLink: (f: SampleFlow) => void;
 }) {
   return (
     <main className="flows">
@@ -99,6 +101,8 @@ export function FlowList({
             flows={SAMPLE_FLOWS.filter((f) => !!f.peak === g.peak)}
             onPlaySample={onPlaySample}
             onOpenSample={onOpenSample}
+            onCopyLink={onCopySampleLink}
+            copiedKey={copiedKey}
           />
         </section>
       ))}

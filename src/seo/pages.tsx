@@ -274,6 +274,9 @@ function FlowLinks({ flows, root }: { flows: SampleFlow[]; root: string }) {
   );
 }
 
+/** A few poses from across the set, on the flows' index: one row of six, or two of three on phones. */
+const PREVIEW_POSES = ['tree', 'warrior-2', 'dancer', 'crow', 'down-dog', 'camel'];
+
 /** The index of every ready-made flow. */
 function flowsIndex(assets: Assets): Page {
   const root = '../';
@@ -290,15 +293,21 @@ function flowsIndex(assets: Assets): Page {
       <FlowLinks flows={SAMPLE_FLOWS.filter((f) => !f.peak)} root={root} />
       <h2>Peak pose flows</h2>
       <FlowLinks flows={SAMPLE_FLOWS.filter((f) => f.peak)} root={root} />
-      <h2>All the poses</h2>
-      <p>
-        <a href={`${root}poses/`}>Every pose drawing</a>, or look one up:{' '}
-        {POSES.map((p, i) => (
-          <span key={p.id}>
-            <a href={`${root}${posePath(p)}`}>{p.name}</a>
-            {i < POSES.length - 1 ? ', ' : '.'}
-          </span>
+      <h2>The poses</h2>
+      <ul className="guide-pose-grid">
+        {PREVIEW_POSES.map((id) => (
+          <li key={id}>
+            <a href={`${root}${posePath(id)}`}>
+              <PoseFigure poseId={id} size={64} />
+              <span>{getPose(id).name}</span>
+            </a>
+          </li>
         ))}
+      </ul>
+      <p>
+        <a className="guide-play" href={`${root}poses/`}>
+          See all {POSES.length} poses
+        </a>
       </p>
     </>
   );

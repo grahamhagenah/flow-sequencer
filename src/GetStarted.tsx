@@ -211,15 +211,22 @@ function FeaturedClass({
   );
 }
 
-/** Sample classes in a two-column grid, each with Play and Open. Used here and on the Flows page. */
+/**
+ * Sample classes in a two-column grid, each with Play and Open. Used here and on the Flows
+ * page, which also gives each a Copy link (saying so once copied, by `copiedKey`).
+ */
 export function SampleList({
   flows,
   onPlaySample,
   onOpenSample,
+  onCopyLink,
+  copiedKey,
 }: {
   flows: SampleFlow[];
   onPlaySample: (f: SampleFlow) => void;
   onOpenSample: (f: SampleFlow) => void;
+  onCopyLink?: (f: SampleFlow) => void;
+  copiedKey?: string | null;
 }) {
   return (
     // Its own container, so the grid goes to two columns by its own width wherever it's placed.
@@ -249,6 +256,11 @@ export function SampleList({
                 <button onClick={() => onOpenSample(f)} aria-label={`Open ${f.name}`}>
                   Open
                 </button>
+                {onCopyLink && (
+                  <button onClick={() => onCopyLink(f)} aria-label={`Copy a link to ${f.name}`}>
+                    {copiedKey === `sample:${f.id}` ? 'Copied' : 'Copy link'}
+                  </button>
+                )}
               </div>
             </li>
           );

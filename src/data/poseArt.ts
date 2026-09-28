@@ -65,9 +65,9 @@ export const POSE_ART: Record<string, PoseArt> = {
   // floor, the arms long along it, the head resting; no neck.
   child: { head: [14.2, 38.14], d: 'M36 42.85H25.6L34.3 37.14C28.65 36.09 23.6 36.24 16.2 43.05H6.25' },
   thunderbolt: { head: [30, 15], d: 'M30 20v18M30 38l-16 4h18M30 23l-8 14' },
-  // Graham's drawing: kneeling tall, the body arching up and back over the heels, the hands
-  // reaching down to them, the head dropped back and down behind the arc; no neck.
-  camel: { head: [32.8, 25.5], d: 'M30.35 42.9H16V32.6C16 18.6 24.75 19.75 27.2 20L29.5 39.35' },
+  // Graham's drawing, exactly: kneeling tall, the body arching up and back over the heels,
+  // the arm straight down toward them, the head back beyond the shoulder; no neck.
+  camel: { head: [32.5, 21.5], d: 'M30.4 42.9H16V33.37C16 20.41 22.47 21.61 27.34 21.1V37.4' },
   // Graham's drawing, mirrored to face left: the shin flat and the thigh straight up, the body
   // sloping down to the shoulder on the floor, one arm threaded along the floor beneath, the
   // other reaching down past it; the head resting.

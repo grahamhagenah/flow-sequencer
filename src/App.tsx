@@ -9,7 +9,7 @@ import { iconId } from './flowIcons';
 import { Dialog, type DialogSpec } from './Dialog';
 import { unlockPlayback } from './player/conductor';
 import { FlowList } from './FlowList';
-import { ArrowLeftIcon, CheckIcon, FlowsIcon, LinkIcon, NewFlowIcon, SaveIcon, UndoIcon } from './icons';
+import { ArrowLeftIcon, CheckIcon, FlowsIcon, NewFlowIcon, SaveIcon, UndoIcon } from './icons';
 import { Logo } from './Logo';
 import { deleteFlow, listFlows, loadDraft, loadResume, newId, putFlow, type SavedFlow, saveDraft, saveResume } from './library';
 import { decodeSteps, encodeSteps, fromHash, shareUrl, toHash } from './link';
@@ -407,15 +407,6 @@ export function App() {
                 {dirty && seq.length > 0 && !justSaved && <span className="icon-dot" aria-hidden="true" />}
               </button>
               <button
-                className={copied === 'current' ? 'icon-btn tip-shown' : 'icon-btn'}
-                onClick={() => copyLink('current', name.trim(), steps, color, icon)}
-                disabled={seq.length === 0}
-                aria-label={copied === 'current' ? 'Link copied' : 'Copy link'}
-                data-tip={copied === 'current' ? 'Link copied' : 'Copy share link'}
-              >
-                {copied === 'current' ? <CheckIcon /> : <LinkIcon />}
-              </button>
-              <button
                 className="icon-btn"
                 onClick={newFlow}
                 disabled={seq.length === 0 && !id}
@@ -454,6 +445,10 @@ export function App() {
           onOpen={openSaved}
           onNew={newFlow}
           onCopyLink={(f) => copyLink(f.id, f.name, f.steps, colorId(f.color), iconId(f.icon))}
+          onCopySampleLink={(f) => {
+            const look = sampleLook(f.id);
+            copyLink(`sample:${f.id}`, f.name, encodeSteps(f.seq), look.colorId, look.iconId);
+          }}
           onDuplicate={duplicate}
           onDelete={remove}
           onOpenSample={(f) => openSample(f)}

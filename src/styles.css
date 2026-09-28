@@ -305,6 +305,9 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 .dialog-actions .main { order: 2; }
 button.danger { color: var(--danger); }
 button.danger:hover:not(:disabled) { border-color: var(--danger); }
+/* Set aside in a dialog ("Discard changes"), it's quiet grey text: red there clashed with the flow's colour. */
+.dialog-actions .danger.aside { color: var(--muted); }
+.dialog-actions .danger.aside:hover:not(:disabled) { color: var(--text); }
 
 /* Shown in place of the app if it fails to render (ErrorBoundary). */
 .crashed { max-width: 460px; margin: 15vh auto 0; padding: 0 var(--gutter); }
@@ -570,7 +573,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .single-figure > .pose-figure { color: var(--accent); }
 .single-text { min-width: 0; display: flex; flex-direction: column; gap: var(--space-2); }
 .single-via { font-size: var(--text-md); color: var(--muted); }
-.timeline .single-name { margin: 0; font-size: var(--text-2xl); font-weight: 700; line-height: 1.2; letter-spacing: 0; text-transform: none; color: var(--text); }
+.timeline .single-name { margin: 0 0 var(--space-3); font-size: var(--text-2xl); font-weight: 700; line-height: 1.2; letter-spacing: 0; text-transform: none; color: var(--text); }
 .single-name .side, .single-name .last-tag { font-size: var(--text-sm); }
 .single-sanskrit { margin-left: var(--space-3); font-size: var(--text-lg); font-weight: 400; font-style: italic; color: var(--muted); }
 .single-cue { margin: var(--space-1) 0 0; font-size: var(--text-lg); line-height: 1.5; color: var(--soft); max-width: 44ch; }
@@ -587,6 +590,20 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .single-end { margin: 0; align-self: center; font-size: var(--text-sm); color: var(--muted); }
 /* The pose's drawing, large. */
 .single-figure { flex: none; display: grid; place-items: center; }
+/* The view fills the height above the player, the pose centred in it (on phones too), so
+   there's no empty stretch under it. Wider screens also draw it larger on a tall window. */
+.single { flex: 1 0 auto; }
+.single-pose { flex: 1; }
+@media (min-width: 761px) {
+  .single-pose { padding: var(--space-5) 0; }
+  .single-figure > .pose-figure { width: clamp(140px, 30vh, 280px); height: auto; aspect-ratio: 1; }
+  /* The words larger too, to match the drawing. */
+  .single-via { font-size: var(--text-lg); }
+  .timeline .single-name { font-size: 34px; }
+  .single-sanskrit { font-size: var(--text-xl); }
+  .single-cue { font-size: var(--text-xl); max-width: 40ch; }
+  .single-breath { font-size: var(--text-xl); }
+}
 /* The breath being taken, during a class. */
 .single-breath { margin-top: var(--space-2); font-size: var(--text-lg); font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
 .single-breath span { font-weight: 400; color: var(--muted); }
@@ -997,7 +1014,8 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   /* Header: the logo and icon buttons on one line, the flow's name under them. The save
      icon already says whether there's anything to save, so the status text is left out. */
   .bar { padding: var(--space-2) var(--space-4); gap: var(--space-1) var(--space-2); }
-  .bar h1 { font-size: var(--text-md); }
+  /* The flow's name under it matches the app's name, no larger. */
+  .bar h1, .list-title { font-size: var(--text-md); }
   .flow-buttons, .bar > .status + .flow-buttons { order: 1; gap: 0; margin-left: auto; margin-right: calc((var(--icon-md) - 34px) / 2); }
   .status, .bar-tagline { display: none; }
   /* Taller targets for the icon buttons, as wide as fits beside the name (a 44px square
@@ -1025,13 +1043,13 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .layout-toggle button { height: 36px; padding: 0 var(--space-2); }
   /* Phones: the pose large and centred, its words centred under it. */
   .single { gap: var(--space-4); padding-top: var(--space-2); }
-  .single-pose { flex-direction: column; align-items: center; gap: var(--space-1); padding: 0 0 var(--space-3); text-align: center; }
+  .single-pose { flex-direction: column; align-items: center; justify-content: center; gap: var(--space-1); padding: 0 0 var(--space-3); text-align: center; }
   .single-figure > .pose-figure { width: min(44vw, 180px); height: auto; aspect-ratio: 1; }
   /* The words join the pose's column, so the move into it can sit above the drawing and
      the rest (name, cue, breaths) below: less to read in one place. */
   .single-text { display: contents; }
   /* Just above the drawing it belongs to. */
-  .single-via { order: -1; margin: var(--space-4) 0 var(--space-1); font-size: var(--text-lg); color: var(--soft); max-width: 28ch; }
+  .single-via { order: -1; margin: var(--space-6) 0 0; font-size: var(--text-lg); color: var(--soft); max-width: 28ch; }
   .timeline .single-name { font-size: var(--text-2xl); }
   .single-cue { max-width: 30ch; margin-top: 0; }
   /* Less to read on a phone: the Sanskrit name stays on wider screens. */
