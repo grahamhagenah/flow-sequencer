@@ -18,10 +18,10 @@ export interface PoseArt {
 export const POSE_ART: Record<string, PoseArt> = {
   // Lying on the back
   // Seen from above, on the mat: straight arms resting a little out from the sides, legs a little apart.
-  savasana: { head: [7, 24], d: 'M12 24h16M28 24l14-3M28 24l14 3M14.5 24 26 19M14.5 24 26 29', topView: true },
-  'knees-to-chest': { head: [7.1, 39.3], d: 'M12 40.5h12M24 40.5 17 30h10M14 40l4-9' },
+  savasana: { head: [9, 24], d: 'M13.9 24H24.85M25.4 29.5L13.9 24L25.4 18.5M24.85 24L41.4 20M24.85 24L41.4 28', topView: true },
+  'knees-to-chest': { head: [7.1, 40.5], d: 'M16.1 31.2L24.75 41.7H12.6L16.1 31.2ZM16.1 31.2H29.45' },
   // Seen from above: arms wide in a T past the mat's edges, both knees dropped to one side.
-  'supine-twist': { head: [7, 24], d: 'M12 24h17M15.5 11v26M29 24l3 11h9', topView: true },
+  'supine-twist': { head: [11.5, 22.1], d: 'M16.6 14.3V33.7M16.6 24.05H29.55L27.7 33.7H38.95', topView: true },
   // Graham's drawing: lying on the back, the knees drawn in with the shins straight up and the
   // soles to the sky, the arm reaching up to hold the foot; the head free, no neck.
   'happy-baby': { head: [11.5, 40.3], d: 'M24 25.2V35.35L32.35 42.85H16.7L21.55 25.2' },
@@ -38,7 +38,7 @@ export const POSE_ART: Record<string, PoseArt> = {
   'easy-seat': { head: [24, 16.6], d: 'M19.3 42.66L34.45 38.6L24 35.7L13.55 38.6L28.7 42.66M24 35.7V21.7M14.2 35.65L24 21.7L33.8 35.65' },
   // Graham's drawing, already facing left: sitting tall, the legs long in front; the arms
   // left out, since beside the body they would only double its line.
-  staff: { head: [30, 18.8], d: 'M30 23.9V42.9H8' },
+  staff: { head: [23.9, 21.7], d: 'M8 42.9H23.85V26.9L26.45 34.85L27.15 42.9' },
   // Graham's drawing, already facing left: the legs long on the floor, the back folded
   // forward over them from the hips, the arms reaching on toward the feet; the head above.
   'seated-forward-fold': { head: [15.1, 33.6], d: 'M8 42.9H33.4L19.95 36.9L10.5 40.4' },
@@ -67,7 +67,7 @@ export const POSE_ART: Record<string, PoseArt> = {
   cow: { head: [11.4, 24.42], d: 'M10.3 42.89L12.5 29.94C17.5 33.16 23.65 33.99 32 30.51V42.94H42.5' },
   // Graham's drawing: shins flat, hips back over the heels, the back one low curve down to the
   // floor, the arms long along it, the head resting; no neck.
-  child: { head: [14.2, 38.14], d: 'M36 42.85H25.6L34.3 37.14C28.65 36.09 23.6 36.24 16.2 43.05H6.25' },
+  child: { head: [10.35, 37.9], d: 'M34.25 42.85H25.5L29.4 35.8C17.4 32.8 16.4 38.4 13.55 43.05H4.5' },
   thunderbolt: { head: [30, 15], d: 'M30 20v18M30 38l-16 4h18M30 23l-8 14' },
   // Graham's drawing, exactly: kneeling tall, the body arching up and back over the heels,
   // the arm straight down toward them, the head back beyond the shoulder; no neck.
@@ -79,18 +79,18 @@ export const POSE_ART: Record<string, PoseArt> = {
   // Graham's drawing, mirrored to face left: the back shin on the floor and the thigh
   // straight up, the front thigh level over the shin; the body and arms one line leaning
   // forward and up, the head tucked just behind it so nothing crosses it.
-  'low-lunge': { head: [27.3, 17.2], d: 'M40.4 42.7H27.65V31.9L18.35 7.35M27.65 31.9H14.25V42.7' },
+  'low-lunge': { head: [22.3, 17.1], d: 'M21.5 36.85L29.05 42.9H39.5M10.4 42.9L11.15 34.4L17.7 31.1L21.5 22.15V36.85M21.5 36.85L11.15 34.4' },
   // Graham's drawing, mirrored to face left: the back knee down with the shin flat, the thigh
   // straight up; the body level forward over the front leg, hands straight down to the floor,
   // the front leg long; the head free, no neck.
-  'half-split': { head: [11.9, 30.4], d: 'M40.3 42.9H29.05V29.9H17V42.9M29.05 29.9 8 42.9' },
+  'half-split': { head: [13.9, 19.6], d: 'M17.6 42.9V23.35L29.05 32.5V42.9H39.5M29.05 32.5L8 42.9' },
 
   // On hands and feet
   // Graham's drawing: hands and feet planted, hips high, one clean inverted V; the head hangs
   // free between the arms, no neck.
-  'down-dog': { head: [18.6, 33.9], d: 'M7 42.9L27 11.9L42 42.9' },
+  'down-dog': { head: [16.1, 40.4], d: 'M7 42.9C11.05 37.8 25.1 21.2 25.1 21.2L42 42.9' },
   // Graham's drawing: Down Dog with the top leg lifted high from the hips, reaching up past them.
-  'three-leg-dog': { head: [18.6, 33.9], d: 'M7 42.9L27 11.9L42 42.9M27 11.9L43.6 3.8' },
+  'three-leg-dog': { head: [16.1, 40.4], d: 'M7 42.9C11.05 37.8 25.1 21.2 25.1 21.2M25.1 21.2L42 42.9M25.1 21.2L33.85 10.45' },
   // Graham's drawing: one straight line from the heels to the shoulders, the arm straight
   // down under them; the head free, no neck.
   plank: { head: [8, 24], d: 'M42.05 42.7L11.9 26.7V42.7' },
@@ -148,7 +148,7 @@ export const POSE_ART: Record<string, PoseArt> = {
   chair: { head: [25.3, 14.2], d: 'M23 43 16 33l12-2.5L25.95 26.25 16.35 7.25' },
   // Graham's drawing: Chair's legs; the arms one long line from the elbow hooked outside the
   // knee up through the heart to the other elbow, crossing the body; the head free, no neck.
-  'twisted-chair': { head: [18.8, 13.7], d: 'M23 43 16 33l12-2.5M28 30.5 22.07 18.1M15.8 30.5 27.3 7.75' },
+  'twisted-chair': { head: [16.8, 19.05], d: 'M23 43L16 33L28 30.5C28 30.5 27.85 28.2 25.15 25.3C23.17 23.18 20.57 22.73 20.57 22.73M20.57 22.73L16.6 30.5M20.57 22.73L25.15 13.35' },
   // Graham's drawing, from the front: a deep squat, knees wide over the feet, the spine tall,
   // palms together at the heart with the elbows pressing out; the head free, no neck.
   garland: { head: [23.5, 19.4], d: 'M17.64 42.95 14.05 33.65 23.5 38.5V24.2L17.02 29.85 23.5 33.1M29.35 42.95 32.94 33.65 23.5 38.5M23.5 24.2 29.97 29.85 23.5 33.1' },
@@ -158,7 +158,7 @@ export const POSE_ART: Record<string, PoseArt> = {
   // Graham's drawing, mirrored to face left: the front knee bent over the foot, the back
   // knee lifted with the heel up; the body and arms one line leaning forward and up, the
   // head tucked just behind it, as in Low Lunge.
-  'high-lunge': { head: [24.7, 11.55], d: 'M17.9 1.2L22.35 26.3M22.35 26.3L11.7 31.85L8.4 42.7M22.35 26.3L28.6 36.55L40.4 42.7' },
+  'high-lunge': { head: [17.8, 16], d: 'M22.35 31.7L28.35 40.05L39.5 42.9M22.35 31.7L12.55 34.4L9.65 42.9M22.35 31.7C22.35 31.7 20.56 24.62 21.9 19.35C23.35 13.65 26.25 8.8 26.25 8.8' },
   // Graham's drawing, mirrored to face left: the front knee bent over the foot, the back leg
   // long and straight to the heel; the body and arms one line straight up, the head just in
   // front of it. The hands stop at 1.2, as in High Lunge (drawn to -1.6, off the grid).
@@ -231,7 +231,7 @@ export const POSE_ART: Record<string, PoseArt> = {
   // Graham's drawing, mirrored to face left: hips low, the front knee forward past the ankle,
   // the back leg long to the floor, the body leaning up to the shoulders and the hands
   // straight down beside the front foot; the head free, no neck.
-  'runners-lunge': { head: [7.7, 24.7], d: 'M26.75 36.45 13.65 35.35 17 42.9M26.75 36.45 41.35 43M26.75 36.45 10.75 29.02V42.9' },
+  'runners-lunge': { head: [7.7, 22.7], d: 'M24.45 34.55L14.5 33.65L15 42.9M41.35 43L30.5 40.65L24.45 34.55C24.45 34.55 16.2 29.47 10.75 27V42.9' },
   // Graham's drawing: Down Dog's inverted V on the forearms, flat on the floor; the head hangs
   // free between the arms, no neck.
   dolphin: { head: [8.9, 37.4], d: 'M4.94 42.9H12.94L14.45 36.35 17.4 23.1 41.9 42.9' },

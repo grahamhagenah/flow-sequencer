@@ -556,10 +556,15 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   align-items: center;
   justify-content: space-between;
   gap: var(--space-1) var(--space-3);
-  margin: var(--space-5) calc(-1 * var(--space-2)) 0;
-  padding: 0 var(--space-2) var(--space-2);
+  margin: calc(var(--space-5) - var(--space-2)) calc(-1 * var(--space-2)) 0;
+  padding: var(--space-2) var(--space-2);
   min-height: 32px;
   border-bottom: 1px solid var(--rule);
+  /* Stays at the top of the panel while a long list scrolls under it (below the row menus). */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
 }
 .timeline-head > * { white-space: nowrap; }
 .timeline-head .meta { font-size: var(--text-sm); }
