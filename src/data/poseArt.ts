@@ -58,12 +58,13 @@ export const POSE_ART: Record<string, PoseArt> = {
   pigeon: { head: [11.8, 34.3], d: 'M40.85 42.9H33.2L25.9 41.75M25.9 41.75L16.15 37.25L7.05 42.9M25.9 41.75L14.35 43.3L20.55 45.75' },
 
   // Kneeling and on hands and knees
-  table: { head: [8, 25], d: 'M12 28h20M12 28v15M32 28v15h12' },
-  // Graham's drawings, a pair on Tabletop's frame: the arm up to the shoulder, the back one curve
-  // to the hips, the thigh down and the shin flat behind. Cat rounds the back up with the head
-  // dropped; Cow dips it with the head lifted. No necks.
-  cat: { head: [8.5, 24.1], d: 'M12.5 43V28.7C12.5 19.1 31.7 17.7 32 29V43H42.5' },
-  cow: { head: [10, 22.5], d: 'M12 43L12.5 27.1C16.25 33.7 26.95 35.05 32 27.8V43H42.5' },
+  // Graham's drawings, a set on one frame: the arm slanting up to the shoulder, the back to the hips,
+  // the thigh straight down and the shin flat behind. Tabletop's back is level with the head
+  // ahead; Cat rounds it up with the head dropped; Cow dips it with the head lifted. The
+  // shoulders, hips and legs stay put, so stepping between them only moves the back and head.
+  table: { head: [9.3, 23.6], d: 'M10.45 42.9L12.5 27.95L32 28.65V42.9H42.5' },
+  cat: { head: [6.9, 27.32], d: 'M42.5 42.94H32V32.09C32 21.69 13.15 22.49 11.9 31.09L10.15 42.94' },
+  cow: { head: [11.4, 24.42], d: 'M10.3 42.89L12.5 29.94C17.5 33.16 23.65 33.99 32 30.51V42.94H42.5' },
   // Graham's drawing: shins flat, hips back over the heels, the back one low curve down to the
   // floor, the arms long along it, the head resting; no neck.
   child: { head: [14.2, 38.14], d: 'M36 42.85H25.6L34.3 37.14C28.65 36.09 23.6 36.24 16.2 43.05H6.25' },
@@ -124,7 +125,10 @@ export const POSE_ART: Record<string, PoseArt> = {
   // Graham's drawing, already facing left: resting on the belly, the legs and chest
   // lifted in a shallow V, the arms reaching straight back along the sides.
   locust: { head: [6.5, 35.1], d: 'M39.4 37.6L21.7 42.75L11.2 37.1H26.9' },
-  bow: { head: [11, 28.5], d: 'M26 42Q18 42 14 33M26 42h10l-4-14M15 34l17-6' },
+  // Graham's drawing, already facing left: rocking on the belly, the body curving up from it
+  // to the lifted chest, the knees bent and the feet high behind, the hand holding the ankle,
+  // so the outline closes into a drawn bow.
+  bow: { head: [14, 23.7], d: 'M15.4 28.85C15.88 36.68 19.35 44 31.65 42.45L35.5 33.5L30.8 25.3L15.4 28.85Z' },
 
   // Standing
   // Graham's drawing, from the front: legs a little apart, the spine tall, the arms angled
@@ -295,6 +299,8 @@ export function pathPoints(d: string): [number, number][] {
         num();
         at(num(), num());
         break;
+      case 'Z':
+        continue; // closes the shape: no new point
       default:
         return pts; // anything else isn't used by the drawings
     }

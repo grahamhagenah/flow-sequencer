@@ -1,9 +1,9 @@
-import { type CSSProperties, useState } from 'react';
+import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { FLOW_COLORS } from './colors';
 import { sideLabel } from './data/graph';
 import { BASES, POSES } from './data/poses';
 import type { Pose, Side } from './data/types';
-import { DownloadIcon } from './icons';
+import { ChevronIcon, DownloadIcon } from './icons';
 import { PoseFigure } from './PoseFigure';
 import { poseSvg } from './poseSvg';
 import { SiteBar } from './SiteBar';
@@ -75,19 +75,7 @@ export function PosesPage() {
               </button>
             ))}
           </span>
-          <div className="poses-inks" role="radiogroup" aria-label="Line colour">
-            {INKS.map((i) => (
-              <button
-                key={i.id}
-                role="radio"
-                aria-checked={i.id === inkId}
-                aria-label={i.name}
-                title={i.name}
-                style={{ '--swatch': i.hex } as CSSProperties}
-                onClick={() => setInkId(i.id)}
-              />
-            ))}
-          </div>
+          <InkPicker inkId={inkId} onChange={setInkId} />
           <button
             className="poses-all"
             onClick={() =>
@@ -149,5 +137,63 @@ export function PosesPage() {
       <SiteFooter root="../" />
     </main>
     </>
+  );
+}
+
+/**
+ * The line colour: one button showing the colour chosen, opening the swatches to pick
+ * another. Picking one closes them; so do a click outside and Escape.
+ */
+function InkPicker({ inkId, onChange }: { inkId: string; onChange: (id: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const ink = INKS.find((i) => i.id === inkId)!;
+
+  useEffect(() => {
+    if (!open) return;
+    const outside = (e: PointerEvent) => !ref.current?.contains(e.target as Node) && setOpen(false);
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    document.addEventListener('pointerdown', outside);
+    window.addEventListener('keydown', onKey);
+    // Keyboard users start on the chosen colour.
+    ref.current?.querySelector<HTMLButtonElement>('[aria-checked="true"]')?.focus();
+    return () => {
+      document.removeEventListener('pointerdown', outside);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  return (
+    <div className="ink-picker" ref={ref}>
+      <button
+        className="ink-trigger"
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="true"
+        aria-expanded={open}
+        aria-label={`Line colour, ${ink.name}`}
+      >
+        <span className="ink-dot" style={{ '--swatch': ink.hex } as CSSProperties} aria-hidden="true" />
+        {ink.name}
+        <ChevronIcon dir="down" size={16} />
+      </button>
+      {open && (
+        <div className="poses-inks" role="radiogroup" aria-label="Line colour">
+          {INKS.map((i) => (
+            <button
+              key={i.id}
+              role="radio"
+              aria-checked={i.id === inkId}
+              aria-label={i.name}
+              title={i.name}
+              style={{ '--swatch': i.hex } as CSSProperties}
+              onClick={() => {
+                onChange(i.id);
+                setOpen(false);
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

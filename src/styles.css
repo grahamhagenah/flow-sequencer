@@ -739,10 +739,16 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .poses-search { flex: 1 1 200px; max-width: 260px; min-height: 36px; padding: 0 var(--space-3); background: var(--surface); border-color: var(--border); }
 .poses-search::placeholder { color: var(--muted); }
 .poses-none { margin: var(--space-6) 0; color: var(--muted); }
-.poses-inks { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+/* The line colour: a button with the colour's dot and name, opening the swatches under it. */
+.ink-picker { position: relative; }
+.ink-trigger { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 36px; padding: 0 var(--space-2) 0 var(--space-3); font-weight: 500; color: var(--text); background: var(--surface); border-color: var(--border); }
+.ink-trigger:hover:not(:disabled), .ink-trigger[aria-expanded='true'] { background: var(--surface-2); border-color: var(--muted); }
+.ink-trigger svg { color: var(--muted); }
+.ink-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--swatch); box-shadow: 0 0 0 1px var(--border); }
+.poses-inks { position: absolute; top: calc(100% + var(--space-2)); left: 0; z-index: 30; display: grid; grid-template-columns: repeat(7, 24px); gap: var(--space-2); padding: var(--space-3); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: 0 12px 32px rgb(0 0 0 / 0.45); }
 .poses-inks button { width: 24px; height: 24px; padding: 0; border: none; border-radius: 50%; background: var(--swatch); box-shadow: 0 0 0 1px var(--border); transition: box-shadow 120ms ease; }
-.poses-inks button:hover:not(:disabled) { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--muted); }
-.poses-inks button[aria-checked='true'] { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--text); }
+.poses-inks button:hover:not(:disabled) { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--muted); }
+.poses-inks button[aria-checked='true'] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--text); }
 /* Plain, not in a colour: the drawings carry the colour on this page. */
 .poses-all { display: inline-flex; align-items: center; gap: var(--space-2); margin-left: auto; padding: var(--space-2) var(--space-4); font-weight: 500; color: var(--text); background: var(--surface); border-color: var(--border); }
 .poses-all:hover:not(:disabled) { background: var(--surface-2); border-color: var(--muted); }
@@ -762,17 +768,15 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 /* Shown on hover and focus: what a click does. */
 .poses-hint { display: inline-flex; align-items: center; gap: 6px; margin-top: var(--space-2); font-size: var(--text-sm); color: var(--muted); opacity: 0; transition: opacity 120ms ease; }
 .poses-item:hover .poses-hint, .poses-item:focus-visible .poses-hint { opacity: 1; }
-/* Phones: the search the full width, then the colours, then the side and Download all
-   sharing a line at the foot. */
+/* Phones: the search the full width, then the side, the colour and Download all on one line. */
 @media (max-width: 760px) {
-  .poses-tools { display: grid; grid-template-columns: 1fr auto; grid-template-areas: 'search search' 'inks inks' 'side all'; gap: var(--space-4) var(--space-3); }
-  .poses-search { grid-area: search; max-width: none; min-height: 44px; font-size: var(--text-md); }
-  /* Thirteen colours in an even 7 + 6, spread across the width. */
-  .poses-inks { grid-area: inks; display: grid; grid-template-columns: repeat(7, 28px); justify-content: space-between; row-gap: var(--space-3); }
+  .poses-tools { gap: var(--space-4) var(--space-2); }
+  .poses-search { flex-basis: 100%; max-width: none; min-height: 44px; font-size: var(--text-md); }
+  .poses-inks { grid-template-columns: repeat(7, 28px); }
   .poses-inks button { width: 28px; height: 28px; }
-  .poses-tools .layout-toggle { grid-area: side; justify-self: start; }
-  .poses-tools .layout-toggle button { height: 40px; padding: 0 var(--space-4); }
-  .poses-all { grid-area: all; margin-left: 0; min-height: 40px; }
+  .poses-tools .layout-toggle button { height: 40px; padding: 0 var(--space-3); }
+  .ink-trigger, .poses-all { min-height: 40px; }
+  .poses-all { padding: 0 var(--space-3); }
 }
 
 @media (hover: none) { .row-more { opacity: 0.6; } }
