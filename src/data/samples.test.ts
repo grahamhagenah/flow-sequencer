@@ -13,7 +13,7 @@ describe('sample flows', () => {
   });
 
   it('names a peak pose for each peak class, one the class reaches', () => {
-    for (const flow of SAMPLE_FLOWS.filter((f) => f.peak)) {
+    for (const flow of SAMPLE_FLOWS.filter((f) => f.kind === 'peak')) {
       expect(flow.peakPose, flow.name).toBeDefined();
       expect(flow.seq.some((s) => s.poseId === flow.peakPose), flow.name).toBe(true);
     }

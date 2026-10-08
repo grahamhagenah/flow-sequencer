@@ -6,14 +6,25 @@ import { outgoing } from './graph';
 // the builder uses, so every step is a real move in the pose graph.
 // samples.test.ts checks they all still build after the graph changes.
 
+/**
+ * The sections the ready-made flows are listed in: short ones, everyday classes, ones for a
+ * part of the body (or a feeling), and classes that work up to one harder or fun pose.
+ */
+export type FlowKind = 'quick' | 'class' | 'focus' | 'peak';
+export const FLOW_KINDS: { kind: FlowKind; title: string; one: string }[] = [
+  { kind: 'quick', title: 'Quick flows', one: 'Quick flow' },
+  { kind: 'class', title: 'Everyday flows', one: 'Everyday flow' },
+  { kind: 'focus', title: 'Flows by focus', one: 'Focus flow' },
+  { kind: 'peak', title: 'Peak pose flows', one: 'Peak pose flow' },
+];
+
 export interface SampleFlow {
   id: string;
   name: string;
   description: string;
   seq: Sequence;
-  /** A class that works up to one harder or fun pose, listed in its own section. */
-  peak?: boolean;
-  /** That pose, for a peak class: shown at the end of its preview. */
+  kind: FlowKind;
+  /** For a peak class, that pose: shown at the end of its preview. */
   peakPose?: string;
 }
 
@@ -414,67 +425,221 @@ function camelPeak() {
   return f.seq;
 }
 
+/**
+ * A first class: the basic shapes, held longer so there's time to find them. Instead of
+ * chaturanga, the knees-down way to down dog (plank, belly, cobra), and no jumping.
+ */
+function beginners() {
+  // Plank, all the way down to the belly, cobra, back to down dog.
+  const easyVinyasa = (f: FlowBuilder) => f.path(['plank', 3, 'Shift forward'], ['belly', 2, 'Lower all'], ['cobra', 3], ['down-dog', 5, 'Press back']);
+  const f = new FlowBuilder('easy-seat', 8);
+  catCow(f.path(['table', 3])).path(['table', 2, 'Return'], ['child', 6], ['table', 2], ['down-dog', 6, 'Tuck']);
+  f.path(['forward-fold', 4, 'Walk'], ['mountain', 5, 'Roll up'], ['upward-salute', 3], ['forward-fold', 4, 'Swan']);
+  f.path(['halfway-lift', 2], ['forward-fold', 2], ['down-dog', 5, 'Step back']);
+  easyVinyasa(f);
+  f.bothSides((f) => {
+    f.path(['low-lunge', 5, 'lower back knee'], ['high-lunge', 3, 'Tuck'], ['warrior-1', 5, 'Spin back heel down'])
+      .path(['warrior-2', 5], ['triangle', 5], ['warrior-2', 2], ['down-dog', 3, 'Cartwheel']);
+    easyVinyasa(f);
+  });
+  f.path(['forward-fold', 3, 'Walk'], ['mountain', 3, 'Roll up']);
+  f.lead('right').go('tree', 6).go('tree', 6).go('mountain', 3);
+  f.path(['easy-seat', 2, 'Lower down to sit'], ['savasana', 2, 'Lower down'], ['bridge', 5, 'Bend']);
+  f.path(['knees-to-chest', 3, 'hug'], ['bridge', 5], ['knees-to-chest', 4, 'hug']);
+  f.lead('right').go('supine-twist', 6).go('supine-twist', 6);
+  f.path(['knees-to-chest', 2, 'Bring'], ['savasana', 20]);
+  return f.seq;
+}
+
+/** A few minutes to start the day: cat and cow, down dog, one Sun A. */
+function wakeUp() {
+  const f = new FlowBuilder('table', 3);
+  catCow(f).path(['table', 1, 'Return'], ['down-dog', 5], ['forward-fold', 3, 'Walk'], ['mountain', 2, 'Roll up']);
+  sunA(f);
+  return f.seq;
+}
+
+/** A few minutes before sleep: child's pose, twists, then lying still with the legs up. */
+function bedtime() {
+  const f = new FlowBuilder('child', 8);
+  f.path(['table', 2], ['easy-seat', 2, 'Swing'], ['savasana', 2, 'Lower down'], ['knees-to-chest', 4]);
+  f.lead('right').go('supine-twist', 6).go('supine-twist', 6);
+  f.path(['knees-to-chest', 2, 'Bring'], ['reclined-bound-angle', 8], ['knees-to-chest', 2], ['legs-up-the-wall', 12]);
+  f.path(['savasana', 15]);
+  return f.seq;
+}
+
+/** All on the feet, so it needs no mat: folds, chair and a twist, tree, goddess. */
+function standingStretch() {
+  const f = new FlowBuilder('mountain', 4);
+  f.path(['upward-salute', 2], ['forward-fold', 4, 'Swan'], ['halfway-lift', 1], ['forward-fold', 2], ['mountain', 2, 'Roll up']);
+  f.path(['chair', 4]).lead('right').go('twisted-chair', 4).go('twisted-chair', 4).go('chair', 2, 'Unwind');
+  f.path(['mountain', 2, 'Straighten legs, hands']);
+  f.lead('right').go('tree', 6).go('tree', 6).go('mountain', 2);
+  f.path(['goddess', 5], ['mountain', 4]);
+  return f.seq;
+}
+
+/** For a stiff back: twists, cat and cow, puppy, the gentle belly backbends, bridge. */
+function backCare() {
+  const f = new FlowBuilder('easy-seat', 5);
+  f.lead('right').go('seated-twist', 4).go('seated-twist', 4).go('easy-seat', 2, 'Unwind to center');
+  catCow(f.path(['table', 2])).path(['table', 1, 'Return'], ['puppy', 5], ['child', 5], ['table', 2]);
+  f.path(['down-dog', 3], ['plank', 2, 'Shift forward'], ['belly', 2, 'Lower all'], ['sphinx', 6], ['cobra', 3]);
+  f.path(['belly', 2], ['child', 6, 'Press back'], ['table', 2], ['easy-seat', 2, 'Swing'], ['savasana', 2, 'Lower down']);
+  f.path(['knees-to-chest', 4], ['bridge', 4], ['knees-to-chest', 3]);
+  f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
+  f.path(['knees-to-chest', 3, 'Bring'], ['savasana', 15]);
+  return f.seq;
+}
+
+/** Unknots the shoulders and neck: thread the needle, puppy, dolphin, eagle arms, cow face. */
+function shouldersNeck() {
+  const f = new FlowBuilder('easy-seat', 5);
+  f.path(['table', 2]);
+  f.bothSides((f) => f.path(['thread-needle', 6], ['table', 2]));
+  f.path(['puppy', 6], ['table', 2], ['down-dog', 4], ['dolphin', 5], ['down-dog', 2]);
+  f.path(['forward-fold', 3, 'Walk'], ['mountain', 2, 'Roll up'], ['chair', 2]);
+  f.lead('right').go('eagle', 6).go('eagle', 6).go('chair', 2, 'Unwind');
+  f.path(['mountain', 2, 'Straighten legs, hands'], ['forward-fold', 2, 'Exhale'], ['garland', 2], ['easy-seat', 2]);
+  f.lead('right').go('cow-face', 6).go('cow-face', 6).go('easy-seat', 2, 'Release');
+  f.path(['reverse-tabletop', 3], ['staff', 2], ['savasana', 12, 'Roll down']);
+  return f.seq;
+}
+
+/** Plank in all its kinds, knee to nose and boat, then a twist and rest. */
+function coreStrength() {
+  const f = new FlowBuilder('table', 2);
+  f.path(['down-dog', 3], ['plank', 5, 'Shift forward'], ['forearm-plank', 8], ['plank', 1]);
+  f.lead('right').path(['knee-to-nose', 3], ['plank', 1]).lead('left').path(['knee-to-nose', 3], ['plank', 1]);
+  f.lead('right').path(['side-plank', 5], ['plank', 1]).lead('left').path(['side-plank', 5], ['plank', 1]);
+  f.path(['forearm-plank', 8], ['plank', 1], ['down-dog', 3, 'Lift hips'], ['table', 2, 'Lower knees']);
+  f.path(['easy-seat', 2, 'Swing'], ['staff', 2], ['boat', 5], ['staff', 2], ['boat', 5], ['staff', 2]);
+  f.path(['reverse-tabletop', 3], ['staff', 2], ['savasana', 2, 'Roll down'], ['knees-to-chest', 3]);
+  f.lead('right').go('supine-twist', 6).go('supine-twist', 6);
+  f.path(['knees-to-chest', 3, 'Bring'], ['savasana', 15]);
+  return f.seq;
+}
+
 export const SAMPLE_FLOWS: SampleFlow[] = [
+  {
+    id: 'wake-up',
+    name: 'Wake-Up · morning',
+    description: 'Cat and cow, down dog and one Sun A: a few minutes to start the day.',
+    seq: wakeUp(),
+    kind: 'quick',
+  },
+  {
+    id: 'bedtime',
+    name: 'Bedtime · before sleep',
+    description: 'Child’s pose, twists, reclined bound angle and legs up the wall, then rest.',
+    seq: bedtime(),
+    kind: 'quick',
+  },
+  {
+    id: 'standing-stretch',
+    name: 'Standing Stretch · no mat',
+    description: 'Folds, chair and a twist, tree and goddess, all on your feet, so no mat needed.',
+    seq: standingStretch(),
+    kind: 'quick',
+  },
+  {
+    id: 'back-care',
+    name: 'Back Care · gentle',
+    description: 'Twists, cat and cow, puppy, sphinx and cobra, then bridge for a stiff back.',
+    seq: backCare(),
+    kind: 'focus',
+  },
+  {
+    id: 'shoulders-neck',
+    name: 'Shoulders & Neck · release',
+    description: 'Thread the needle, puppy, dolphin, eagle and cow face to unknot the shoulders.',
+    seq: shouldersNeck(),
+    kind: 'focus',
+  },
+  {
+    id: 'core-strength',
+    name: 'Core Strength · strong',
+    description: 'Plank, forearm plank, knee to nose, side plank and boat, then a twist and rest.',
+    seq: coreStrength(),
+    kind: 'focus',
+  },
   {
     id: 'morning-vinyasa',
     name: 'Morning Vinyasa · all levels',
     description: 'Salutations, a standing series on each side, balance, core and a long rest.',
     seq: morningVinyasa(),
+    kind: 'class',
+  },
+  {
+    id: 'beginners',
+    name: 'Beginner’s Flow · first class',
+    description: 'Your first class: the basic poses held longer, the knees-down way to down dog, no jumping.',
+    seq: beginners(),
+    kind: 'class',
   },
   {
     id: 'slow-hips',
     name: 'Slow Hip Opening · floor',
     description: 'Long holds low to the ground: lunge, lizard, half split and pigeon each side, then frog.',
     seq: slowHips(),
+    kind: 'focus',
   },
   {
     id: 'runners-stretch',
     name: 'Runner’s Stretch · after a run',
     description: 'Lunges, lizard, half split and pyramid for tired legs, then pigeon and legs up the wall.',
     seq: runnersStretch(),
+    kind: 'focus',
   },
   {
     id: 'evening-wind-down',
     name: 'Evening Wind-Down · gentle',
     description: 'Seated and lying down only: twists, folds, legs up the wall and a long savasana.',
     seq: eveningWindDown(),
+    kind: 'class',
   },
   {
     id: 'power-flow',
     name: 'Power Flow · strong',
     description: 'Sun A and B, warriors and side plank to Wild Thing, crow, deep backbends, shoulder stand.',
     seq: powerFlow(),
+    kind: 'class',
   },
   {
     id: 'midday-reset',
     name: 'Midday Reset · quick',
     description: 'A short break: fold, then a lunge, twist and half split each side, and rest.',
     seq: middayReset(),
+    kind: 'quick',
   },
   {
     id: 'desk-break',
     name: 'Desk Break · at work',
     description: 'Twists, cat and cow, puppy for the shoulders, hips and hamstrings, then back on your feet.',
     seq: deskBreak(),
+    kind: 'quick',
   },
   {
     id: 'sun-salutations',
     name: 'Sun Salutations · wake-up',
     description: 'Three rounds of Sun A and two of Sun B, one breath per movement.',
     seq: sunSalutations(),
+    kind: 'quick',
   },
   {
     id: 'steady-balance',
-    name: 'Steady Balance · focus',
+    name: 'Steady Balance · standing',
     description: 'Tree, Warrior III, Half Moon and Standing Splits each side, then Eagle, Dancer and boat.',
     seq: steadyBalance(),
+    kind: 'focus',
   },
   {
     id: 'crow-peak',
     name: 'Crow Pose · arm balance',
     description: 'Core work, knee to nose and deep squats to find the shape, then three tries at Crow.',
     seq: crowPeak(),
-    peak: true,
+    kind: 'peak',
     peakPose: 'crow',
   },
   {
@@ -482,7 +647,7 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     name: 'Dancer · balance',
     description: 'Lunges and backbends open the front body, then Tree builds to Dancer each side.',
     seq: dancerPeak(),
-    peak: true,
+    kind: 'peak',
     peakPose: 'dancer',
   },
   {
@@ -490,7 +655,7 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     name: 'Wheel · backbend',
     description: 'Wild Thing, lunges and belly backbends, Camel and Bridge warm the spine, then Wheel.',
     seq: wheelPeak(),
-    peak: true,
+    kind: 'peak',
     peakPose: 'wheel',
   },
   {
@@ -498,7 +663,7 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     name: 'Bird of Paradise · bind',
     description: 'Warriors and side angle open the hips, Tree steadies, then Bird of Paradise from a bind.',
     seq: birdOfParadisePeak(),
-    peak: true,
+    kind: 'peak',
     peakPose: 'bird-of-paradise',
   },
   {
@@ -506,7 +671,7 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     name: 'Eagle · wrap',
     description: 'Shoulder and hip openers, Chair and Tree for strong legs, then three rounds of Eagle.',
     seq: eaglePeak(),
-    peak: true,
+    kind: 'peak',
     peakPose: 'eagle',
   },
   {
@@ -514,7 +679,7 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     name: 'Headstand · inversion',
     description: 'Dolphin, forearm plank and core build the strength, three Headstands, then Shoulder Stand.',
     seq: headstandPeak(),
-    peak: true,
+    kind: 'peak',
     peakPose: 'headstand',
   },
   {
@@ -522,7 +687,7 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
     name: 'Camel · heart opener',
     description: 'Lunges and belly backbends open the front body, Camel from Thunderbolt and Hero, then Rabbit.',
     seq: camelPeak(),
-    peak: true,
+    kind: 'peak',
     peakPose: 'camel',
   },
 ];

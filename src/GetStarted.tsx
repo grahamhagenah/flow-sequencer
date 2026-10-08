@@ -1,6 +1,6 @@
 import { type CSSProperties, useLayoutEffect, useRef, useState } from 'react';
 import { sampleLook } from './data/sampleLooks';
-import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
+import { FLOW_KINDS, SAMPLE_FLOWS, type SampleFlow } from './data/samples';
 import { FlowMark } from './flowIcons';
 import { CheckIcon, LinkIcon, PlayIcon, PlusIcon } from './icons';
 import { PoseFigure } from './PoseFigure';
@@ -89,31 +89,25 @@ export function GetStarted({
         </section>
       )}
 
-      <section>
-        <div className="gs-head">
-          <h3>Ready-made flows</h3>
-        </div>
-        <SampleList
-          flows={rest.filter((f) => !f.peak)}
-          onPlaySample={onPlaySample}
-          onOpenSample={onOpenSample}
-          onCopyLink={onCopySampleLink}
-          copiedKey={copiedKey}
-        />
-      </section>
-
-      <section>
-        <div className="gs-head">
-          <h3>Peak pose flows</h3>
-        </div>
-        <SampleList
-          flows={rest.filter((f) => f.peak)}
-          onPlaySample={onPlaySample}
-          onOpenSample={onOpenSample}
-          onCopyLink={onCopySampleLink}
-          copiedKey={copiedKey}
-        />
-      </section>
+      {/* The other ready-made flows by kind: quick ones, whole classes, a focus, a peak pose. */}
+      {FLOW_KINDS.map((k) => {
+        const flows = rest.filter((f) => f.kind === k.kind);
+        if (flows.length === 0) return null;
+        return (
+          <section key={k.kind}>
+            <div className="gs-head">
+              <h3>{k.title}</h3>
+            </div>
+            <SampleList
+              flows={flows}
+              onPlaySample={onPlaySample}
+              onOpenSample={onOpenSample}
+              onCopyLink={onCopySampleLink}
+              copiedKey={copiedKey}
+            />
+          </section>
+        );
+      })}
 
       <SiteFooter />
     </div>
@@ -284,26 +278,26 @@ export function SampleList({
           // "Power Flow · strong": the part after the dot is its style, shown before the length.
           const [title, style] = f.name.split(' · ');
           return (
+            // A quiet row: the flow itself opens it; a small play button and (on hover) a share link at its end.
             <li key={f.id} className="sample-card" style={{ '--tone': color } as CSSProperties}>
-              <span className="sample-title">
-                <span className="sample-icon">{icon}</span>
-                {title}
-              </span>
-              <span className="sample-meta">
-                {style && `${style[0].toUpperCase()}${style.slice(1)} · `}
-                {aboutMinutes(length(f.seq))}
-              </span>
-              <span className="sample-desc" title={`${f.description} (${f.seq.length} poses)`}>
-                {f.description}
-              </span>
-              <div className="sample-actions">
-                <button className="gs-play" onClick={() => onPlaySample(f)} aria-label={`Play ${f.name}`}>
-                  <PlayIcon /> Play
-                </button>
-                <button onClick={() => onOpenSample(f)} aria-label={`Open ${f.name}`}>
-                  Open
-                </button>
+              <button className="sample-open" onClick={() => onOpenSample(f)} aria-label={`Open ${f.name}`}>
+                <span className="sample-title">
+                  <span className="sample-icon">{icon}</span>
+                  {title}
+                </span>
+                <span className="sample-meta">
+                  {style && `${style[0].toUpperCase()}${style.slice(1)} · `}
+                  {aboutMinutes(length(f.seq))}
+                </span>
+                <span className="sample-desc" title={`${f.description} (${f.seq.length} poses)`}>
+                  {f.description}
+                </span>
+              </button>
+              <div className="sample-side">
                 {onCopyLink && <ShareSample flow={f} onCopyLink={onCopyLink} copied={copiedKey === `sample:${f.id}`} />}
+                <button className="sample-play" onClick={() => onPlaySample(f)} aria-label={`Play ${f.name}`} title="Play">
+                  <PlayIcon />
+                </button>
               </div>
             </li>
           );

@@ -33,6 +33,13 @@ const LOOKS: Record<string, { icon: string; color: string }> = {
   'runners-stretch': { icon: 'run', color: 'sky' },
   'headstand-peak': { icon: 'upside-down', color: 'lilac' },
   'camel-peak': { icon: 'heart', color: 'rose' },
+  'wake-up': { icon: 'battery-full', color: 'butter' },
+  bedtime: { icon: 'bed', color: 'periwinkle' },
+  'standing-stretch': { icon: 'walk', color: 'mint' },
+  'back-care': { icon: 'cat', color: 'pearl' },
+  'shoulders-neck': { icon: 'wind', color: 'orchid' },
+  'core-strength': { icon: 'lightning', color: 'poppy' },
+  beginners: { icon: 'plant', color: 'teal' },
 };
 
 export const sampleLook = (id: string): SampleLook => {

@@ -1,8 +1,8 @@
-import type { CSSProperties, ReactNode } from 'react';
+import { type CSSProperties, Fragment, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { getPose, renderLabel, TRANSITION_BY_ID } from '../data/graph';
 import { BASES, POSES } from '../data/poses';
-import { SAMPLE_FLOWS, type SampleFlow } from '../data/samples';
+import { FLOW_KINDS, SAMPLE_FLOWS, type SampleFlow } from '../data/samples';
 import { sampleLook } from '../data/sampleLooks';
 import { TRANSITIONS } from '../data/transitions';
 import type { Pose } from '../data/types';
@@ -144,7 +144,8 @@ function flowPage(f: SampleFlow, assets: Assets): Page {
     [title, path],
   ]);
   const description = `${f.description} A ${mins}-minute yoga flow of ${f.seq.length} steps, with a voice to guide you. Free, in your browser.`;
-  const others = SAMPLE_FLOWS.filter((o) => o.id !== f.id && !!o.peak === !!f.peak);
+  const others = SAMPLE_FLOWS.filter((o) => o.id !== f.id && o.kind === f.kind);
+  const kind = FLOW_KINDS.find((k) => k.kind === f.kind)!;
   const stepText = (i: number) => {
     const s = f.seq[i];
     const move = s.via === undefined ? 'Begin here' : renderLabel(TRANSITION_BY_ID.get(s.via)!.label, s.side);
@@ -154,7 +155,7 @@ function flowPage(f: SampleFlow, assets: Assets): Page {
   const body = (
     <>
       <article className="guide-flow">
-        <p className="guide-kicker">{f.peak ? 'Peak pose flow' : 'Ready-made flow'}</p>
+        <p className="guide-kicker">{kind.one}</p>
         <h1 className="guide-title">
           <span className="guide-icon" aria-hidden="true">
             {look.icon}
@@ -196,7 +197,7 @@ function flowPage(f: SampleFlow, assets: Assets): Page {
         </ol>
 
 
-        <h2>{f.peak ? 'More peak pose flows' : 'More ready-made flows'}</h2>
+        <h2>More {kind.title.toLowerCase()}</h2>
         <FlowLinks flows={others} root={root} />
       </article>
     </>
@@ -228,7 +229,7 @@ function flowPage(f: SampleFlow, assets: Assets): Page {
       section: { name: 'Flows', href: `${root}flows/` },
       path,
       root,
-      title: `${title} · ${mins}-minute ${f.peak ? 'peak pose yoga flow' : 'yoga flow'} · ${NAME}`,
+      title: `${title} · ${mins}-minute ${f.kind === 'peak' ? 'peak pose yoga flow' : 'yoga flow'} · ${NAME}`,
       description,
       accent: look.color,
       jsonLd: [howTo, trail.jsonLd],
@@ -289,10 +290,12 @@ function flowsIndex(assets: Assets): Page {
         {SAMPLE_FLOWS.length} complete classes, from a ten-minute desk break to peak pose flows that build to Crow,
         Headstand or Wheel. Open any of them in {NAME} to play it with a voice guiding you, or change it to suit you.
       </p>
-      <h2>Ready-made flows</h2>
-      <FlowLinks flows={SAMPLE_FLOWS.filter((f) => !f.peak)} root={root} />
-      <h2>Peak pose flows</h2>
-      <FlowLinks flows={SAMPLE_FLOWS.filter((f) => f.peak)} root={root} />
+      {FLOW_KINDS.map((k) => (
+        <Fragment key={k.kind}>
+          <h2>{k.title}</h2>
+          <FlowLinks flows={SAMPLE_FLOWS.filter((f) => f.kind === k.kind)} root={root} />
+        </Fragment>
+      ))}
       <h2>The poses</h2>
       <ul className="guide-pose-grid">
         {PREVIEW_POSES.map((id) => (

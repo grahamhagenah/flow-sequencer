@@ -428,19 +428,17 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .row .pose-figure { width: 36px; height: 36px; margin: 0 2px 0 var(--space-1); }
 .row.current .pose-figure, .row.playing .pose-figure { color: var(--accent); }
 
-/* The start page: the featured class, then quiet cards for everything else.
-   One spacing scale throughout: 32px between sections, 12px under each heading. */
-.get-started { display: flex; flex-direction: column; gap: var(--space-6); padding: var(--space-2) 0 var(--space-7); container-type: inline-size; }
+/* The start page: the featured class, then quiet lists for everything else.
+   One spacing scale throughout: 64px between sections, 16px under each heading. */
+.get-started { display: flex; flex-direction: column; gap: calc(var(--space-7) + var(--space-4)); padding: var(--space-2) 0 var(--space-7); container-type: inline-size; }
 /* Cards: a step lighter than the page with a soft edge, brighter on hover. */
-.build-own, .gs-list, .sample-card {
+.gs-list {
   background: var(--card);
   border: 1px solid var(--rule);
   border-radius: var(--radius-lg);
 }
-/* Build your own: dashed, like the choices of what to add, as it isn't a flow yet. */
-.build-own { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4) var(--space-5); padding: var(--space-5); border: 1px dashed var(--border); }
-/* Set further apart from the flow to try above it, on top of the page's gap. */
-.featured + .build-own { margin-top: var(--space-5); }
+/* Build your own: no box, just a hairline above and below, like the rows of flows. */
+.build-own { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3) var(--space-5); padding: var(--space-4) 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
 .build-own-text { display: flex; flex-direction: column; gap: var(--space-1); flex: 1 1 280px; }
 .get-started .build-own h3 { margin: 0; font-size: var(--text-lg); font-weight: 600; color: var(--text); }
 .build-own p { margin: 0; font-size: var(--text-md); line-height: 1.45; color: var(--muted); }
@@ -450,7 +448,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .build-own .build-own-btn .icon { color: var(--muted); }
 .build-own .build-own-btn:hover:not(:disabled), .build-own .build-own-btn:focus-visible { color: var(--text); background: var(--surface); border-color: var(--muted); }
 .build-own .build-own-btn:hover .icon, .build-own .build-own-btn:focus-visible .icon { color: var(--text); }
-.gs-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: var(--space-3); }
+.gs-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: var(--space-4); }
 /* "See all": white, like the text around it, not the flow's colour. */
 .gs-head .link-btn { color: var(--text); }
 .link-btn { position: relative; padding: 0; background: none; border: none; border-radius: 0; font-size: var(--text-sm); color: var(--accent); }
@@ -486,7 +484,7 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   padding: 0;
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-3);
+  gap: 0 var(--space-6);
 }
 .sample-grid { container-type: inline-size; }
 
@@ -521,6 +519,8 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 @keyframes share-rise { from { opacity: 0; transform: translateY(8px); } }
 @media (prefers-reduced-motion: reduce) { .share-screen.finished > * { animation: none; } }
 @media (max-width: 760px) {
+  /* A little less room between the start page's sections on a phone. */
+  .get-started { gap: var(--space-7); }
   .share-screen { padding: var(--space-6) 0; }
   .share-actions button { min-height: 48px; }
   /* The main action full width on a phone, the others under it. */
@@ -553,27 +553,43 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .featured-actions { margin-top: var(--space-3); }
 .featured-actions button { min-height: 44px; font-size: var(--text-md); }
 .featured-actions .gs-play { padding: 0 var(--space-5) 0 var(--space-4); }
-@container (min-width: 400px) {
+/* Two columns only with room for each row's text beside its play button. */
+@container (min-width: 600px) {
   .sample-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   /* In two columns, short lines read better than ones stretched across a wide column.
      A single column (phones) uses the full width. */
   .sample-desc { max-width: 44ch; }
 }
-.sample-card { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-4) var(--space-4) var(--space-3); transition: border-color 0.15s; }
-.sample-card:hover { border-color: var(--border); }
+/* A list, not cards: a hairline above each flow, no box. The text opens the flow; the
+   play button (and the share link, shown on hover) sit at the row's end, centred on it. */
+.sample-card { display: flex; align-items: center; gap: var(--space-2); border-top: 1px solid var(--rule); }
+.sample-open { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: var(--space-4) 0; text-align: left; color: var(--text); background: none; border: none; border-radius: 0; }
+.sample-open:hover:not(:disabled) .sample-desc { color: var(--soft); }
+.sample-side { flex: none; display: flex; align-items: center; gap: 2px; }
+.sample-play, .sample-side .sample-share { display: inline-grid; place-items: center; width: 36px; height: 36px; padding: 0; border-radius: 50%; color: var(--muted); background: none; }
+.sample-play { border: 1px solid var(--border); }
+.sample-play svg { width: 14px; height: 14px; }
+.sample-play:hover:not(:disabled) { color: var(--text); border-color: var(--muted); }
+.sample-side .sample-share { border: none; }
+.sample-side .sample-share svg { width: 18px; height: 18px; }
+.sample-side .sample-share:hover:not(:disabled) { color: var(--text); background: var(--surface-2); }
+@media (hover: hover) {
+  .sample-side .sample-share { opacity: 0; transition: opacity 120ms ease; }
+  .sample-card:hover .sample-share, .sample-side .sample-share:focus-visible, .sample-side .sample-share[aria-label='Link copied'] { opacity: 1; }
+}
 .sample-title { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-lg); font-weight: 600; line-height: 1.3; }
 .sample-icon { flex: none; display: inline-flex; color: var(--tone); }
 .sample-icon svg { width: var(--icon-md); height: var(--icon-md); }
 .sample-meta { font-size: var(--text-sm); color: var(--muted); white-space: nowrap; }
-/* Up to three lines; the full text is in the tooltip. */
+/* Up to two lines; the full text is in the tooltip. */
 .sample-desc {
   flex: 1;
-  margin-top: var(--space-1);
+  margin-top: 2px;
   font-size: var(--text-md);
-  line-height: 1.5;
+  line-height: 1.45;
   color: var(--muted);
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

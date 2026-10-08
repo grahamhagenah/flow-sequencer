@@ -1,4 +1,4 @@
-import { SAMPLE_FLOWS, type SampleFlow } from './data/samples';
+import { FLOW_KINDS, SAMPLE_FLOWS, type SampleFlow } from './data/samples';
 import { SampleList } from './GetStarted';
 import { SiteFooter } from './SiteFooter';
 import { FlowMark } from './flowIcons';
@@ -7,11 +7,6 @@ import type { SavedFlow } from './library';
 import { decodeSteps } from './link';
 import { aboutMinutes, classMs } from './player/conductor';
 import { loadSettings } from './player/usePlayer';
-
-const SAMPLE_GROUPS = [
-  { title: 'Ready-made flows', peak: false },
-  { title: 'Peak pose flows', peak: true },
-];
 
 /** How long a flow runs with the player's saved settings, voice included. */
 const length = (seq: Parameters<typeof classMs>[0]) => {
@@ -92,13 +87,13 @@ export function FlowList({
         </ul>
       )}
 
-      {SAMPLE_GROUPS.map((g) => (
-        <section key={g.title}>
+      {FLOW_KINDS.map((g) => (
+        <section key={g.kind}>
           <div className="flows-head samples-head">
             <h2>{g.title}</h2>
           </div>
           <SampleList
-            flows={SAMPLE_FLOWS.filter((f) => !!f.peak === g.peak)}
+            flows={SAMPLE_FLOWS.filter((f) => f.kind === g.kind)}
             onPlaySample={onPlaySample}
             onOpenSample={onOpenSample}
             onCopyLink={onCopySampleLink}
