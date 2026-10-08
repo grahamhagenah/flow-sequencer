@@ -13,6 +13,8 @@ export interface PoseArt {
   topView?: boolean;
   /** True to draw a neck into the head. None by default: the head sits free of the body. */
   neck?: boolean;
+  /** Against a wall (Legs Up the Wall): a faint upright line at the mat's far end, like the floor. */
+  wall?: boolean;
 }
 
 export const POSE_ART: Record<string, PoseArt> = {
@@ -105,6 +107,7 @@ export const POSE_ART: Record<string, PoseArt> = {
   // the hand on the floor, the top arm reaching up, and the other leg threaded under and
   // through from the hip; the head free past the shoulders.
   'fallen-triangle': { head: [11.8, 29], d: 'M42 42L16.9 28.8M16.9 28.8L16 43M16.9 28.8L13.4 15.05M31.75 46.9L26.5 33.95' },
+  'wild-thing': { head: [11, 35.3], d: 'M16 43V31.7C16 31.7 18.9 29.55 23.5 29.1C28.1 28.65 30.2 30.1 30.2 30.1L35.61 38.21L38.8 43M35.61 38.21L33.55 43M35.61 38.21L37.2 34.5L30.2 30.1M16 31.7L4.9 28.2' },
   // Graham's drawing, already facing left: one long line from the stacked feet to the hand
   // on the floor, the top arm reaching up; Fallen Triangle is this with a leg threaded under.
   'side-plank': { head: [11.8, 29], d: 'M42 42L16.9 28.8M16.9 28.8L16 43M16.9 28.8L13.4 15.05' },
@@ -187,6 +190,23 @@ export const POSE_ART: Record<string, PoseArt> = {
   // Graham's drawing, mirrored to face left: one level line from the back heel to the
   // shoulders, stopping short of the head; the arm folded under the chest.
   'warrior-3': { head: [7.3, 28], d: 'M23.85 43V28M43 28H12.8L18.3 34.05H10.95' },
+  'standing-splits': { head: [12.2, 33], d: 'M13.4 42.9L16.8 36.45L20 27L26 13.8M20 27V42.9' },
+  // From Claude's drafts, to be redrawn. Goddess, Side Lunge and Gate are seen from the front.
+  goddess: { head: [24, 14], d: 'M14 43V33L24 31L34 33V43M24 31V19M17 12V19H31V12' },
+  'side-lunge': { head: [19.2, 19.9], d: 'M13 42.9L10 35.5L18 37L40 42.9M18 37L19 25' },
+  puppy: { head: [12.5, 35.2], d: 'M41 43H30V30L17 39L6 43' },
+  'twisted-low-lunge': { head: [11.5, 24], d: 'M39.5 42.9H29.05L21.5 36.85L11.15 34.4L10.4 42.9M21.5 36.85L15.5 27L19 13.5M15.5 27L14.5 42.9' },
+  gate: { head: [25, 15.5], d: 'M22 42.9V31L40 42.9M22 31L27 20L36 14M27 20L33 38.3' },
+  'reverse-tabletop': { head: [40.5, 28.8], d: 'M12 42.9V31.5H36V42.9' },
+  'wide-legged-seated-forward-fold': { head: [14.5, 24], d: 'M10 15.5L30 24L10 32.5M30 24H19.5M22.5 20.8L19.5 24L22.5 27.2', topView: true },
+  'reclined-bound-angle': { head: [9, 24], d: 'M13.9 24H26L33 16.5L38 24L33 31.5L26 24M22 30L13.9 24L22 18', topView: true },
+  'reclined-hand-to-big-toe': { head: [7.6, 41.3], d: 'M43 42.9H12M30 42.9L21 15M12 42.9L23.6 23' },
+  'legs-up-the-wall': { head: [8.6, 41.3], d: 'M12.6 42.9H36V14', wall: true },
+  'knee-to-nose': { head: [7, 30.5], d: 'M12 42.8V27C16 23.5 21 23 26 25L42 42.8M26 25L16.5 33L24 37.5' },
+  'forearm-plank': { head: [8, 31], d: 'M5 42.8H12.5V34L42 42.8' },
+  'revolved-side-angle': { head: [6.5, 25.5], d: 'M39.5 42.9L28.35 40.05L22.35 31.7L12.55 34.4L9.65 42.9M22.35 31.7L10.5 29L15.5 15M10.5 29L6.5 42.9' },
+  frog: { head: [9, 24], d: 'M14.5 24H27M36 15.5H27V32.5H36M8.5 17.5H15L14.5 24L15 30.5H8.5', topView: true },
+  rabbit: { head: [15.5, 41], d: 'M36 42.9H21L25 30.5C25 27 18 28 16.5 36L34.5 41.5' },
   // Graham's drawing, already facing left: legs in a wide inverted V, the
   // torso folded down along the front leg, the arm bent to the floor inside it.
   pyramid: { head: [9.7, 35.5], d: 'M25.85 25.5L12 43M16.3 43L20.75 37.5L13.9 33.05L25.85 25.5L38 43' },

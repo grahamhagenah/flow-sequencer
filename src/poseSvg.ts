@@ -10,6 +10,8 @@ import { DRAWINGS_NOTICE } from './terms';
 /** The mat under a drawing: its edge in a side view, the whole of it seen from above. */
 export const FLOOR_PATH = 'M4 45h40';
 export const MAT_RECT = { x: 2, y: 14, width: 44, height: 20, rx: 2 };
+/** A wall at the mat's far end, rising from the floor, for the poses done against one. */
+export const WALL_PATH = 'M39.5 45V8';
 
 /**
  * How a one-sided pose is drawn for the left side: a side view turns to face the other
@@ -25,11 +27,12 @@ export function poseSvg(poseId: string, color: string, { left = false, strokeWid
   const mat = art.topView
     ? `<rect x="${m.x}" y="${m.y}" width="${m.width}" height="${m.height}" rx="${m.rx}" stroke-width="1.4" opacity="0.35"/>`
     : `<path d="${FLOOR_PATH}" stroke-width="1.4" opacity="0.35"/>`;
+  const wall = art.wall ? `\n  <path d="${WALL_PATH}" stroke-width="1.4" opacity="0.35"/>` : '';
   return [
     // Who drew it and on what terms, carried in the file wherever it goes.
     `<!-- ${getPose(poseId).name}, from Flow Sequencer (https://yoga.grahamhagenah.com/poses/). ${DRAWINGS_NOTICE} -->`,
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="480" height="480" fill="none" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round">`,
-    `  ${mat}`,
+    `  ${mat}${wall}`,
     `  <g${left ? ` transform="${leftSideTransform(art)}"` : ''}>`,
     `    <path d="${art.d}${neckPath(art)}"/>`,
     `    <circle cx="${art.head[0]}" cy="${art.head[1]}" r="3.3" fill="${color}" stroke="none"/>`,
@@ -82,6 +85,7 @@ export function poseSheetSvg(color: string, background = '#08090b'): string {
         `  <g id="${p.id}">`,
         `    <g id="${p.id}-drawing" transform="translate(${x} ${top})">`,
         `      ${mat}`,
+        ...(art.wall ? [`      <path id="wall" d="${scalePath(WALL_PATH, SCALE)}" stroke-width="14" opacity="0.35"/>`] : []),
         `      <path id="body" d="${scalePath(art.d + neckPath(art), SCALE)}"/>`,
         `      <circle id="head" cx="${px(art.head[0])}" cy="${px(art.head[1])}" r="33" fill="${color}" stroke="none"/>`,
         `    </g>`,

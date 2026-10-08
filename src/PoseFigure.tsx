@@ -1,7 +1,7 @@
 import { getPose } from './data/graph';
 import { neckPath, POSE_ART } from './data/poseArt';
 import type { Side } from './data/types';
-import { FLOOR_PATH, leftSideTransform, MAT_RECT } from './poseSvg';
+import { FLOOR_PATH, leftSideTransform, MAT_RECT, WALL_PATH } from './poseSvg';
 
 /**
  * A pose's line drawing (see poseArt.ts). One-sided poses are drawn on the right
@@ -32,6 +32,7 @@ export function PoseFigure({ poseId, side, size = 40 }: { poseId: string; side?:
       ) : (
         <path d={FLOOR_PATH} strokeWidth={1.4} opacity={0.35} />
       )}
+      {art.wall && <path d={WALL_PATH} strokeWidth={1.4} opacity={0.35} />}
       <g transform={mirrored ? leftSideTransform(art) : undefined}>
         <path d={art.d + neckPath(art)} />
         <circle cx={art.head[0]} cy={art.head[1]} r={3.3} fill="currentColor" stroke="none" />

@@ -312,6 +312,100 @@ const ROWS: Row[] = [
   [285, 'high-lunge', 'humble-warrior', 'Spin back heel down, clasp behind, bow inside the {side} knee'],
   [286, 'humble-warrior', 'warrior-1', 'Rise up, release the hands overhead'],
   [287, 'humble-warrior', 'down-dog', 'Release, hands down, step back to down dog'],
+  // Wild Thing
+  [288, 'three-leg-dog', 'wild-thing', 'Bend the {side} knee, flip over, foot down behind'],
+  [289, 'side-plank', 'wild-thing', 'Step the top foot back, lift the hips, reach the arm overhead'],
+  [290, 'wild-thing', 'down-dog', 'Flip back over to down dog'],
+  [291, 'wild-thing', 'three-leg-dog', 'Flip back over, the leg lifts high'],
+  // Standing Splits
+  [292, 'forward-fold', 'standing-splits', 'Weight into the {side} foot, raise the {other} leg behind you'],
+  [293, 'warrior-3', 'standing-splits', 'Hands down, fold forward, the back leg rises'],
+  [294, 'standing-splits', 'forward-fold', 'Lower the leg, feet together'],
+  [295, 'standing-splits', 'three-leg-dog', 'Step back to Three-Legged Dog, the {side} leg stays up', 'flip'],
+  // Goddess and Side Lunge (seen from the front; Side Lunge's side is the bent knee)
+  [296, 'mountain', 'goddess', 'Step feet wide, toes out, sink low'],
+  [297, 'wide-leg-fold', 'goddess', 'Rise up, turn the toes out, bend the knees'],
+  [298, 'warrior-2', 'goddess', 'Turn the toes out, bend both knees'],
+  [299, 'goddess', 'wide-leg-fold', 'Straighten the legs, feet parallel, fold forward'],
+  [300, 'goddess', 'garland', 'Bring the feet in, sink into a squat'],
+  [301, 'goddess', 'mountain', 'Step the feet together, rise up'],
+  [326, 'wide-leg-fold', 'side-lunge', 'Bend the {side} knee, sink low to the side'],
+  [327, 'goddess', 'side-lunge', 'Shift into the {side} knee, the other leg straightens'],
+  [328, 'side-lunge', 'side-lunge', 'Shift through center to the {side}', 'flip'],
+  [329, 'side-lunge', 'wide-leg-fold', 'Straighten both legs, fold forward'],
+  [330, 'side-lunge', 'goddess', 'Come back to center, both knees bent'],
+  // Puppy
+  [302, 'table', 'puppy', 'Walk the hands forward, chest melts down'],
+  [303, 'puppy', 'child', 'Sink the hips back to the heels'],
+  [304, 'puppy', 'table', 'Walk the hands back under the shoulders'],
+  [305, 'child', 'puppy', 'Lift the hips over the knees, keep the arms long'],
+  [306, 'down-dog', 'puppy', 'Knees down, hips stay high, heart sinks'],
+  // Legs Up the Wall
+  [307, 'savasana', 'legs-up-the-wall', 'Scoot the hips to the wall, legs up'],
+  [308, 'legs-up-the-wall', 'savasana', 'Bend the knees, roll away from the wall, lie flat'],
+  [309, 'legs-up-the-wall', 'knees-to-chest', 'Bend the knees, hug them in'],
+  [310, 'knees-to-chest', 'legs-up-the-wall', 'Lift the legs up the wall'],
+  // Twisted Low Lunge (its side is the front leg)
+  [311, 'low-lunge', 'twisted-low-lunge', 'Hand down inside the front foot, twist to the {side}'],
+  [312, 'twisted-low-lunge', 'low-lunge', 'Unwind, back to center'],
+  [313, 'twisted-low-lunge', 'down-dog', 'Hands down, step back to down dog'],
+  [314, 'runners-lunge', 'twisted-low-lunge', 'Lower the back knee, twist to the {side}'],
+  // Reclined Bound Angle
+  [315, 'savasana', 'reclined-bound-angle', 'Bend the knees, soles together, knees fall open'],
+  [316, 'reclined-bound-angle', 'savasana', 'Draw the knees together, legs long'],
+  [317, 'knees-to-chest', 'reclined-bound-angle', 'Soles together, let the knees open'],
+  [318, 'reclined-bound-angle', 'knees-to-chest', 'Draw the knees in, hug them'],
+  // Reclined Hand-to-Big-Toe (its side is the lifted leg)
+  [319, 'savasana', 'reclined-hand-to-big-toe', 'Lift the {side} leg, hold the big toe or the calf'],
+  [320, 'reclined-hand-to-big-toe', 'savasana', 'Lower the leg, rest'],
+  [321, 'reclined-hand-to-big-toe', 'reclined-hand-to-big-toe', 'Switch legs, lift the {side} leg', 'flip'],
+  [322, 'knees-to-chest', 'reclined-hand-to-big-toe', 'Straighten the {side} leg up, the other long'],
+  // Reverse Tabletop
+  [323, 'staff', 'reverse-tabletop', 'Hands behind, bend the knees, lift the hips'],
+  [324, 'reverse-tabletop', 'staff', 'Sit down, straighten out'],
+  [325, 'easy-seat', 'reverse-tabletop', 'Feet down, hands behind, lift the hips'],
+  // Gate (its side is the leg stepped out)
+  [331, 'table', 'gate', 'Rise to the knees, step the {side} leg out to the side'],
+  [332, 'gate', 'table', 'Hands down, back to all fours'],
+  [333, 'gate', 'gate', 'Switch, the {side} leg steps out', 'flip'],
+  [334, 'thunderbolt', 'gate', 'Rise to the knees, step the {side} leg out'],
+  // Wide-Legged Seated Forward Fold
+  [335, 'staff', 'wide-legged-seated-forward-fold', 'Open the legs wide, fold forward'],
+  [336, 'wide-legged-seated-forward-fold', 'staff', 'Rise up, bring the legs together'],
+  [337, 'easy-seat', 'wide-legged-seated-forward-fold', 'Open the legs wide, walk the hands forward'],
+  [338, 'wide-legged-seated-forward-fold', 'bound-angle', 'Rise up, soles of the feet together'],
+  // Knee to Nose (its side is the knee drawn in)
+  [339, 'three-leg-dog', 'knee-to-nose', 'Shift forward, draw the {side} knee to the nose'],
+  [340, 'knee-to-nose', 'three-leg-dog', 'Press back, extend the leg high'],
+  [341, 'knee-to-nose', 'low-lunge', 'Step the foot forward, lower the back knee'],
+  [342, 'knee-to-nose', 'high-lunge', 'Step the foot forward, rise up'],
+  [343, 'knee-to-nose', 'runners-lunge', 'Step the foot between the hands'],
+  [344, 'plank', 'knee-to-nose', 'Draw the {side} knee toward the nose'],
+  [345, 'knee-to-nose', 'plank', 'Step the foot back to plank'],
+  // Forearm Plank
+  [346, 'plank', 'forearm-plank', 'Lower onto the forearms one at a time'],
+  [347, 'forearm-plank', 'plank', 'Press up onto the hands'],
+  [348, 'dolphin', 'forearm-plank', 'Walk the feet back, lower the hips'],
+  [349, 'forearm-plank', 'dolphin', 'Hips lift up and back'],
+  [350, 'forearm-plank', 'sphinx', 'Lower the knees and belly down'],
+  [351, 'sphinx', 'forearm-plank', 'Tuck the toes, lift the body in one line'],
+  // Revolved Side Angle (its side is the front leg)
+  [352, 'high-lunge', 'revolved-side-angle', 'Fold over the {side} thigh, opposite hand down, twist open'],
+  [353, 'twisted-low-lunge', 'revolved-side-angle', 'Lift the back knee'],
+  [354, 'revolved-side-angle', 'high-lunge', 'Unwind, rise up'],
+  [355, 'revolved-side-angle', 'down-dog', 'Hands down, step back to down dog'],
+  [356, 'revolved-side-angle', 'twisted-low-lunge', 'Lower the back knee'],
+  // Frog
+  [357, 'table', 'frog', 'Widen the knees, lower onto the forearms'],
+  [358, 'frog', 'child', 'Bring the knees in, sink back'],
+  [359, 'frog', 'table', 'Draw the knees in, rise onto the hands'],
+  [360, 'child', 'frog', 'Widen the knees, come forward onto the forearms'],
+  // Rabbit
+  [361, 'child', 'rabbit', 'Hold the heels, roll onto the crown of the head'],
+  [362, 'rabbit', 'child', 'Lower the hips, rest the forehead'],
+  [363, 'camel', 'rabbit', 'Sit back, fold forward, crown to the floor'],
+  [364, 'thunderbolt', 'rabbit', 'Fold forward, hold the heels, crown to the floor'],
+  [365, 'rabbit', 'thunderbolt', 'Roll up slowly to sit on the heels'],
 ];
 
 export const TRANSITIONS: Transition[] = ROWS.map(([id, from, to, label, side = 'keep']) => ({

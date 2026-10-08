@@ -87,6 +87,23 @@ export const POSES: Pose[] = [
   { id: 'triangle', name: 'Triangle', sanskrit: 'Trikonasana', base: 'standing', sided: true, breaths: 5, cue: 'Front leg straight, arms in one line, chest opens to the side.' },
   { id: 'half-moon', name: 'Half Moon', sanskrit: 'Ardha Chandrasana', base: 'standing', sided: true, breaths: 4, cue: 'Standing leg strong, hips stack open, top arm reaches up.' },
   { id: 'warrior-3', name: 'Warrior III', sanskrit: 'Virabhadrasana III', base: 'standing', sided: true, breaths: 3, cue: 'Balance on one leg, body and back leg parallel to the floor.' },
+  { id: 'standing-splits', name: 'Standing Splits', sanskrit: 'Urdhva Prasarita Eka Padasana', base: 'standing', sided: true, breaths: 3, cue: 'Hips square, chest draws toward the standing shin, fingertips light.' },
+  // From Claude's drafts, to be redrawn.
+  { id: 'goddess', name: 'Goddess', sanskrit: 'Utkata Konasana', base: 'standing', sided: false, breaths: 5, cue: 'Knees track over the toes, tailbone heavy, arms in a cactus.' },
+  { id: 'side-lunge', name: 'Side Lunge', sanskrit: 'Skandasana', base: 'standing', sided: true, breaths: 3, cue: 'Other leg long with toes up, heel down, chest lifts.' },
+  { id: 'puppy', name: 'Puppy', sanskrit: 'Uttana Shishosana', aka: ['Extended Puppy'], base: 'kneeling', sided: false, breaths: 5, cue: 'Chest melts toward the mat, forehead rests, belly soft.' },
+  { id: 'twisted-low-lunge', name: 'Twisted Low Lunge', sanskrit: 'Parivrtta Anjaneyasana', aka: ['Revolved Low Lunge'], base: 'kneeling', sided: true, breaths: 3, cue: 'Top arm reaches high, chest turns open, back knee stays down.' },
+  { id: 'gate', name: 'Gate', sanskrit: 'Parighasana', base: 'kneeling', sided: true, breaths: 3, cue: 'Lean over the straight leg, top arm reaches past the ear.' },
+  { id: 'reverse-tabletop', name: 'Reverse Tabletop', sanskrit: 'Ardha Purvottanasana', base: 'seated', sided: false, breaths: 3, cue: 'Knees over the ankles, chest broad, chin gently tucked.' },
+  { id: 'wide-legged-seated-forward-fold', name: 'Wide-Legged Seated Forward Fold', sanskrit: 'Upavistha Konasana', aka: ['Seated Straddle'], base: 'seated', sided: false, breaths: 5, cue: 'Lead with the chest, knees and toes point up.' },
+  { id: 'reclined-bound-angle', name: 'Reclined Bound Angle', sanskrit: 'Supta Baddha Konasana', base: 'supine', sided: false, breaths: 8, cue: 'Let the hips soften, a hand on the belly if you like.' },
+  { id: 'reclined-hand-to-big-toe', name: 'Reclined Hand-to-Big-Toe', sanskrit: 'Supta Padangusthasana', base: 'supine', sided: true, breaths: 5, cue: 'The other leg stays long and heavy, shoulders soft on the mat.' },
+  { id: 'legs-up-the-wall', name: 'Legs Up the Wall', sanskrit: 'Viparita Karani', base: 'supine', sided: false, breaths: 10, cue: 'Arms rest open, let the legs be heavy against the wall.' },
+  { id: 'knee-to-nose', name: 'Knee to Nose', base: 'hands', sided: true, breaths: 2, cue: 'Round the back, shoulders over the wrists, belly draws in.' },
+  { id: 'forearm-plank', name: 'Forearm Plank', sanskrit: 'Makara Adho Mukha Svanasana', aka: ['Dolphin Plank'], base: 'hands', sided: false, breaths: 5, cue: 'Elbows under the shoulders, belly firm, one long line to the heels.' },
+  { id: 'revolved-side-angle', name: 'Revolved Side Angle', sanskrit: 'Parivrtta Parsvakonasana', base: 'standing', sided: true, breaths: 3, cue: 'Lengthen the spine first, then turn the chest toward the sky.' },
+  { id: 'frog', name: 'Frog', sanskrit: 'Mandukasana', base: 'kneeling', sided: false, breaths: 8, cue: 'Hips sink back in line with the knees, breathe into the inner thighs.' },
+  { id: 'rabbit', name: 'Rabbit', sanskrit: 'Sasangasana', base: 'kneeling', sided: false, breaths: 5, cue: 'Curl the spine, weight light on the crown, hips lift.' },
   { id: 'pyramid', name: 'Pyramid', sanskrit: 'Parsvottanasana', base: 'standing', sided: true, breaths: 5, cue: 'Both legs straight, hips square, lead with the chest.' },
   { id: 'tree', name: 'Tree', sanskrit: 'Vrksasana', base: 'standing', sided: true, breaths: 5, cue: 'Press foot and leg into each other, never on the knee, hands at heart.' },
 
@@ -109,6 +126,7 @@ export const POSES: Pose[] = [
   { id: 'revolved-triangle', name: 'Revolved Triangle', sanskrit: 'Parivrtta Trikonasana', base: 'standing', sided: true, breaths: 5, cue: 'Hips square, both legs straight, top arm reaches to the sky.' },
   { id: 'humble-warrior', name: 'Humble Warrior', sanskrit: 'Baddha Virabhadrasana', base: 'standing', sided: true, breaths: 4, cue: 'Shoulder toward the inner knee, arms float away from the back.' },
   { id: 'fallen-triangle', name: 'Fallen Triangle', sanskrit: 'Patita Tarasana', base: 'hands', sided: true, breaths: 3, cue: 'Hips lift, top arm reaches up, gaze to the hand.' },
+  { id: 'wild-thing', name: 'Wild Thing', sanskrit: 'Camatkarasana', base: 'hands', sided: true, breaths: 3, cue: 'Chest opens to the sky, press through the standing hand, let the head drop back.' },
 ];
 
 /** Poses offered when a sequence is empty. */
