@@ -170,3 +170,28 @@ export const ScissorsIcon = () => (
     <path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12" />
   </Icon>
 );
+
+/** Larger drawings on the poses page: four big squares. */
+export const LargeTilesIcon = () => (
+  <Icon>
+    <rect x="4" y="4" width="7" height="7" rx="1.5" />
+    <rect x="13" y="4" width="7" height="7" rx="1.5" />
+    <rect x="4" y="13" width="7" height="7" rx="1.5" />
+    <rect x="13" y="13" width="7" height="7" rx="1.5" />
+  </Icon>
+);
+
+/** Smaller drawings, more to a row: nine small squares. */
+export const SmallTilesIcon = () => (
+  <Icon>
+    <rect x="4" y="4" width="4" height="4" rx="1" />
+    <rect x="10" y="4" width="4" height="4" rx="1" />
+    <rect x="16" y="4" width="4" height="4" rx="1" />
+    <rect x="4" y="10" width="4" height="4" rx="1" />
+    <rect x="10" y="10" width="4" height="4" rx="1" />
+    <rect x="16" y="10" width="4" height="4" rx="1" />
+    <rect x="4" y="16" width="4" height="4" rx="1" />
+    <rect x="10" y="16" width="4" height="4" rx="1" />
+    <rect x="16" y="16" width="4" height="4" rx="1" />
+  </Icon>
+);

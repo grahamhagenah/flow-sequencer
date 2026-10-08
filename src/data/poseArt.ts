@@ -38,17 +38,17 @@ export const POSE_ART: Record<string, PoseArt> = {
   'easy-seat': { head: [24, 16.6], d: 'M19.3 42.66L34.45 38.6L24 35.7L13.55 38.6L28.7 42.66M24 35.7V21.7M14.2 35.65L24 21.7L33.8 35.65' },
   // Graham's drawing, already facing left: sitting tall, the legs long in front; the arms
   // left out, since beside the body they would only double its line.
-  staff: { head: [23.9, 21.7], d: 'M8 42.9H23.85V26.9L26.45 34.85L27.15 42.9' },
+  staff: { head: [29.1, 20.7], d: 'M7.8 42.9H30.02V25.7L32.89 34.52L33.4 42.9' },
   // Graham's drawing, already facing left: the legs long on the floor, the back folded
   // forward over them from the hips, the arms reaching on toward the feet; the head above.
-  'seated-forward-fold': { head: [15.1, 33.6], d: 'M8 42.9H33.4L19.95 36.9L10.5 40.4' },
+  'seated-forward-fold': { head: [15.1, 33.6], d: 'M8 42.9H33.4L19.95 36.9L8 42.9Z' },
   // Graham's drawing, already facing left: balanced on the sit bones in a V, the legs
   // straight up and out, the back leaning away, the arms level forward alongside the legs.
   boat: { head: [13.9, 22.6], d: 'M39 26.9L24 42.9L16 27.9H32.7' },
   // Graham's drawing, from the front: sitting tall, the knees wide and low, the soles
   // together in front; the arms bent at the elbows, hands down by the feet.
   'bound-angle': { head: [24, 15.8], d: 'M22 42.8L11 39.38L24 38.8L37 39.38L26 42.8M24 38.8V20.8M19.5 38.8L17.1 30.55L24 20.8L30.9 30.55L28.5 38.8' },
-  'head-to-knee': { head: [11, 34], d: 'M32 43H8M32 43l-16-9M18 35l-9 7M31 43l-6-4.5-4 4.5' },
+  'head-to-knee': { head: [15.1, 33.6], d: 'M8 42.9H33.4L19.95 36.9L8 42.9ZM19.95 42.9L25.3 39.29' },
   // Graham's drawing, from the front: sitting cross-legged, the spine curving as it turns,
   // the head turned over the shoulder, one arm bent back behind toward the floor.
   'seated-twist': { head: [29.5, 17.1], d: 'M26.75 21.25C26.75 21.25 24.44 24.06 23.7 27.45C23 30.66 23.4 35.9 23.4 35.9L14.2 38.6L29.6 42.73M26.75 21.25L28.55 29L33.4 36.2M23.4 35.9L33.8 38.6L18.65 42.66' },
@@ -166,7 +166,7 @@ export const POSE_ART: Record<string, PoseArt> = {
   // Graham's drawing, already facing left: Warrior I's legs, the body bowed down along the
   // inside of the front thigh, the clasped arms one line lifting away from the back, the
   // head hanging low by the front foot.
-  'humble-warrior': { head: [8.7, 36.5], d: 'M41.35 42.6L24.1 31.35L14 34.3M14.85 42.65L14 34.3L18.85 23.8' },
+  'humble-warrior': { head: [8.7, 36.5], d: 'M41.35 42.6L24.1 31.35L18.85 32.88L14 34.3L18.2 23.95M18.85 32.88L14.85 42.65' },
   // Graham's drawing, front on with the bent knee to the left, as the app's side views face:
   // the arms one level line at the shoulders, the head just clear above it.
   'warrior-2': { head: [24, 10.2], d: 'M24 15.5V27M24 27L13 31L11 43M24 27L39 43M6 15.5H42' },

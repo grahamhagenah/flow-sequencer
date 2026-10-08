@@ -41,6 +41,19 @@ const FRESH_STEPS = encodeSteps(start(FIRST_POSE));
 const flowKey = (steps: string, name: string, color: string | null, icon: string | null) =>
   JSON.stringify([steps, name.trim(), color, icon]);
 
+/**
+ * Each screen is a step in the browser's history, so Back and Forward move between them
+ * as on any site: the start page, a flow (its link in the address bar) and My flows.
+ * A flow's entry remembers which saved flow it was, which its link doesn't carry.
+ */
+type Screen = 'start' | 'flow' | 'flows';
+interface Entry {
+  screen: Screen;
+  id: string | null;
+}
+const entryOf = (state: unknown): Entry | null =>
+  state && typeof state === 'object' && 'screen' in state ? (state as Entry) : null;
+
 /** How a flow was when it was opened, or null for none (the start page). */
 const openedKey = (o: Opened) => (o.seq.length ? flowKey(encodeSteps(o.seq), o.name, o.color, o.icon) : null);
 
@@ -140,12 +153,21 @@ export function App() {
     : seq.length > 0 && !untouched;
 
   // Keep the draft and the address bar in step with the flow, so a reload or a
-  // bookmark always lands back here.
+  // bookmark always lands back here. Moving to another screen adds a step to the
+  // browser's history (edits only update the current one), unless Back or Forward
+  // brought us there, or the browser just made the step itself (a pasted link).
+  const screen: Screen = view === 'flows' ? 'flows' : seq.length ? 'flow' : 'start';
+  const lastScreen = useRef(screen);
+  const popped = useRef(false);
   useEffect(() => {
     saveDraft({ id, name, steps, color, icon });
     const url = seq.length ? `#${toHash(name.trim(), steps, color, icon)}` : location.pathname + location.search;
-    history.replaceState(null, '', url);
-  }, [id, name, steps, color, icon, seq.length]);
+    const entry: Entry = { screen, id };
+    if (screen !== lastScreen.current && !popped.current && entryOf(history.state)) history.pushState(entry, '', url);
+    else history.replaceState(entry, '', url);
+    lastScreen.current = screen;
+    popped.current = false;
+  }, [id, name, steps, color, icon, seq.length, screen]);
 
   // Coming back from the Flows page, show the newest pose and its choices. Only the
   // desktop panel scrolls on its own (on phones the page does, and this does nothing).
@@ -238,6 +260,8 @@ export function App() {
   // A pasted link in the same tab only changes the hash.
   useEffect(() => {
     const onHash = () => {
+      // Back and Forward between the app's own steps are handled on popstate.
+      if (entryOf(history.state)) return;
       const linked = fromHash(location.hash);
       if (
         !linked ||
@@ -292,20 +316,91 @@ export function App() {
   const goHome = () => {
     if (view === 'flows') return setView('builder');
     if (seq.length === 0) return setChoosing(false);
+    leaveFlow(false);
+  };
+
+  /**
+   * Closes the flow for the start page (from the logo, or Back): first asking about
+   * unsaved changes, then offering it there under "Continue where you left off".
+   * `back` is set for the browser's Back, which has already left its step, so
+   * staying put puts the step back.
+   */
+  const leaveFlow = (back: boolean) => {
+    const close = () => {
+      popped.current = back;
+      open(EMPTY);
+    };
     if (untouched) {
       forgetResume();
-      return open(EMPTY);
+      return close();
     }
-    guardUnsaved('Go to the start page?', 'Save and leave', ({ discarded, savedId }) => {
-      if (discarded) forgetResume();
-      else {
-        const d = { id: savedId, name: name.trim(), steps, color, icon };
-        saveResume(d);
-        setResume(d);
-      }
-      open(EMPTY);
-    });
+    guardUnsaved(
+      'Go to the start page?',
+      'Save and leave',
+      ({ discarded, savedId }) => {
+        if (discarded) forgetResume();
+        else {
+          const d = { id: savedId, name: name.trim(), steps, color, icon };
+          saveResume(d);
+          setResume(d);
+        }
+        close();
+      },
+      back ? restoreStep : undefined,
+    );
   };
+
+  // Back or Forward stopped by "Cancel": the screen stays, so its step comes back.
+  const restoreStep = () => {
+    const entry: Entry = { screen, id };
+    history.pushState(entry, '', seq.length ? `#${toHash(name.trim(), steps, color, icon)}` : location.pathname);
+  };
+
+  // The browser's Back and Forward, between the app's own steps.
+  useEffect(() => {
+    const onPop = (e: PopStateEvent) => {
+      const entry = entryOf(e.state);
+      if (!entry) return; // a link typed or pasted in: the hash handler opens it
+      if (entry.screen === 'flows') {
+        if (screen !== 'flows') popped.current = true;
+        return setView('flows');
+      }
+      if (entry.screen === 'start') {
+        if (view === 'flows') popped.current = true;
+        setView('builder');
+        if (seq.length) leaveFlow(true);
+        return;
+      }
+      // A flow: the one open (from My flows), or another, read from the link.
+      const linked = fromHash(location.hash);
+      if (!linked) return;
+      const same =
+        encodeSteps(linked.seq) === steps && linked.name === name.trim() && linked.color === color && linked.icon === icon;
+      if (same) {
+        if (screen !== 'flow') popped.current = true;
+        return setView('builder');
+      }
+      guardUnsaved(
+        'Open the earlier flow?',
+        'Save and open',
+        () => {
+          forgetResume();
+          popped.current = true;
+          open({
+            id: entry.id && flows.some((f) => f.id === entry.id) ? entry.id : null,
+            name: linked.name,
+            color: linked.color,
+            icon: linked.icon,
+            seq: linked.seq,
+            notice: droppedNotice(linked.dropped),
+          });
+        },
+        restoreStep,
+      );
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  });
 
   // Picks up the flow put aside when the app opened at its bare address.
   const openResume = () => {

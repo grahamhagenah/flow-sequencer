@@ -826,6 +826,10 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 /* Plain, not in a colour: the drawings carry the colour on this page. */
 .poses-all { display: inline-flex; align-items: center; gap: var(--space-2); margin-left: auto; padding: var(--space-2) var(--space-4); font-weight: 500; color: var(--text); background: var(--surface); border-color: var(--border); }
 .poses-all:hover:not(:disabled) { background: var(--surface-2); border-color: var(--muted); }
+/* The sheet: a quiet word before Download all, which it pushes to the right with it. */
+.poses-sheet { margin-left: auto; padding: var(--space-2) var(--space-3); color: var(--muted); background: none; border-color: transparent; }
+.poses-sheet:hover:not(:disabled) { color: var(--text); border-color: transparent; text-decoration: underline; }
+.poses-sheet + .poses-all { margin-left: 0; }
 .poses-group { margin-top: var(--space-6); }
 .poses-group h2 { margin: 0 0 var(--space-3); font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .poses-group h2 span { margin-left: 6px; font-weight: 400; color: var(--border); }
@@ -842,6 +846,15 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 /* Shown on hover and focus: what a click does. */
 .poses-hint { display: inline-flex; align-items: center; gap: 6px; margin-top: var(--space-2); font-size: var(--text-sm); color: var(--muted); opacity: 0; transition: opacity 120ms ease; }
 .poses-item:hover .poses-hint, .poses-item:focus-visible .poses-hint { opacity: 1; }
+/* Larger or smaller drawings: two icon buttons, the size of the side toggle's words. */
+.poses-size button { display: inline-flex; align-items: center; justify-content: center; padding: 0 var(--space-2); }
+.poses-size button svg { width: 18px; height: 18px; }
+/* Smaller: just the drawings and their names, many to a row. */
+.poses-page.compact .poses-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: var(--space-1); }
+.poses-page.compact .poses-item { padding: var(--space-2) var(--space-1); }
+.poses-page.compact .poses-item .pose-figure { margin-bottom: var(--space-1); }
+.poses-page.compact .poses-name { font-size: var(--text-sm); line-height: 1.3; }
+.poses-page.compact :is(.poses-sanskrit, .poses-aka, .poses-cue, .poses-hint) { display: none; }
 /* Phones: the search the full width, then the side, the colour and Download all on one line. */
 @media (max-width: 760px) {
   .poses-tools { gap: var(--space-4) var(--space-2); }
@@ -851,6 +864,9 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .poses-tools .layout-toggle button { height: 40px; padding: 0 var(--space-3); }
   .ink-trigger, .poses-all { min-height: 40px; }
   .poses-all { padding: 0 var(--space-3); }
+  /* The colour and Download all share a row; the sheet goes quietly under them. */
+  .poses-sheet { order: 1; margin-left: 0; padding-left: 0; }
+  .poses-sheet + .poses-all { margin-left: auto; }
 }
 
 @media (hover: none) { .row-more { opacity: 0.6; } }

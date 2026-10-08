@@ -3,9 +3,9 @@ import { FLOW_COLORS } from './colors';
 import { sideLabel } from './data/graph';
 import { BASES, POSES } from './data/poses';
 import type { Pose, Side } from './data/types';
-import { ChevronIcon, DownloadIcon, InfoIcon } from './icons';
+import { ChevronIcon, DownloadIcon, InfoIcon, LargeTilesIcon, SmallTilesIcon } from './icons';
 import { PoseFigure } from './PoseFigure';
-import { poseSvg } from './poseSvg';
+import { poseSheetSvg, poseSvg } from './poseSvg';
 import { SiteBar } from './SiteBar';
 import { SiteFooter } from './SiteFooter';
 import { DRAWINGS_LICENSE_TEXT, DRAWINGS_OWNER, LICENSE_URL } from './terms';
@@ -13,7 +13,8 @@ import { zip } from './zip';
 
 // The poses page (/poses/): every drawing in a grid, grouped as the "Get to" list is,
 // with its cue. A search narrows them; one-sided poses show the side chosen.
-// Each downloads as an SVG, or all of them at once (both sides) as a zip.
+// Each downloads as an SVG, or all of them at once (both sides) as a zip, with a sheet of
+// every pose together in a grid; the sheet also downloads on its own.
 
 const INKS = [
   { id: 'white', name: 'White', hex: '#ffffff' },
@@ -41,6 +42,8 @@ export function PosesPage() {
   const [inkId, setInkId] = useState('white');
   const [side, setSide] = useState<Side>('right');
   const [query, setQuery] = useState('');
+  // Cards with each pose's names and cue, or just the drawings, many to a row, to see the set at once.
+  const [compact, setCompact] = useState(false);
   const ink = INKS.find((i) => i.id === inkId)!;
   const suffix = inkId === 'white' ? '' : `-${inkId}`;
   /** A one-sided pose's files are named for their side. */
@@ -53,12 +56,12 @@ export function PosesPage() {
   return (
     <>
     <SiteBar root="../" section="Poses" />
-    <main className="poses-page" style={{ '--ink': ink.hex } as CSSProperties}>
+    <main className={compact ? 'poses-page compact' : 'poses-page'} style={{ '--ink': ink.hex } as CSSProperties}>
       <header className="poses-head">
         <h1>Poses</h1>
         <p>
           All {POSES.length} pose drawings. Click one to download it as an SVG, or download them all as a zip (both sides
-          of each one-sided pose), in the line colour chosen here. <TermsInfo />
+          of each one-sided pose, plus a sheet of every pose together), in the line colour chosen here. <TermsInfo />
         </p>
         <div className="poses-tools">
           <input
@@ -76,7 +79,22 @@ export function PosesPage() {
               </button>
             ))}
           </span>
+          <span className="layout-toggle poses-size" role="group" aria-label="Drawing size">
+            <button aria-pressed={!compact} onClick={() => setCompact(false)} aria-label="Larger, with names and cues" title="Larger, with names and cues">
+              <LargeTilesIcon />
+            </button>
+            <button aria-pressed={compact} onClick={() => setCompact(true)} aria-label="Smaller, to see the whole set" title="Smaller, to see the whole set">
+              <SmallTilesIcon />
+            </button>
+          </span>
           <InkPicker inkId={inkId} onChange={setInkId} />
+          <button
+            className="poses-sheet"
+            onClick={() => save(new Blob([poseSheetSvg(ink.hex)], { type: 'image/svg+xml' }), `all-poses${suffix}.svg`)}
+            title="Every pose together in one labelled grid, one layer per pose"
+          >
+            Sheet of all poses
+          </button>
           <button
             className="poses-all"
             onClick={() =>
@@ -85,6 +103,8 @@ export function PosesPage() {
                   [
                     zip([
                       ...POSES.flatMap((p) => (p.sided ? [fileOf(p, 'right'), fileOf(p, 'left')] : [fileOf(p, 'right')])),
+                      // Every pose together, labelled, to look over or adjust in one place.
+                      { name: `all-poses${suffix}.svg`, text: poseSheetSvg(ink.hex) },
                       // The terms travel with the set.
                       { name: 'LICENSE.txt', text: DRAWINGS_LICENSE_TEXT },
                     ]),
@@ -123,7 +143,7 @@ export function PosesPage() {
                     aria-label={`Download ${p.name}${p.sided ? `, ${side} side,` : ''} as SVG`}
                     title="Download SVG"
                   >
-                    <PoseFigure poseId={p.id} side={side} size={128} />
+                    <PoseFigure poseId={p.id} side={side} size={compact ? 80 : 128} />
                     <span className="poses-name">
                       {p.name}
                       {p.sided && <span className="side">{sideLabel(side)}</span>}
