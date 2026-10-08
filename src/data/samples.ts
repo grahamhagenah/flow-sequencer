@@ -93,7 +93,7 @@ const catCow = (f: FlowBuilder) => f.path(['cow', 1], 'cat', 'cow', 'cat', 'cow'
 
 function morningVinyasa() {
   const f = new FlowBuilder('easy-seat', 12);
-  catCow(f.path(['table', 2])).path(['table', 1, 'Return'], ['down-dog', 8]);
+  catCow(f.path(['table', 2])).path(['table', 1, 'Return'], ['puppy', 5], ['table', 1], ['down-dog', 8]);
   f.path(['forward-fold', 5, 'Walk'], ['halfway-lift', 1], ['forward-fold', 2], ['mountain', 5, 'Roll up']);
   sunA(f);
   sunA(f);
@@ -112,7 +112,7 @@ function morningVinyasa() {
   f.path(['easy-seat', 2, 'Swing'], ['staff', 2], ['boat', 5], ['staff', 2], ['boat', 5], ['knees-to-chest', 3, 'Roll down']);
   f.path(['bridge', 6], ['knees-to-chest', 2], ['bridge', 6], ['knees-to-chest', 4]);
   f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
-  f.path(['knees-to-chest', 3, 'Bring'], ['happy-baby', 6], ['savasana', 30], ['easy-seat', 5]);
+  f.path(['knees-to-chest', 3, 'Bring'], ['reclined-bound-angle', 6], ['savasana', 30], ['easy-seat', 5]);
   return f.seq;
 }
 
@@ -120,16 +120,17 @@ function slowHips() {
   const f = new FlowBuilder('child', 10);
   catCow(f.path(['table', 2])).path(['table', 2, 'Return']);
   f.lead('right').go('thread-needle', 8).go('table', 2).lead('left').go('thread-needle', 8).go('table', 2);
-  f.go('down-dog', 8);
+  f.path(['frog', 10], ['table', 2], ['down-dog', 8]);
   f.bothSides((f) =>
     f.path(['three-leg-dog', 2], ['low-lunge', 5, 'lower back knee'], ['lizard', 8], ['half-split', 8], ['low-lunge', 4])
       .path(['three-leg-dog', 2, 'Step'], ['pigeon', 15], ['down-dog', 5]),
   );
   f.path(['table', 2, 'Lower knees'], ['easy-seat', 3, 'Swing'], ['bound-angle', 12], ['staff', 2]);
+  f.path(['wide-legged-seated-forward-fold', 10], ['staff', 2]);
   f.lead('right').go('head-to-knee', 10).go('head-to-knee', 10);
   f.path(['staff', 2], ['seated-forward-fold', 12], ['staff', 2], ['savasana', 2, 'Roll down'], ['knees-to-chest', 4]);
   f.lead('right').go('supine-twist', 10).go('supine-twist', 10);
-  f.path(['knees-to-chest', 3, 'Bring'], ['savasana', 30]);
+  f.path(['knees-to-chest', 3, 'Bring'], ['reclined-bound-angle', 10], ['savasana', 30]);
   return f.seq;
 }
 
@@ -140,7 +141,8 @@ function eveningWindDown() {
   f.path(['table', 2], ['child', 12], ['table', 2], ['easy-seat', 2, 'Swing'], ['savasana', 2, 'Lower down']);
   f.path(['knees-to-chest', 6]);
   f.lead('right').go('supine-twist', 10).go('supine-twist', 10);
-  f.path(['knees-to-chest', 3, 'Bring'], ['happy-baby', 8], ['savasana', 40]);
+  f.path(['knees-to-chest', 3, 'Bring'], ['reclined-bound-angle', 10], ['knees-to-chest', 2], ['legs-up-the-wall', 20]);
+  f.path(['savasana', 40]);
   return f.seq;
 }
 
@@ -154,11 +156,11 @@ function powerFlow() {
   f.bothSides((f) => {
     f.path(['high-lunge', 5, 'rise up'], ['warrior-3', 5], ['high-lunge', 2], ['warrior-1', 3, 'Spin back heel down'])
       .path(['warrior-2', 3], ['reverse-warrior', 3], ['down-dog', 1, 'Cartwheel'], ['plank', 2], ['side-plank', 5])
-      .path(['plank', 1], ['chaturanga', 1], 'up-dog', ['down-dog', 3]);
+      .path(['wild-thing', 3], ['down-dog', 1], ['plank', 1], ['chaturanga', 1], 'up-dog', ['down-dog', 3]);
   });
   f.path(['garland', 5], ['crow', 5], ['garland', 2], ['crow', 5], ['chaturanga', 1], 'up-dog', ['down-dog', 3]);
-  f.path(['plank', 2], ['belly', 2, 'Lower all'], ['locust', 5], ['belly', 2], ['locust', 5], ['bow', 5, 'Bend']);
-  f.path(['belly', 3], ['child', 5, 'Press back'], ['thunderbolt', 2], ['camel', 5], ['thunderbolt', 3], ['camel', 5]);
+  f.path(['plank', 2], ['forearm-plank', 8], ['plank', 1], ['belly', 2, 'Lower all'], ['locust', 5], ['belly', 2], ['locust', 5]);
+  f.path(['bow', 5, 'Bend'], ['belly', 3], ['child', 5, 'Press back'], ['thunderbolt', 2], ['camel', 5], ['thunderbolt', 3], ['camel', 5]);
   f.path(['child', 8], ['table', 2], ['easy-seat', 2, 'Swing'], ['savasana', 2, 'Lower down'], ['bridge', 3, 'Bend']);
   f.path(['wheel', 5], ['knees-to-chest', 3, 'hug'], ['bridge', 2], ['wheel', 5], ['knees-to-chest', 5, 'hug']);
   f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
@@ -182,8 +184,8 @@ function middayReset() {
   const f = new FlowBuilder('mountain', 5);
   f.path('upward-salute', ['forward-fold', 3, 'Swan'], ['halfway-lift', 1], ['forward-fold', 3], ['down-dog', 5, 'Step back']);
   f.bothSides((f) =>
-    f.path(['three-leg-dog', 2], ['low-lunge', 5, 'lower back knee'], ['half-split', 5], ['low-lunge', 2])
-      .path(['down-dog', 3, 'Step back']),
+    f.path(['three-leg-dog', 2], ['low-lunge', 5, 'lower back knee'], ['twisted-low-lunge', 4], ['low-lunge', 2])
+      .path(['half-split', 5], ['low-lunge', 2], ['down-dog', 3, 'Step back']),
   );
   catCow(f.path(['table', 2, 'Lower knees'])).path(['table', 1, 'Return'], ['child', 8]);
   f.path(['table', 2], ['easy-seat', 3, 'Swing']);
@@ -192,20 +194,20 @@ function middayReset() {
   return f.seq;
 }
 
-/** For a break from the desk: twists, cat and cow, shoulders, hips and hamstrings, back on your feet. */
+/** For a break from the desk: twists, cat and cow, puppy and thread the needle for the shoulders, hips and hamstrings, back on your feet. */
 function deskBreak() {
   const f = new FlowBuilder('easy-seat', 6);
   f.lead('right').go('seated-twist', 4).go('seated-twist', 4).go('easy-seat', 2, 'Unwind to center');
   catCow(f.path(['table', 2])).path(['table', 1, 'Return']);
   f.bothSides((f) => f.path(['thread-needle', 5], ['table', 2]));
-  f.path(['down-dog', 5]);
+  f.path(['puppy', 5], ['table', 1], ['down-dog', 5]);
   f.bothSides((f) => f.path(['low-lunge', 4, 'lower back knee'], ['half-split', 4], ['low-lunge', 1], ['down-dog', 2, 'Step back']));
   f.path(['forward-fold', 4, 'Walk'], ['halfway-lift', 1], ['forward-fold', 2], ['mountain', 3, 'Roll up']);
   f.path(['upward-salute', 2], ['forward-fold', 2, 'Swan'], ['mountain', 5, 'Roll up']);
   return f.seq;
 }
 
-/** After a run: lunges for the hip flexors, half split and pyramid for the hamstrings, pigeon, then the floor. */
+/** After a run: lunges for the hip flexors, half split, pyramid and a lying leg lift for the hamstrings, pigeon, then legs up the wall. */
 function runnersStretch() {
   const f = new FlowBuilder('mountain', 5);
   f.path(['forward-fold', 6, 'Exhale'], ['halfway-lift', 1], ['forward-fold', 3], ['down-dog', 6, 'Step back']);
@@ -215,18 +217,22 @@ function runnersStretch() {
       .path(['pigeon', 10], ['down-dog', 3, 'step back']),
   );
   f.path(['table', 2, 'Lower knees'], ['easy-seat', 2, 'Swing'], ['staff', 2], ['seated-forward-fold', 10], ['staff', 2]);
-  f.path(['savasana', 2, 'Roll down'], ['knees-to-chest', 4]);
+  f.path(['savasana', 2, 'Roll down'], ['knees-to-chest', 3]);
+  f.lead('right').go('reclined-hand-to-big-toe', 8).go('reclined-hand-to-big-toe', 8).path(['savasana', 2], ['knees-to-chest', 3]);
   f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
-  f.path(['knees-to-chest', 3, 'Bring'], ['happy-baby', 6], ['savasana', 20]);
+  f.path(['knees-to-chest', 3, 'Bring'], ['legs-up-the-wall', 15], ['savasana', 20]);
   return f.seq;
 }
 
-/** Standing balances on each side, from Tree to Half Moon, then Eagle and Dancer, core and rest. */
+/** Standing balances on each side, from Tree to Half Moon and Standing Splits, then Eagle and Dancer, core and rest. */
 function steadyBalance() {
   const f = new FlowBuilder('mountain', 8);
   sunA(f);
   sunA(f);
-  f.bothSides((f) => f.path(['tree', 6], ['warrior-3', 5], ['half-moon', 5], ['warrior-3', 2], ['mountain', 3]));
+  f.bothSides((f) =>
+    f.path(['tree', 6], ['warrior-3', 5], ['half-moon', 5], ['warrior-3', 2], ['standing-splits', 4], ['forward-fold', 2])
+      .path(['mountain', 3, 'Roll up']),
+  );
   f.path(['chair', 3]).lead('right').go('eagle', 6).go('eagle', 6).path(['chair', 2, 'Unwind'], ['mountain', 3]);
   f.lead('right').go('dancer', 6).go('dancer', 6).go('mountain', 3);
   f.path(['forward-fold', 3, 'Exhale'], ['garland', 3], ['easy-seat', 2], ['staff', 2], ['boat', 5], ['staff', 2], ['boat', 5]);
@@ -236,12 +242,14 @@ function steadyBalance() {
   return f.seq;
 }
 
-/** Builds strength and the crow shape (core, twists, squats), then three tries at Crow. */
+/** Builds strength and the crow shape (core, knee to nose, twists, squats), then three tries at Crow. */
 function crowPeak() {
   const f = new FlowBuilder('easy-seat', 8);
   catCow(f.path(['table', 2])).path(['table', 1, 'Return'], ['down-dog', 5]);
   f.path(['plank', 5, 'Shift forward']).lead('right').path(['side-plank', 5], ['plank', 2]);
-  f.lead('left').path(['side-plank', 5], ['plank', 2], ['down-dog', 3, 'Lift hips']);
+  f.lead('left').path(['side-plank', 5], ['plank', 2]);
+  f.lead('right').path(['knee-to-nose', 3], ['plank', 1]).lead('left').path(['knee-to-nose', 3], ['plank', 1]);
+  f.path(['forearm-plank', 8], ['plank', 1], ['down-dog', 3, 'Lift hips']);
   f.path(['forward-fold', 3, 'Walk'], ['mountain', 3, 'Roll up']);
   sunA(f);
   sunA(f);
@@ -279,20 +287,21 @@ function dancerPeak() {
   return f.seq;
 }
 
-/** Opens the hip flexors, then the spine from belly backbends to Camel and Bridge, then three Wheels. */
+/** Wild Thing and lunges open the front body, then the spine from belly backbends to Camel and Bridge, then three Wheels. */
 function wheelPeak() {
   const f = new FlowBuilder('mountain', 5);
   sunA(f);
   sunA(f);
   toDownDog(f, 3);
   f.bothSides((f) => {
-    f.path(['three-leg-dog', 2], ['high-lunge', 4, 'rise up'], ['low-lunge', 6], ['high-lunge', 2, 'Tuck'])
-      .path(['forward-fold', 1, 'Step back foot forward'], ['down-dog', 1, 'Step back to down']);
+    f.path(['three-leg-dog', 2], ['wild-thing', 3], ['three-leg-dog', 2], ['high-lunge', 4, 'rise up'], ['low-lunge', 6])
+      .path(['high-lunge', 2, 'Tuck'], ['forward-fold', 1, 'Step back foot forward'], ['down-dog', 1, 'Step back to down']);
     vinyasa(f);
   });
   f.path(['plank', 2, 'Shift forward'], ['belly', 2, 'Lower all'], ['locust', 5], ['belly', 2], ['locust', 5]);
-  f.path(['bow', 5, 'Bend'], ['child', 5, 'Release, press back'], ['thunderbolt', 2], ['camel', 5], ['thunderbolt', 2]);
-  f.path(['camel', 5], ['child', 6], ['table', 2], ['easy-seat', 2, 'Swing'], ['savasana', 2, 'Lower down']);
+  f.path(['bow', 5, 'Bend'], ['child', 5, 'Release, press back'], ['puppy', 6], ['child', 2], ['thunderbolt', 2]);
+  f.path(['camel', 5], ['thunderbolt', 2], ['camel', 5], ['child', 6], ['table', 2], ['easy-seat', 2, 'Swing']);
+  f.path(['savasana', 2, 'Lower down']);
   f.path(['bridge', 5, 'Bend'], ['knees-to-chest', 2, 'hug'], ['bridge', 3], ['wheel', 3], ['knees-to-chest', 3, 'hug']);
   f.path(['bridge', 2], ['wheel', 5], ['knees-to-chest', 3, 'hug'], ['bridge', 2], ['wheel', 5], ['knees-to-chest', 5, 'hug']);
   f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
@@ -371,7 +380,8 @@ function headstandPeak() {
   sunA(f);
   sunA(f);
   toDownDog(f, 3);
-  f.path(['dolphin', 5], ['down-dog', 2], ['dolphin', 5], ['down-dog', 2], ['plank', 5, 'Shift forward']);
+  f.path(['dolphin', 5], ['down-dog', 2], ['dolphin', 5], ['forearm-plank', 8], ['dolphin', 2], ['down-dog', 2]);
+  f.path(['plank', 5, 'Shift forward']);
   f.path(['down-dog', 3, 'Lift hips'], ['child', 5, 'Lower knees'], ['table', 2], ['easy-seat', 2, 'Swing']);
   f.path(['staff', 2], ['boat', 5], ['staff', 2], ['boat', 5], ['staff', 2], ['easy-seat', 2], ['table', 2]);
   f.path(['dolphin', 3], ['headstand', 3], ['dolphin', 2, 'Lower feet'], ['child', 5, 'Lower knees']);
@@ -382,7 +392,7 @@ function headstandPeak() {
   return f.seq;
 }
 
-/** Lunges open the hip flexors and belly backbends the spine, then Camel from Thunderbolt and from Hero. */
+/** Lunges open the hip flexors and belly backbends the spine, then Camel from Thunderbolt and from Hero, and Rabbit to round the back after. */
 function camelPeak() {
   const f = new FlowBuilder('mountain', 5);
   sunA(f);
@@ -396,7 +406,7 @@ function camelPeak() {
   f.path(['plank', 2, 'Shift forward'], ['belly', 2, 'Lower all'], ['sphinx', 6], ['cobra', 3], ['belly', 2]);
   f.path(['locust', 5], ['belly', 2], ['locust', 5], ['bow', 5, 'Bend'], ['child', 5, 'Release, press back']);
   f.path(['thunderbolt', 2], ['camel', 3], ['thunderbolt', 2, 'Lift chest'], ['camel', 5], ['thunderbolt', 2, 'Lift chest']);
-  f.path(['hero', 5], ['camel', 6], ['child', 10, 'Come up slowly'], ['table', 2], ['easy-seat', 2, 'Swing']);
+  f.path(['hero', 5], ['camel', 6], ['rabbit', 6], ['child', 10], ['table', 2], ['easy-seat', 2, 'Swing']);
   f.lead('right').go('seated-twist', 6).go('seated-twist', 6).go('easy-seat', 2, 'Unwind to center');
   f.path(['savasana', 2, 'Lower down'], ['knees-to-chest', 4]);
   f.lead('right').go('supine-twist', 8).go('supine-twist', 8);
@@ -414,37 +424,37 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
   {
     id: 'slow-hips',
     name: 'Slow Hip Opening · floor',
-    description: 'Long holds low to the ground: lunge, lizard, half split and pigeon on each side.',
+    description: 'Long holds low to the ground: lunge, lizard, half split and pigeon each side, then frog.',
     seq: slowHips(),
   },
   {
     id: 'runners-stretch',
     name: 'Runner’s Stretch · after a run',
-    description: 'Lunges, lizard, half split and pyramid for tired legs, then pigeon and the floor.',
+    description: 'Lunges, lizard, half split and pyramid for tired legs, then pigeon and legs up the wall.',
     seq: runnersStretch(),
   },
   {
     id: 'evening-wind-down',
     name: 'Evening Wind-Down · gentle',
-    description: 'Seated and lying down only, with twists, folds and a long savasana.',
+    description: 'Seated and lying down only: twists, folds, legs up the wall and a long savasana.',
     seq: eveningWindDown(),
   },
   {
     id: 'power-flow',
     name: 'Power Flow · strong',
-    description: 'Sun A and B, warrior III and side plank each side, crow, deep backbends, then shoulder stand.',
+    description: 'Sun A and B, warriors and side plank to Wild Thing, crow, deep backbends, shoulder stand.',
     seq: powerFlow(),
   },
   {
     id: 'midday-reset',
     name: 'Midday Reset · quick',
-    description: 'A short break: fold, lunge and half split each side, then twist and rest.',
+    description: 'A short break: fold, then a lunge, twist and half split each side, and rest.',
     seq: middayReset(),
   },
   {
     id: 'desk-break',
     name: 'Desk Break · at work',
-    description: 'Twists, cat and cow, shoulders, hips and hamstrings, then back on your feet.',
+    description: 'Twists, cat and cow, puppy for the shoulders, hips and hamstrings, then back on your feet.',
     seq: deskBreak(),
   },
   {
@@ -456,13 +466,13 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
   {
     id: 'steady-balance',
     name: 'Steady Balance · focus',
-    description: 'Tree, Warrior III and Half Moon on each side, then Eagle and Dancer, boat and a long rest.',
+    description: 'Tree, Warrior III, Half Moon and Standing Splits each side, then Eagle, Dancer and boat.',
     seq: steadyBalance(),
   },
   {
     id: 'crow-peak',
     name: 'Crow Pose · arm balance',
-    description: 'Core, twists and deep squats to find the shape, then three tries at Crow.',
+    description: 'Core work, knee to nose and deep squats to find the shape, then three tries at Crow.',
     seq: crowPeak(),
     peak: true,
     peakPose: 'crow',
@@ -478,7 +488,7 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
   {
     id: 'wheel-peak',
     name: 'Wheel · backbend',
-    description: 'Lunges and belly backbends, Camel and Bridge warm the spine, then three tries at Wheel.',
+    description: 'Wild Thing, lunges and belly backbends, Camel and Bridge warm the spine, then Wheel.',
     seq: wheelPeak(),
     peak: true,
     peakPose: 'wheel',
@@ -502,7 +512,7 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
   {
     id: 'headstand-peak',
     name: 'Headstand · inversion',
-    description: 'Dolphin and core build the strength, three tries at Headstand, then Shoulder Stand.',
+    description: 'Dolphin, forearm plank and core build the strength, three Headstands, then Shoulder Stand.',
     seq: headstandPeak(),
     peak: true,
     peakPose: 'headstand',
@@ -510,7 +520,7 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
   {
     id: 'camel-peak',
     name: 'Camel · heart opener',
-    description: 'Lunges and belly backbends open the front body, then Camel from Thunderbolt and Hero.',
+    description: 'Lunges and belly backbends open the front body, Camel from Thunderbolt and Hero, then Rabbit.',
     seq: camelPeak(),
     peak: true,
     peakPose: 'camel',
