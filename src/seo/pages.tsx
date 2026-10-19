@@ -8,6 +8,7 @@ import { TRANSITIONS } from '../data/transitions';
 import type { Pose } from '../data/types';
 import { encodeSteps, toHash } from '../link';
 import { classMs } from '../player/conductor';
+import { DEFAULT_SECONDS_PER_BREATH } from '../player/usePlayer';
 import { PoseFigure } from '../PoseFigure';
 import { SiteBar } from '../SiteBar';
 import { SiteFooter } from '../SiteFooter';
@@ -21,7 +22,7 @@ import { SiteFooter } from '../SiteFooter';
 export const SITE = 'https://yoga.grahamhagenah.com';
 const NAME = 'Flow Sequencer';
 /** How long a class runs for the numbers on these pages: the player's default pace. */
-const minutes = (f: SampleFlow) => Math.max(1, Math.round(classMs(f.seq, 5, true) / 60000));
+const minutes = (f: SampleFlow) => Math.max(1, Math.round(classMs(f.seq, DEFAULT_SECONDS_PER_BREATH, true) / 60000));
 
 export interface Page {
   /** Where it's written in the build, e.g. "flows/crow-peak/index.html". */
