@@ -264,6 +264,8 @@ function crowPeak() {
   f.path(['plank', 5, 'Shift forward']).lead('right').path(['side-plank', 5], ['plank', 2]);
   f.lead('left').path(['side-plank', 5], ['plank', 2]);
   f.lead('right').path(['knee-to-nose', 3], ['plank', 1]).lead('left').path(['knee-to-nose', 3], ['plank', 1]);
+  // A rest for the wrists and core before the forearm plank.
+  f.path(['child', 6, 'Lower knees, sink back'], ['down-dog', 2], ['plank', 2]);
   f.path(['forearm-plank', 8], ['plank', 1], ['down-dog', 3, 'Lift hips']);
   f.path(['forward-fold', 3, 'Walk'], ['mountain', 3, 'Roll up']);
   sunA(f);
