@@ -131,12 +131,13 @@ function slowHips() {
   const f = new FlowBuilder('child', 10);
   catCow(f.path(['table', 2])).path(['table', 2, 'Return']);
   f.lead('right').go('thread-needle', 8).go('table', 2).lead('left').go('thread-needle', 8).go('table', 2);
-  f.path(['frog', 10], ['table', 2], ['down-dog', 8]);
+  f.path(['down-dog', 8, 'Tuck']);
   f.bothSides((f) =>
     f.path(['three-leg-dog', 2], ['low-lunge', 5, 'lower back knee'], ['lizard', 8], ['half-split', 8], ['low-lunge', 4])
       .path(['three-leg-dog', 2, 'Step'], ['pigeon', 15], ['down-dog', 5]),
   );
-  f.path(['table', 2, 'Lower knees'], ['easy-seat', 3, 'Swing'], ['bound-angle', 12], ['staff', 2]);
+  // Frog once the lunges and pigeon have warmed the hips, not cold at the start.
+  f.path(['table', 2, 'Lower knees'], ['frog', 10], ['table', 2], ['easy-seat', 3, 'Swing'], ['bound-angle', 12], ['staff', 2]);
   f.path(['wide-legged-seated-forward-fold', 10], ['staff', 2]);
   f.lead('right').go('head-to-knee', 10).go('head-to-knee', 10);
   f.path(['staff', 2], ['seated-forward-fold', 12], ['staff', 2], ['savasana', 2, 'Roll down'], ['knees-to-chest', 4]);
@@ -166,8 +167,11 @@ function powerFlow() {
   toDownDog(f, 3);
   f.bothSides((f) => {
     f.path(['high-lunge', 5, 'rise up'], ['warrior-3', 5], ['high-lunge', 2], ['warrior-1', 3, 'Spin back heel down'])
-      .path(['warrior-2', 3], ['reverse-warrior', 3], ['down-dog', 1, 'Cartwheel'], ['plank', 2], ['side-plank', 5])
-      .path(['wild-thing', 3], ['down-dog', 1], ['plank', 1], ['chaturanga', 1], 'up-dog', ['down-dog', 3]);
+      .path(['warrior-2', 3], ['reverse-warrior', 3], ['down-dog', 1, 'Cartwheel'], ['plank', 2], ['side-plank', 4])
+      // Wild Thing from Three-Legged Dog, on the other hand: the one that just held Side
+      // Plank gets a rest, as teachers switch arms.
+      .path(['down-dog', 1, 'Roll back'], ['three-leg-dog', 2], ['wild-thing', 3], ['down-dog', 1, 'Flip back'])
+      .path(['plank', 1], ['chaturanga', 1], 'up-dog', ['down-dog', 3]);
   });
   f.path(['garland', 5], ['crow', 5], ['garland', 2], ['crow', 5], ['chaturanga', 1], 'up-dog', ['down-dog', 3]);
   f.path(['plank', 2], ['forearm-plank', 8], ['plank', 1], ['belly', 2, 'Lower all'], ['locust', 5], ['belly', 2], ['locust', 5]);
@@ -595,14 +599,14 @@ export const SAMPLE_FLOWS: SampleFlow[] = [
   {
     id: 'evening-wind-down',
     name: 'Evening Wind-Down · gentle',
-    description: 'Seated and lying down only: twists, folds, legs up the wall and a long savasana.',
+    description: 'Seated, kneeling and lying down: twists, folds, child’s pose, legs up the wall and a long savasana.',
     seq: eveningWindDown(),
     kind: 'class',
   },
   {
     id: 'power-flow',
     name: 'Power Flow · strong',
-    description: 'Sun A and B, warriors and side plank to Wild Thing, crow, deep backbends, shoulder stand.',
+    description: 'Sun A and B, warriors, side plank and Wild Thing, crow, deep backbends, shoulder stand.',
     seq: powerFlow(),
     kind: 'class',
   },
