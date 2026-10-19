@@ -3,8 +3,12 @@ import type { Sequence } from '../sequence';
 import { canSpeak, Conductor, type PlayerState } from './conductor';
 import { rankVoices } from './voices';
 
-const SETTINGS_KEY = 'nextpose:player';
+const SETTINGS_KEY = 'nextpose:player:2';
+/** Where settings were kept while the default pace was 5 seconds a breath. */
+const OLD_SETTINGS_KEY = 'nextpose:player';
 export const BREATH_CHOICES = [3, 4, 5, 6, 7, 8];
+/** The player's pace until another is chosen. */
+export const DEFAULT_SECONDS_PER_BREATH = 4;
 
 export interface Settings {
   secondsPerBreath: number;
@@ -13,17 +17,28 @@ export interface Settings {
   breathTone: boolean;
 }
 
-const DEFAULTS: Settings = { secondsPerBreath: 5, voiceURI: null, chime: true, breathTone: true };
+const DEFAULTS: Settings = { secondsPerBreath: DEFAULT_SECONDS_PER_BREATH, voiceURI: null, chime: true, breathTone: true };
 
 /** The saved player settings (or defaults), for estimating class lengths outside the player. */
 export function loadSettings(): Settings {
   try {
-    const s = { ...DEFAULTS, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? '') as Partial<Settings>) };
+    const s = { ...DEFAULTS, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY) ?? oldSettings()) as Partial<Settings>) };
     if (BREATH_CHOICES.includes(s.secondsPerBreath)) return s;
   } catch {
     // fall through to defaults
   }
   return DEFAULTS;
+}
+
+/**
+ * Settings saved before the default pace changed. They were saved whenever the player
+ * opened, so a pace of 5 (the old default) may never have been chosen: it gives way to the
+ * new default. Any other pace, and the voice and sounds, carry over.
+ */
+function oldSettings(): string {
+  const old = JSON.parse(localStorage.getItem(OLD_SETTINGS_KEY) ?? '{}') as Partial<Settings>;
+  if (old.secondsPerBreath === 5) delete old.secondsPerBreath;
+  return JSON.stringify(old);
 }
 
 function useVoices(): SpeechSynthesisVoice[] {

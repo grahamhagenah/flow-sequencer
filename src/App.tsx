@@ -10,7 +10,8 @@ import { Dialog, type DialogSpec } from './Dialog';
 import { FlowFinished, SharedWelcome } from './ShareScreens';
 import { unlockPlayback } from './player/conductor';
 import { FlowList } from './FlowList';
-import { ArrowLeftIcon, CheckIcon, FlowsIcon, NewFlowIcon, SaveIcon, UndoIcon } from './icons';
+import { BarMenu } from './BarMenu';
+import { ArrowLeftIcon, CheckIcon, FlowsIcon, LinkIcon, NewFlowIcon, SaveIcon, UndoIcon } from './icons';
 import { Logo } from './Logo';
 import { deleteFlow, listFlows, loadDraft, loadResume, newId, putFlow, type SavedFlow, saveDraft, saveResume } from './library';
 import { decodeSteps, encodeSteps, fromHash, shareUrl, toHash } from './link';
@@ -486,37 +487,78 @@ export function App() {
       ],
     });
 
+  // The sequencer with a flow in it, or the empty one choosing a first pose (not the start page).
+  const flowOpen = view === 'builder' && (seq.length > 0 || choosing);
   const status = saved ? (dirty ? 'Unsaved changes' : 'Saved') : seq.length ? 'Not saved yet' : '';
 
   return (
     // The open flow's colour is the accent everywhere: its poses, the play button, highlights.
     <div className="app" style={{ '--accent': flowColor(color).hex } as CSSProperties}>
       <Dialog spec={dialog} onClose={() => setDialog(null)} />
-      {/* One bar: the app's name, the open flow's save status, and everything you do with it (the
-          flow's name heads its list, in Builder). */}
-      <header className="bar">
+      {/* One bar: home, the open flow's name (editable in place) where the app's name would be,
+          and what you do with it: undo and save to hand, the rest under ⋯. */}
+      <header className={flowOpen ? 'bar flow-bar' : 'bar'}>
         <h1>
           {/* Home is the start page (see goHome); opening it in a new tab starts fresh there too. */}
           <a
             className="home"
             href="./"
+            aria-label={flowOpen ? 'Flow Sequencer, start page' : undefined}
+            title={flowOpen ? 'Start page' : undefined}
             onClick={(e) => {
               if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
               e.preventDefault();
               goHome();
             }}
           >
-            {/* White until a flow is open, then in its colour. */}
-            <Logo size={22} color={seq.length > 0 || choosing ? 'var(--accent)' : undefined} /> Flow Sequencer
+            {/* With a flow open, just the logo: the flow's name takes the app's place. */}
+            <Logo size={22} />
+            {!flowOpen && ' Flow Sequencer'}
           </a>
         </h1>
-        {view === 'builder' ? (
+        {view === 'flows' ? (
           <>
-            {/* The start page has no flow yet, so no name for it; the app's tagline instead
-                (on wider screens). */}
-            {seq.length === 0 && !choosing && <span className="bar-tagline">Build a yoga flow, one pose at a time</span>}
-            {(seq.length > 0 || choosing) && <span className="status">{status}</span>}
-            {/* Icon-only; data-tip is the hover/focus tooltip and aria-label the spoken name. */}
+            <span className="bar-page">My flows</span>
+            <button className="nav" onClick={() => setView('builder')} aria-label="Back to sequencer">
+              <ArrowLeftIcon /> <span className="nav-text">Back to sequencer</span>
+            </button>
+          </>
+        ) : !flowOpen ? (
+          <>
+            {/* The start page has no flow yet: the app's tagline (on wider screens), and My flows. */}
+            <span className="bar-tagline">Build a yoga flow, one pose at a time</span>
+            <div className="flow-buttons" ref={buttonsRef}>
+              <button
+                className="icon-btn flows-icon"
+                onClick={() => setView('flows')}
+                aria-label={`My flows, ${flows.length} saved`}
+                data-tip="My flows"
+              >
+                <FlowsIcon />
+                {flows.length > 0 && <span className="icon-count">{flows.length}</span>}
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* The flow's icon (or a dot) in its colour, then its name, editable in place
+                (outlined on hover). */}
+            <div className="list-title">
+              <LookPicker color={color} icon={icon} onColor={setColor} onIcon={setIcon} />
+              <label className="name-field" title="Rename this flow">
+                <input
+                  className="flow-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Untitled flow"
+                  aria-label="Flow name"
+                  maxLength={80}
+                />
+              </label>
+            </div>
+            <span className="status">{status}</span>
+            {/* Icon-only; data-tip is the hover/focus tooltip and aria-label the spoken name.
+                On phones undo and save step aside while there's nothing for them to do. */}
             <div className="flow-buttons" ref={buttonsRef}>
               <button className="icon-btn" onClick={undo} disabled={!canUndo} aria-label="Undo" data-tip="Undo (⌘Z)">
                 <UndoIcon />
@@ -536,33 +578,20 @@ export function App() {
                 {justSaved ? <CheckIcon /> : <SaveIcon />}
                 {dirty && seq.length > 0 && !justSaved && <span className="icon-dot" aria-hidden="true" />}
               </button>
-              <button
-                className="icon-btn"
-                onClick={newFlow}
-                disabled={seq.length === 0 && !id}
-                aria-label="New flow"
-                data-tip="New flow"
-              >
-                <NewFlowIcon />
-              </button>
-              {/* The Flows page, with a badge for how many are saved. */}
-              <button
-                className="icon-btn flows-icon"
-                onClick={() => setView('flows')}
-                aria-label={`Flows, ${flows.length} saved`}
-                data-tip="My flows"
-              >
-                <FlowsIcon />
-                {flows.length > 0 && <span className="icon-count">{flows.length}</span>}
-              </button>
+              <BarMenu
+                items={[
+                  {
+                    icon: copied === 'open' ? <CheckIcon /> : <LinkIcon />,
+                    label: copied === 'open' ? 'Link copied' : 'Copy link',
+                    run: () => copyLink('open', name.trim(), steps, color, icon),
+                    disabled: seq.length === 0,
+                    stay: true,
+                  },
+                  { icon: <NewFlowIcon />, label: 'New flow', run: newFlow },
+                  { icon: <FlowsIcon />, label: 'My flows', count: flows.length, run: () => setView('flows') },
+                ]}
+              />
             </div>
-          </>
-        ) : (
-          <>
-            <span className="bar-page">My flows</span>
-            <button className="nav" onClick={() => setView('builder')} aria-label="Back to sequencer">
-              <ArrowLeftIcon /> <span className="nav-text">Back to sequencer</span>
-            </button>
           </>
         )}
       </header>
@@ -585,23 +614,6 @@ export function App() {
         <Builder
           seq={seq}
           set={set}
-          title={
-            // The flow's icon (or a dot) in its colour, then its name, editable in place
-            // (outlined on hover).
-            <div className="list-title">
-              <LookPicker color={color} icon={icon} onColor={setColor} onIcon={setIcon} />
-              <label className="name-field" title="Rename this flow">
-                <input
-                  className="flow-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Untitled flow"
-                  aria-label="Flow name"
-                  maxLength={80}
-                />
-              </label>
-            </div>
-          }
           timelineRef={timelineRef}
           onOpenSample={(f) => openSample(f)}
           onPlaySample={playSample}
