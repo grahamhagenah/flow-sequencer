@@ -142,6 +142,8 @@ a.bar-page:hover { text-decoration: underline; text-decoration-color: var(--mute
 /* The start page's tagline beside the app's name, where a flow's name goes otherwise. */
 .bar-tagline { min-width: 0; font-size: var(--text-md); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bar > .nav { margin-left: auto; }
+/* With a flow open, its name in the header: one line, the name giving way to the buttons. */
+.flow-bar { flex-wrap: nowrap; }
 .meta { color: var(--muted); font-variant-numeric: tabular-nums; }
 
 /* One column: the sequence (or the start page) and, under it, the player. */
@@ -240,6 +242,13 @@ input:focus { outline: none; border-color: var(--accent); background: var(--surf
 /* A quiet link back, no box: just the arrow and its words (hidden on phones). */
 .bar .nav { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 var(--space-2); font-size: var(--text-sm); background: none; border: none; color: var(--muted); }
 .bar .nav:hover { color: var(--text); }
+
+/* The header's ⋯ and the menu it opens, hanging from its right edge. */
+.bar-menu { position: relative; display: flex; }
+.row-menu.bar-menu-list { position: absolute; top: calc(100% + 6px); right: 0; width: 220px; }
+.bar-menu-list .row-menu-items { margin-top: 0; padding-top: 0; border-top: none; }
+.bar-menu-list .row-menu-label { flex: 1; }
+.bar-menu-count { font-size: var(--text-sm); color: var(--muted); font-variant-numeric: tabular-nums; }
 
 /* Its saved-flows count, as a small badge on the icon's corner (smaller than the type scale, on purpose). */
 .icon-count {
@@ -643,8 +652,9 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
 .timeline-head > * { white-space: nowrap; }
 .timeline-head .meta { font-size: var(--text-sm); }
 .timeline-head.empty-head { display: none; }
-/* The pose count and the view toggle, at the heading's right. */
-.timeline-head-end { display: flex; align-items: center; gap: var(--space-3); margin-left: auto; }
+/* The pose count at the left and the view toggle at the right (the name is in the header). */
+.timeline-head-end { flex: 1; display: flex; align-items: center; gap: var(--space-3); }
+.timeline-head-end .layout-toggle { margin-left: auto; }
 /* One pose at a time, or the list. */
 /* Quiet: two words, no box; the chosen one in the text colour on a faint tint. */
 .layout-toggle { display: flex; gap: 2px; }
@@ -1119,13 +1129,16 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
     --text-2xl: 26px;
   }
 
-  /* Header: the logo and icon buttons on one line, the flow's name under them. The save
-     icon already says whether there's anything to save, so the status text is left out. */
+  /* Header: the logo, the flow's name and its icon buttons on one line. The save icon
+     already says whether there's anything to save, so the status text is left out. */
   .bar { padding: var(--space-2) var(--space-4); gap: var(--space-1) var(--space-2); }
-  /* The flow's name under it matches the app's name, no larger. */
-  .bar h1, .list-title { font-size: var(--text-md); }
+  /* The flow's name matches the app's name, no larger. */
+  .bar h1, .flow-bar .list-title { font-size: var(--text-md); }
   .flow-buttons, .bar > .status + .flow-buttons { order: 1; gap: 0; margin-left: auto; margin-right: calc((var(--icon-md) - 34px) / 2); }
   .status, .bar-tagline { display: none; }
+  /* Undo and save only while there's something to undo or save (the check just after
+     saving stays a moment), so the name keeps as much of the line as it can. */
+  .flow-bar .icon-btn:disabled:not(.tip-shown) { display: none; }
   /* Taller targets for the icon buttons, as wide as fits beside the name (a 44px square
      each would push them onto a line of their own). */
   .icon-btn { width: 34px; }

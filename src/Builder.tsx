@@ -49,7 +49,6 @@ const saveLayout = (layout: Layout) => {
 export function Builder({
   seq,
   set,
-  title,
   banner,
   timelineRef,
   onOpenSample,
@@ -73,8 +72,6 @@ export function Builder({
   seq: Sequence;
   set: SetSeq;
   /** A notice shown above the current pose, if any. */
-  /** The flow's name and colour, heading the list. */
-  title: ReactNode;
   banner: ReactNode;
   timelineRef: React.RefObject<HTMLElement | null>;
   onOpenSample: (f: SampleFlow) => void;
@@ -318,8 +315,8 @@ export function Builder({
     <main className="layout">
       <aside className="timeline" ref={timelineRef}>
         {banner}
-        <div className={seq.length || choosing ? 'timeline-head' : 'timeline-head empty-head'}>
-          {title}
+        {/* The flow's name is in the header; here, its length and the view. */}
+        <div className={seq.length ? 'timeline-head' : 'timeline-head empty-head'}>
           {seq.length > 0 && (
             <span className="timeline-head-end">
               <span className="meta">
