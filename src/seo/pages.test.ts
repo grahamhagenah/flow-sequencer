@@ -30,7 +30,7 @@ describe('guide pages', () => {
 
   it('links only to pages that exist', () => {
     // The app's own pages, the site's files and the guide pages themselves.
-    const known = new Set(['', 'poses/', 'favicon.svg', 'assets/app.css', ...pages.map((p) => p.fileName.replace(/index\.html$/, ''))]);
+    const known = new Set(['', 'poses/', 'figure/', 'favicon.svg', 'assets/app.css', ...pages.map((p) => p.fileName.replace(/index\.html$/, ''))]);
     for (const page of html) {
       for (const [, href] of page.content.matchAll(/(?:href)="([^"#]*)(?:#[^"]*)?"/g)) {
         const path = resolve(page.fileName, href);

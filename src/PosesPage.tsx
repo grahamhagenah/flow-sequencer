@@ -16,12 +16,12 @@ import { zip } from './zip';
 // Each downloads as an SVG, or all of them at once (both sides) as a zip, with a sheet of
 // every pose together in a grid; the sheet also downloads on its own.
 
-const INKS = [
+export const INKS = [
   { id: 'white', name: 'White', hex: '#ffffff' },
   ...FLOW_COLORS,
 ];
 
-function save(blob: Blob, filename: string) {
+export function save(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -172,7 +172,7 @@ export function PosesPage() {
  * The line colour: one button showing the colour chosen, opening the swatches to pick
  * another. Picking one closes them; so do a click outside and Escape.
  */
-function InkPicker({ inkId, onChange }: { inkId: string; onChange: (id: string) => void }) {
+export function InkPicker({ inkId, onChange }: { inkId: string; onChange: (id: string) => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const ink = INKS.find((i) => i.id === inkId)!;
