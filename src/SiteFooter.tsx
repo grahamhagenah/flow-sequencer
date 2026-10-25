@@ -22,6 +22,9 @@ export function SiteFooter({ root = './' }: { root?: string }) {
             <a href={`${root}poses/`}>Pose drawings</a>
           </li>
           <li>
+            <a href={`${root}figure/`}>Pose a figure</a>
+          </li>
+          <li>
             <a href={REPO}>Source on GitHub</a>
           </li>
           <li>

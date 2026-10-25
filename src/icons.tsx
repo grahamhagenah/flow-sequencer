@@ -26,6 +26,22 @@ export const UndoIcon = () => (
   </Icon>
 );
 
+export const RedoIcon = () => (
+  <Icon>
+    <path d="m15 14 5-5-5-5" />
+    <path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13" />
+  </Icon>
+);
+
+/** Flip a drawing to face the other way: two halves either side of a dashed middle. */
+export const FlipIcon = () => (
+  <Icon>
+    <path d="M12 3v18" strokeDasharray="2 2.5" />
+    <path d="M9 7 4 12l5 5" />
+    <path d="m15 7 5 5-5 5" />
+  </Icon>
+);
+
 /** Save to My flows: a bookmark, "keep this in my list". */
 export const SaveIcon = () => (
   <Icon>

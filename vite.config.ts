@@ -43,11 +43,11 @@ export default defineConfig({
   // including a GitHub Pages project path like /om/. The app has no routes of
   // its own (flows live in the URL hash), so nothing else depends on the base.
   base: './',
-  // Two pages: the app, and /poses/ (every drawing, to download). The guide pages
-  // (flows/, poses/<id>/, sitemap.xml) are written by seoPages.
+  // Three pages: the app, /poses/ (every drawing, to download) and /figure/ (a figure to
+  // pose). The guide pages (flows/, poses/<id>/, sitemap.xml) are written by seoPages.
   build: {
     rollupOptions: {
-      input: { main: 'index.html', poses: 'poses/index.html' },
+      input: { main: 'index.html', poses: 'poses/index.html', figure: 'figure/index.html' },
     },
   },
 });

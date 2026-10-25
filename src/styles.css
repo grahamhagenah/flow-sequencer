@@ -1245,3 +1245,35 @@ button.danger:hover:not(:disabled) { border-color: var(--danger); }
   .single-via { min-height: calc(3 * 1.45em); }
   .single-words { min-height: 190px; }
 }
+
+/* The figure page (/figure/): the figure to pose, large, with its tools beside it (under
+   it on phones). --ink is the line colour chosen, as on the poses page; the joints are
+   drawn in the app's apricot whatever the ink, so they show on a white figure. */
+.figure-page { max-width: 1100px; margin: 0 auto; padding: var(--space-6) var(--gutter) var(--space-7); --accent: var(--ink); --handle: #f2b27a; }
+.figure-studio { display: grid; grid-template-columns: minmax(0, 560px) minmax(240px, 1fr); gap: var(--space-6); align-items: start; }
+/* The canvas: the drawing's grid, square, in the ink; nothing scrolls while a joint drags. */
+.figure-canvas { width: 100%; aspect-ratio: 1; color: var(--ink); background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); touch-action: none; user-select: none; -webkit-user-select: none; }
+/* The joints: a small dot on each, brighter under the pointer; the head's is a ring round
+   the head. The wide, invisible circle around each is what's picked up. */
+.figure-dot { fill: var(--handle); stroke: var(--bg); stroke-width: 0.35; opacity: 0.6; pointer-events: none; transition: opacity 120ms ease; }
+.figure-joint .figure-dot[r='3.3'] { fill: none; stroke: var(--handle); stroke-width: 0.5; }
+.figure-hit { fill: transparent; stroke: none; cursor: grab; outline: none; }
+.figure-hit:active { cursor: grabbing; }
+.figure-joint:hover .figure-dot, .figure-joint.picked .figure-dot, .figure-hit:focus-visible + .figure-dot { opacity: 1; }
+.figure-joint.held .figure-dot { opacity: 1; stroke: var(--text); }
+.figure-joint.carried .figure-dot { opacity: 0.9; }
+/* The limb being pulled, drawn over the body so its stretch shows. */
+.figure-bone { stroke: var(--handle); stroke-width: 1.5; opacity: 0.55; pointer-events: none; }
+.figure-tools { display: flex; flex-direction: column; gap: var(--space-4); }
+.figure-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
+.figure-label { font-size: var(--text-sm); color: var(--muted); }
+.figure-tools .icon-btn { border-color: var(--border); background: var(--surface); color: var(--soft); }
+.figure-tools .icon-btn:hover:not(:disabled) { color: var(--text); background: var(--surface-2); }
+.figure-check { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--soft); cursor: pointer; }
+.figure-check input { accent-color: var(--handle); width: 16px; height: 16px; margin: 0; }
+.figure-tools .poses-all, .figure-tools .poses-sheet { margin-left: 0; }
+.figure-tools .poses-sheet { display: inline-flex; align-items: center; gap: 6px; }
+.figure-hint { margin: 0; font-size: var(--text-sm); color: var(--muted); }
+@media (max-width: 760px) {
+  .figure-studio { grid-template-columns: minmax(0, 1fr); }
+}

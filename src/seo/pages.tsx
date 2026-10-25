@@ -447,7 +447,7 @@ function posePage(p: Pose, assets: Assets): Page {
 /** Every page to write, the sitemap last. */
 export function buildPages(assets: Assets): Page[] {
   const pages = [flowsIndex(assets), ...SAMPLE_FLOWS.map((f) => flowPage(f, assets)), ...POSES.map((p) => posePage(p, assets))];
-  const urls = ['', 'poses/', ...pages.map((p) => p.fileName.replace(/index\.html$/, ''))];
+  const urls = ['', 'poses/', 'figure/', ...pages.map((p) => p.fileName.replace(/index\.html$/, ''))];
   const sitemap = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
